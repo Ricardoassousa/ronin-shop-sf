@@ -1,0 +1,23 @@
+app_register:
+    path: /register
+    controller: App\Controller\RegistrationController::register
+
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+app_logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+
+app_profile:
+    path: /profile
+    controller: App\Controller\ProfileController::editProfile
+
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\AdminController::dashboard
+
+admin_user_edit:
+    path: /admin/user/{id}/edit
+    controller: App\Controller\AdminController::editUserRoles
