@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\CustomerProfile;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -26,6 +27,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      */
     private $password;
+
+    /**
+     * @var CustomerProfile
+     */
+    private $customerProfile;
 
     /**
      * @return int
@@ -107,5 +113,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function eraseCredentials() { }
+
+    /**
+     * @return CustomerProfile
+     */
+    public function getCustomerProfile(): ?CustomerProfile
+    {
+        return $this->customerProfile;
+    }
+
+    /**
+     * @param CustomerProfile $customerProfile
+     *
+     * @return $this
+     */
+    public function setCustomerProfile(?CustomerProfile $customerProfile): self
+    {
+        if ($customerProfile->getUser() != $this) {
+            $customerProfile->setUser($this);
+        }
+        $this->customerProfile = $customerProfile;
+
+        return $this;
+    }
 
 }
