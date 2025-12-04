@@ -105,6 +105,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @return string
+     */
+    public function getUserIdentifier()
+    {
+        return $this->email;
+    }
+
+    /**
      * @return null
      */
     public function getSalt()
