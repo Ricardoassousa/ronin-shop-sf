@@ -5,3 +5,7 @@
 user_routes:
     resource: "routes/user.yaml"
     type: "yaml"
+
+product_routes:
+    resource: "routes/product.yaml"
+    type: "yaml"
