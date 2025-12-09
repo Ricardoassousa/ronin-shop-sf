@@ -12,7 +12,7 @@
         <field name="sku" type="string" column="sku" length="100" unique="true"/>
         <field name="shortDescription" type="string" column="short_description" length="255"/>
         <field name="description" type="text" column="description"/>
-        <field name="image" type="string" column="image" length="255"/>
+        <field name="image" type="string" column="image" length="255" nullable="true"/>
         <field name="price" type="float" column="price"/>
         <field name="discountPrice" type="float" column="discount_price" nullable="true"/>
         <field name="stock" type="integer" column="stock"/>

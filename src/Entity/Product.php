@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use DateTime;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
+/**
+ * @Vich\Uploadable
+ */
 class Product
 {
     /**
@@ -41,7 +46,13 @@ class Product
     private $description;
 
     /**
-     * @var string
+     * @var File|null
+     * @Vich\UploadableField(mapping="product_image", fileNameProperty="image")
+     */
+    private $imageFile;
+
+    /**
+     * @var string|null
      */
     private $image;
 
@@ -189,7 +200,27 @@ class Product
     }
 
     /**
-     * @return string
+     * @return File|null
+     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @param File|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile) {
+            $this->updatedAt = new DateTime();
+        }
+    }
+
+    /**
+     * @return string|null
      */
     public function getImage()
     {
@@ -197,11 +228,11 @@ class Product
     }
 
     /**
-     * @param string $image
+     * @param string|null $image
      *
      * @return $this
      */
-    public function setImage(string $image)
+    public function setImage(?string $image)
     {
         $this->image = $image;
         return $this;

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +18,11 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class ProductController extends AbstractController
 {
     /**
-     * Lists all products.
-     */
+    * Displays a list of all products.
+    *
+    * @param EntityManagerInterface $em
+    * @return Response
+    */
     public function index(EntityManagerInterface $em): Response
     {
         $products = $em->getRepository(Product::class)->findAll();
@@ -29,32 +33,19 @@ class ProductController extends AbstractController
     }
 
     /**
-     * Creates a new product.
+     * Creates a new product entity and handles the form submission.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
      */
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $product = new Product();
-
-        $form = $this->createForm(ProductType::class, $product, [
-            'is_edit' => false,
-        ]);
+        $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $imageFile */
-            $imageFile = $form['image']->getData();
-            if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                try {
-                    $imageFile->move(
-                        $this->getParameter('products_images_directory'),
-                        $newFilename
-                    );
-                    $product->setImage($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Could not upload image.');
-                }
-            }
 
             $em->persist($product);
             $em->flush();
@@ -69,8 +60,13 @@ class ProductController extends AbstractController
     }
 
     /**
-     * Edits an existing product.
-     */
+    * Edits an existing product entity and handles the form submission.
+    *
+    * @param Request $request
+    * @param Product $product
+    * @param EntityManagerInterface $em
+    * @return Response
+    */
     public function edit(Request $request, Product $product, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(ProductType::class, $product, [
@@ -79,22 +75,9 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $imageFile */
-            $imageFile = $form['image']->getData();
-            if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                try {
-                    $imageFile->move(
-                        $this->getParameter('products_images_directory'),
-                        $newFilename
-                    );
-                    $product->setImage($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Could not upload image.');
-                }
-            }
 
-            $product->setUpdatedAt(new \DateTime());
+            $product->setUpdatedAt(new DateTime());
+
             $em->flush();
 
             return $this->redirectToRoute('product_index');
@@ -107,8 +90,13 @@ class ProductController extends AbstractController
     }
 
     /**
-     * Deletes a product.
-     */
+    * Deletes a product entity after validating the CSRF token.
+    *
+    * @param Request $request
+    * @param Product $product
+    * @param EntityManagerInterface $em
+    * @return Response
+    */
     public function delete(Request $request, Product $product, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
@@ -120,8 +108,11 @@ class ProductController extends AbstractController
     }
 
     /**
-     * Shows a product's details.
-     */
+    * Displays the details of a product entity.
+    *
+    * @param Product
+    * @return Response
+    */
     public function show(Product $product): Response
     {
         return $this->render('product/show.html.twig', [

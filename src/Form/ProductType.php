@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 /**
  * Defines the form used to create and edit products.
@@ -59,11 +60,12 @@ class ProductType extends AbstractType
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Is Active'
             ])
-            ->add('image', FileType::class, [
+            ->add('imageFile', VichImageType::class, [
                 'label' => 'Product Image',
-                'mapped' => false,
                 'required' => !$isEdit,
-            ])
+                'allow_delete' => true,
+                'download_uri' => true
+            ]);
         ;
     }
 
