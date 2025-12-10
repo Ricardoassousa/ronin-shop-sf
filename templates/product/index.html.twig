@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for product in products %}
+            {% for product in pagination.items %}
                 <tr>
                     <td>{{ product.id }}</td>
                     <td>{{ product.name }}</td>
@@ -43,4 +43,8 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="pagination">
+        {{ knp_pagination_render(pagination) }}
+    </div>
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,14 +22,22 @@ class ProductController extends AbstractController
     * Displays a list of all products.
     *
     * @param EntityManagerInterface $em
+    * @param PaginatorInterface $paginator
+    * @param Request $request
     * @return Response
     */
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
         $products = $em->getRepository(Product::class)->findAll();
 
+        $pagination = $paginator->paginate(
+            $products,
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('product/index.html.twig', [
-            'products' => $products,
+            'pagination' => $pagination
         ]);
     }
 
@@ -55,7 +64,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/new.html.twig', [
             'product' => $product,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
@@ -85,7 +94,7 @@ class ProductController extends AbstractController
 
         return $this->render('product/edit.html.twig', [
             'product' => $product,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 
@@ -116,7 +125,7 @@ class ProductController extends AbstractController
     public function show(Product $product): Response
     {
         return $this->render('product/show.html.twig', [
-            'product' => $product,
+            'product' => $product
         ]);
     }
 
