@@ -2,4 +2,4 @@ knp_paginator:
     page_limit: 10
     page_range: 5
     template:
-        pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig'
+        pagination: '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig'
