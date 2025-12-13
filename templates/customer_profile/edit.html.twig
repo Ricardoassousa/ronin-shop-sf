@@ -2,19 +2,96 @@
 
 {% block title %}Customer Profile{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
 {% block body %}
-    <h1>Customer Profile</h1>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4 text-center">Customer Profile</h2>
 
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }}">
-                {{ message }}
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
+                        {{ form_start(form) }}
+                            <div class="form-group">
+                                {{ form_label(form.firstName) }}
+                                {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.firstName) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.surname) }}
+                                {{ form_widget(form.surname, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.surname) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.phone) }}
+                                {{ form_widget(form.phone, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.phone) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.countryPrefixCode) }}
+                                {{ form_widget(form.countryPrefixCode, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.countryPrefixCode) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.primaryAddress) }}
+                                {{ form_widget(form.primaryAddress, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.primaryAddress) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.secondaryAddress) }}
+                                {{ form_widget(form.secondaryAddress, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.secondaryAddress) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.city) }}
+                                {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.city) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.country) }}
+                                {{ form_widget(form.country, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.country) }}
+                            </div>
+
+                            <div class="form-group form-check">
+                                {{ form_widget(form.state, {'attr': {'class': 'form-check-input'}}) }}
+                                {{ form_label(form.state, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                {{ form_errors(form.state) }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form_label(form.postalCode) }}
+                                {{ form_widget(form.postalCode, {'attr': {'class': 'form-control'}}) }}
+                                {{ form_errors(form.postalCode) }}
+                            </div>
+
+                            <button class="btn btn-primary mt-2">{{ button_label|default('Save') }}</button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
             </div>
-        {% endfor %}
-    {% endfor %}
+        </div>
+    </div>
+{% endblock %}
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <button class="btn btn-primary mt-3">Save</button>
-    {{ form_end(form) }}
+{% block javascripts %}
+    {{ parent() }}
 {% endblock %}
