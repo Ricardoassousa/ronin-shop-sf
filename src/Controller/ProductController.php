@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\ProductSearch;
+use App\Form\ProductSearchType;
 use App\Form\ProductType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,16 +30,80 @@ class ProductController extends AbstractController
     */
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
-        $products = $em->getRepository(Product::class)->findAll();
+        $productSearch = new ProductSearch();
+        $searchForm = $this->createForm(ProductSearchType::class, $productSearch);
+        $searchForm->handleRequest($request);
+        $searchParams = array();
+
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+
+            $name = $searchForm['name']->getData();
+            $sku = $searchForm['sku']->getData();
+            $minPrice = $searchForm['minPrice']->getData();
+            $maxPrice = $searchForm['maxPrice']->getData();
+            $stock = $searchForm['stock']->getData();
+            $isActive = $searchForm['isActive']->getData();
+            $startDate = $searchForm['startDate']->getData();
+            $endDate = $searchForm['endDate']->getData();
+
+
+            if (!empty($name)) {
+                $searchParams['name'] = $name;
+            }
+
+            if (!empty($sku)) {
+                $searchParams['sku'] = $sku;
+            }
+
+            if (!empty($minPrice)) {
+                $searchParams['minPrice'] = $minPrice;
+            }
+
+            if (!empty($maxPrice)) {
+                $searchParams['maxPrice'] = $maxPrice;
+            }
+
+            if (!empty($stock)) {
+                $searchParams['stock'] = $stock;
+            }
+
+            if (!empty($isActive)) {
+                $searchParams['isActive'] = $isActive;
+            }
+
+            if (!empty($startDate)) {
+                $searchParams['startDate'] = $startDate;
+            } else {
+                $startDate = new DateTime();
+                $startDate->setTime(0, 0, 0);
+                $startDate->setDate(2000, 1, 1);
+                $startDate->format('yyyy-mm-dd');
+
+                $searchParams['startDate'] = $startDate;
+            }
+
+            if (!empty($endDate)) {
+                $searchParams['endDate'] = $endDate->setTime(23, 59, 59);
+            } else {
+                $endDate = new DateTime();
+                $endDate->setTime(23, 59, 59);
+                $endDate->setDate(date('Y'), date('m'), date('d'));
+                $endDate->format('yyyy-mm-dd');
+                $searchParams['endDate'] = $endDate;
+            }
+        }
+
+        $query = $em->getRepository(Product::class)->findProductByFilterQuery($searchParams);
 
         $pagination = $paginator->paginate(
-            $products,
+            $query,
             $request->query->getInt('page', 1),
             10
         );
 
         return $this->render('product/index.html.twig', [
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'searchForm' => $searchForm->createView()
         ]);
     }
 

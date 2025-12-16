@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
+ * Product
  * @Vich\Uploadable
  */
 class Product
@@ -74,7 +75,7 @@ class Product
     /**
      * Whether the product is active and visible.
      * 
-     * @var string
+     * @var bool
      */
     private $isActive = true;
 
