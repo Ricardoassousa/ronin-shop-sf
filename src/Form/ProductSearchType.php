@@ -5,10 +5,11 @@ namespace App\Form;
 use App\Entity\ProductSearch;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProductSearchType extends AbstractType
@@ -32,7 +33,7 @@ class ProductSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Max Price'
             ])
-            ->add('stock', NumberType::class, [
+            ->add('stock', IntegerType::class, [
                 'required' => false,
                 'label' => 'Stock'
             ])

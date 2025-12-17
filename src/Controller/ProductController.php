@@ -55,19 +55,19 @@ class ProductController extends AbstractController
                 $searchParams['sku'] = $sku;
             }
 
-            if (!empty($minPrice)) {
+            if (isset($minPrice)) {
                 $searchParams['minPrice'] = $minPrice;
             }
 
-            if (!empty($maxPrice)) {
+            if (isset($maxPrice)) {
                 $searchParams['maxPrice'] = $maxPrice;
             }
 
-            if (!empty($stock)) {
+            if (isset($stock)) {
                 $searchParams['stock'] = $stock;
             }
 
-            if (!empty($isActive)) {
+            if (isset($isActive)) {
                 $searchParams['isActive'] = $isActive;
             }
 

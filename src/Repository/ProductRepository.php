@@ -62,13 +62,13 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if (array_key_exists('stock', $searchParams)) {
-            $qb->andWhere('product.stock = ?4');
-            $qb->setParameter(4, $searchParams['stock']);
+            $qb->andWhere('product.stock = ?5');
+            $qb->setParameter(5, $searchParams['stock']);
         }
 
         if (array_key_exists('isActive', $searchParams)) {
-            $qb->andWhere('product.isActive = ?5');
-            $qb->setParameter(5, $searchParams['isActive']);
+            $qb->andWhere('product.isActive = ?6');
+            $qb->setParameter(6, $searchParams['isActive']);
         }
 
         if (array_key_exists('startDate', $searchParams) and array_key_exists('endDate', $searchParams)) {
@@ -78,13 +78,13 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if (array_key_exists('startDate', $searchParams)) {
-            $qb->andWhere('product.createdAt >= ?6');
-            $qb->setParameter(6, $searchParams['startDate']);
+            $qb->andWhere('product.createdAt >= ?7');
+            $qb->setParameter(7, $searchParams['startDate']);
         }
 
         if (array_key_exists('endDate', $searchParams)) {
-            $qb->andWhere('product.createdAt <= ?7');
-            $qb->setParameter(7, $searchParams['endDate']);
+            $qb->andWhere('product.createdAt <= ?8');
+            $qb->setParameter(8, $searchParams['endDate']);
         }
 
         $qb->orderBy('product.id', 'desc');

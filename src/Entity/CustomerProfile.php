@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Entity\User;
 
+/**
+ * CustomerProfile
+ */
 class CustomerProfile
 {
     /**
