@@ -1,0 +1,24 @@
+product_index:
+    path: /product/
+    controller: App\Controller\ProductController::index
+    methods: [GET, POST]
+
+product_new:
+    path: /product/new
+    controller: App\Controller\ProductController::new
+    methods: [GET, POST]
+
+product_show:
+    path: /product/{id}
+    controller: App\Controller\ProductController::show
+    methods: [GET]
+
+product_edit:
+    path: /product/{id}/edit
+    controller: App\Controller\ProductController::edit
+    methods: [GET, POST]
+
+product_delete:
+    path: /product/{id}
+    controller: App\Controller\ProductController::delete
+    methods: [DELETE]

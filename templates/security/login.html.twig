@@ -2,28 +2,50 @@
 
 {% block title %}Login{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
 {% block body %}
-<h1>Login</h1>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4 text-center">Login</h2>
 
-{% if error %}
-    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
+                        {% if error %}
+                            <div class="alert alert-danger">
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </div>
+                        {% endif %}
 
-<form action="{{ path('app_login') }}" method="post">
-    <div class="form-group">
-        <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control">
+                        <form action="{{ path('app_login') }}" method="post">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Email:</label>
+                                <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" required autofocus>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password:</label>
+                                <input type="password" id="password" name="_password" class="form-control" required>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                            </div>
+                        </form>
+
+                        <p class="mt-3 text-center">
+                            Don't have an account? <a href="{{ path('app_register') }}">Register here</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
 
-    <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="_password" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
-
-<p>
-    Don't have an account? <a href="{{ path('app_register') }}">Register here</a>.
-</p>
+{% block javascripts %}
+    {{ parent() }}
 {% endblock %}

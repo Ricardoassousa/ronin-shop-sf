@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-center">{{ product.name }}</h2>
+
+                {% if product.image %}
+                    <div class="text-center mb-4">
+                        <img src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.name }}" class="img-fluid" style="max-width:300px;">
+                    </div>
+                {% endif %}
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>SKU:</strong> {{ product.sku }}</li>
+                    <li class="list-group-item"><strong>Price:</strong> {{ product.price | number_format(2, '.', ',') }} USD</li>
+                    {% if product.discountPrice %}
+                        <li class="list-group-item"><strong>Discount Price:</strong> {{ product.discountPrice | number_format(2, '.', ',') }} USD</li>
+                    {% endif %}
+                    <li class="list-group-item"><strong>Stock:</strong> {{ product.stock ?: 'N/A' }}</li>
+                    <li class="list-group-item"><strong>Active:</strong> {{ product.isActive ? 'Yes' : 'No' }}</li>
+                    <li class="list-group-item"><strong>Short Description:</strong> {{ product.shortDescription }}</li>
+                    <li class="list-group-item"><strong>Description:</strong> {{ product.description }}</li>
+                </ul>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-warning">Edit</a>
+                    <a href="{{ path('product_index') }}" class="btn btn-secondary">Back to list</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

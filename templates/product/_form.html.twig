@@ -1,0 +1,63 @@
+{{ form_start(form) }}
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.slug) }}
+        {{ form_widget(form.slug, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.slug) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.sku) }}
+        {{ form_widget(form.sku, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.sku) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.shortDescription) }}
+        {{ form_widget(form.shortDescription, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.shortDescription) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.price) }}
+        {{ form_widget(form.price, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.price) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.discountPrice) }}
+        {{ form_widget(form.discountPrice, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.discountPrice) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.stock) }}
+        {{ form_widget(form.stock, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.stock) }}
+    </div>
+
+    <div class="form-group form-check">
+        {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+        {{ form_label(form.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
+        {{ form_errors(form.isActive) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.imageFile) }}
+        {{ form_widget(form.imageFile) }}
+        {{ form_errors(form.imageFile) }}
+    </div>
+
+    <button class="btn btn-primary mt-2">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
