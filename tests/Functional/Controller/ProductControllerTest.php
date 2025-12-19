@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Product;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -25,25 +26,29 @@ class ProductControllerTest extends WebTestCase
         $this->assertSelectorExists('form[name="product_search"]');
     }
 
-    // /**
-    //  * Test product index page contains the search form.
-    //  */
-    // public function testIndexPageContainsSearchForm(): void
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/product/');
+    /**
+     * Test product index page contains the search form.
+     */
+    public function testIndexPageContainsSearchForm(): void
+    {
+        $client = static::createClient();
 
-    //     $this->assertGreaterThan(
-    //         0,
-    //         $crawler->filter('form[name="product_search"]')->count(),
-    //         'Search not found.'
-    //     );
+        $user = $this->createTestUser('ROLE_ADMIN');
+        $client->loginUser($user);
 
-    //     $this->assertGreaterThan(0, $crawler->filter('input[name*="[name]"]')->count());
-    //     $this->assertGreaterThan(0, $crawler->filter('input[name*="[sku]"]')->count());
-    //     $this->assertGreaterThan(0, $crawler->filter('input[name*="[minPrice]"]')->count());
-    //     $this->assertGreaterThan(0, $crawler->filter('input[name*="[maxPrice]"]')->count());
-    // }
+        $crawler = $client->request('GET', '/product/');
+
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('form[name="product_search"]')->count(),
+            'Search not found.'
+        );
+
+        $this->assertGreaterThan(0, $crawler->filter('input[name*="[name]"]')->count());
+        $this->assertGreaterThan(0, $crawler->filter('input[name*="[sku]"]')->count());
+        $this->assertGreaterThan(0, $crawler->filter('input[name*="[minPrice]"]')->count());
+        $this->assertGreaterThan(0, $crawler->filter('input[name*="[maxPrice]"]')->count());
+    }
 
     /**
      * Test index page without filters.
@@ -60,8 +65,8 @@ class ProductControllerTest extends WebTestCase
 
         $crawler = $client->request('GET', '/product/');
 
-        $this->assertResponseIsSuccessful(); // espera HTTP 2xx
-        $this->assertSelectorExists('form[name="product_search"]'); // verifica formulário
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form[name="product_search"]');
     }
 
     // /**
@@ -70,6 +75,10 @@ class ProductControllerTest extends WebTestCase
     // public function testIndexWithSearchFilters(): void
     // {
     //     $client = static::createClient();
+
+    //     $user = $this->createTestUser();
+    //     $client->loginUser($user);
+
     //     $crawler = $client->request('GET', '/product/');
 
     //     $form = $crawler->filter('form')->form([
@@ -97,31 +106,52 @@ class ProductControllerTest extends WebTestCase
     // public function testPaginationWorks(): void
     // {
     //     $client = static::createClient();
+    //     $client->followRedirects(true);
 
-    //     $client->request('GET', '/product?page=2');
+    //     $user = $this->createTestUser('ROLE_ADMIN');
+    //     $client->loginUser($user);
 
-    //     $this->assertResponseIsSuccessful();
-    //     $this->assertResponseStatusCodeSame(200);
-    // }
+    //     $this->createTestProducts(15);
 
-    // /**
-    //  * Test index page with empty form submission.
-    //  *
-    //  * Ensures default date logic does not break the request.
-    //  */
-    // public function testEmptyFormSubmission(): void
-    // {
-    //     $client = static::createClient();
-    //     $crawler = $client->request('GET', '/product/');
-
-    //     $form = $crawler->filter('form')->form([]);
-
-    //     $client->submit($form);
+    //     $crawler = $client->request('GET', '/product?page=2');
 
     //     $this->assertResponseIsSuccessful();
     //     $this->assertResponseStatusCodeSame(200);
+
+    //     $this->assertSelectorExists('.product-item');
     // }
 
+    /**
+     * Test index page with empty form submission.
+     *
+     * Ensures default date logic does not break the request.
+     */
+    public function testEmptyFormSubmission(): void
+    {
+        $client = static::createClient();
+
+        $user = $this->createTestUser('ROLE_ADMIN');
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/product/');
+
+        $form = $crawler->filter('form')->form([]);
+
+        $client->submit($form);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    /**
+     * Creates a test user and persists it to the database.
+     *
+     * This method creates a new user with a unique email, a hashed password,
+     * and assigns the role of 'ROLE_ADMIN'. The user is then persisted to
+     * the database using Doctrine's EntityManager.
+     *
+     * @return User The created User entity.
+     */
     private function createTestUser()
     {
         $user = new User();
@@ -134,6 +164,41 @@ class ProductControllerTest extends WebTestCase
         $em->flush();
 
         return $user;
+    }
+
+    /**
+     * Creates a set of test products and persists them to the database.
+     *
+     * This method generates a specified number of test products, deletes any
+     * existing products in the database first, and then persists the newly
+     * created products to the database using Doctrine's EntityManager.
+     * Each product will have a unique slug, SKU, and short description.
+     *
+     * @param int $count The number of products to create. Default is 15.
+     */
+    private function createTestProducts(int $count = 15): void
+    {
+        $em = static::getContainer()->get('doctrine')->getManager();
+
+        $em->createQuery('DELETE FROM App\Entity\Product p')->execute();
+
+        for ($i = 1; $i <= $count; $i++) {
+            $uniqueId = uniqid();
+
+            $product = new Product();
+            $product->setName("Product $i");
+            $product->setSlug('product-' . $uniqueId);
+            $product->setSku('SKU-' . $uniqueId);
+            $product->setShortDescription("Short description for product $i");
+            $product->setDescription("Description for product $i");
+            $product->setPrice(mt_rand(100, 1000));
+            $product->setStock(mt_rand(1, 50));
+            $product->setIsActive(true);
+
+            $em->persist($product);
+        }
+
+        $em->flush();
     }
 
 }
