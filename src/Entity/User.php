@@ -6,6 +6,9 @@ use App\Entity\CustomerProfile;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+/**
+ * User
+ */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
