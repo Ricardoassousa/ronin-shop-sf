@@ -1,0 +1,27 @@
+{{ form_start(form) }}
+    <div class="form-group">
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.slug) }}
+        {{ form_widget(form.slug, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.slug) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="form-group form-check">
+        {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+        {{ form_label(form.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
+        {{ form_errors(form.isActive) }}
+    </div>
+
+    <button class="btn btn-primary mt-2">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

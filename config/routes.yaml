@@ -9,3 +9,7 @@ user_routes:
 product_routes:
     resource: "routes/product.yaml"
     type: "yaml"
+
+category_routes:
+    resource: "routes/category.yaml"
+    type: "yaml"

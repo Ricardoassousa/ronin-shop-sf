@@ -37,6 +37,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/product, roles: ROLE_ADMIN }
+        - { path: ^/category, roles: ROLE_ADMIN }
 
     encoders:
         App\Entity\User:

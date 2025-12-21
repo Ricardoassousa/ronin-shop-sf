@@ -18,6 +18,11 @@ class Product
     private $id;
 
     /**
+     * @var Category
+     */
+    private $category;
+
+    /**
      * @var string
      */
     private $name;
@@ -103,6 +108,29 @@ class Product
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get the category of the product.
+     *
+     * @return Category|null
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * Set the category of the product.
+     *
+     * @param Category|null $category
+     *
+     * @return $this
+     */
+    public function setCategory(?Category $category)
+    {
+        $this->category = $category;
+        return $this;
     }
 
     /**
