@@ -6,7 +6,6 @@ use App\Entity\Category;
 use App\Form\CategoryType;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,20 +25,14 @@ class CategoryController extends AbstractController
     * @param PaginatorInterface $paginator
     * @return Response
     */
-    public function index(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
+    public function index(EntityManagerInterface $em): Response
     {
-        $query = $em->getRepository(Category::class)->findAll();
-
-        $pagination = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            10
-        );
+        $categories = $em->getRepository(Category::class)->findAll();
 
         return $this->render('category/index.html.twig', [
-            'pagination' => $pagination
+            'categories' => $categories
         ]);
-    }
+}
 
     /**
      * Creates a new category entity and handles the form submission.

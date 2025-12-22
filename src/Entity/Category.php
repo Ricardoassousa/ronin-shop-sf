@@ -229,4 +229,17 @@ class Category
         return $this;
     }
 
+    /**
+     * Returns the string representation of the Category.
+     *
+     * This method is called when the object is treated as a string,
+     * for example in forms or when echoing the object.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
+
 }

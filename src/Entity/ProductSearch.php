@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Category;
 use DateTime;
 
 /**
@@ -52,6 +53,11 @@ class ProductSearch
      * @var Datetime|null
      */
     private $endDate;
+
+    /**
+     * @var Category|null
+     */
+    private $category;
 
     /**
      * @return string|null
@@ -202,6 +208,25 @@ class ProductSearch
     public function setEndDate(?Datetime $endDate)
     {
         $this->endDate = $endDate;
+        return $this;
+    }
+
+    /**
+     * @return Category|null
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param Category|null $endDate
+     *
+     * @return $this
+     */
+    public function setCategory(?Category $category)
+    {
+        $this->category = $category;
         return $this;
     }
 

@@ -66,9 +66,9 @@ class ProductRepository extends ServiceEntityRepository
             $qb->setParameter(5, $searchParams['stock']);
         }
 
-        if (array_key_exists('isActive', $searchParams)) {
-            $qb->andWhere('product.isActive = ?6');
-            $qb->setParameter(6, $searchParams['isActive']);
+        if (!empty($searchParams['categoryId'])) {
+            $qb->andWhere('product.category = ?6');
+            $qb->setParameter(6, $searchParams['categoryId']);
         }
 
         if (array_key_exists('startDate', $searchParams) and array_key_exists('endDate', $searchParams)) {
