@@ -20,7 +20,7 @@
         <field name="createdAt" type="datetime" column="created_at"/>
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>
         <many-to-one field="category" target-entity="App\Entity\Category" inversed-by="products">
-            <join-column name="category_id" referenced-column-name="id" nullable="false"/>
+            <join-column name="category_id" referenced-column-name="id" nullable="true"/>
         </many-to-one>
     </entity>
 </doctrine-mapping>

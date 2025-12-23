@@ -14,9 +14,6 @@
         <field name="createdAt" type="datetime" column="created_at"/>
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>
         <one-to-many field="products" target-entity="App\Entity\Product" mapped-by="category">
-            <cascade>
-                <cascade-all />
-            </cascade>
         </one-to-many>
     </entity>
 </doctrine-mapping>
