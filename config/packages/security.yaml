@@ -1,4 +1,7 @@
 security:
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
+
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
@@ -37,6 +40,7 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/product, roles: ROLE_ADMIN }
+        - { path: ^/category, roles: ROLE_ADMIN }
 
     encoders:
         App\Entity\User:

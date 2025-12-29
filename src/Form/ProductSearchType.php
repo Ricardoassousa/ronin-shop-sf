@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Category;
 use App\Entity\ProductSearch;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -37,12 +39,6 @@ class ProductSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Stock'
             ])
-            ->add('isActive', CheckboxType::class, [
-                'required' => false,
-                'label' => 'Only Active',
-                'value' => true,
-                'label_attr' => ['class' => 'checkbox-inline']
-            ])
             ->add('startDate', DateType::class, [
                 'required' => false,
                 'widget' => 'single_text',
@@ -54,6 +50,13 @@ class ProductSearchType extends AbstractType
                 'widget' => 'single_text',
                 'label' => 'End Date',
                 'attr' => ['class' => 'datepicker']
+            ])
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => false,
+                'label' => 'Category'
             ]);
     }
 

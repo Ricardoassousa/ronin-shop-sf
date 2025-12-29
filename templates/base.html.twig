@@ -17,6 +17,15 @@
         {% endblock %}
     </head>
     <body>
+        <header>
+            <nav>
+                {% if app.user is not null %}
+                    <form action="{{ path('app_logout') }}" method="post">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                {% endif %}
+            </nav>
+        </header>
         {% block body %}{% endblock %}
     </body>
 </html>
