@@ -59,10 +59,10 @@
                 </div>
 
                 <div class="col-md-6">
-                    <div class="form-group form-check">
-                        {{ form_widget(searchForm.isActive, {'attr': {'class': 'form-check-input'}}) }}
-                        {{ form_label(searchForm.isActive, null, {'label_attr': {'class': 'form-check-label'}}) }}
-                        {{ form_errors(searchForm.isActive) }}
+                    <div class="form-group">
+                        {{ form_label(searchForm.category) }}
+                        {{ form_widget(searchForm.category, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(searchForm.category) }}
                     </div>
                 </div>
             </div>
@@ -97,7 +97,7 @@
                     <th>SKU</th>
                     <th>Price</th>
                     <th>Stock</th>
-                    <th>Active</th>
+                    <th>Category</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -110,7 +110,7 @@
                         <td>{{ product.sku }}</td>
                         <td>{{ product.price | number_format(2, '.', ',') }} USD</td>
                         <td>{{ product.stock ?: 'N/A' }}</td>
-                        <td>{{ product.isActive ? 'Yes' : 'No' }}</td>
+                        <td>{{ product.category }}</td>
                         <td>{{ product.createdAt|date('d/m/Y') }}</td>
                         <td>
                             <a href="{{ path('product_show', { id: product.id }) }}" class="btn btn-sm btn-info">Show</a>

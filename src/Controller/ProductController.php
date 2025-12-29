@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\ProductSearch;
 use App\Form\ProductSearchType;
@@ -42,7 +43,7 @@ class ProductController extends AbstractController
             $minPrice = $searchForm['minPrice']->getData();
             $maxPrice = $searchForm['maxPrice']->getData();
             $stock = $searchForm['stock']->getData();
-            $isActive = $searchForm['isActive']->getData();
+            $category = $searchForm['category']->getData();
             $startDate = $searchForm['startDate']->getData();
             $endDate = $searchForm['endDate']->getData();
 
@@ -67,8 +68,8 @@ class ProductController extends AbstractController
                 $searchParams['stock'] = $stock;
             }
 
-            if (isset($isActive)) {
-                $searchParams['isActive'] = $isActive;
+            if ($category instanceof Category) {
+                $searchParams['categoryId'] = $category->getId();
             }
 
             if (!empty($startDate)) {
