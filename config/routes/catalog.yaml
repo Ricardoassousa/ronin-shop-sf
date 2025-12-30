@@ -1,0 +1,4 @@
+catalog_index:
+    path: /catalog/
+    controller: App\Controller\CatalogController::indexAction
+    methods: [GET, POST]
