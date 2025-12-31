@@ -85,6 +85,8 @@
                 </div>
             </div>
 
+            {% do searchForm.shortDescription.setRendered() %}
+
             <button class="btn btn-primary mt-2">{{ button_label|default('Search') }}</button>
             {{ form_end(searchForm) }}
         </div>

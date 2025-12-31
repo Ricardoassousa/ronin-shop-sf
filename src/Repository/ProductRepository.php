@@ -34,15 +34,20 @@ class ProductRepository extends ServiceEntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->select('product')
             ->from(Product::class, 'product');
-        
+
         if (array_key_exists('name', $searchParams)) {
-            $qb->andWhere('product.name = :name');
-            $qb->setParameter('name', $searchParams['name']);
+            $qb->andWhere('product.name LIKE :name');
+            $qb->setParameter('name', '%' . $searchParams['name'] . '%');
         }
 
         if (array_key_exists('sku', $searchParams)) {
             $qb->andWhere('product.sku = :sku');
             $qb->setParameter('sku', $searchParams['sku']);
+        }
+
+        if (array_key_exists('shortDescription', $searchParams)) {
+            $qb->andWhere('product.shortDescription LIKE :shortDescription');
+            $qb->setParameter('shortDescription', '%' . $searchParams['shortDescription'] . '%');
         }
 
         if (array_key_exists('minPrice', $searchParams) and array_key_exists('maxPrice', $searchParams)) {

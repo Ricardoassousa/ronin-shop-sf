@@ -40,6 +40,7 @@ class CatalogController extends AbstractController
 
             $name = $searchForm['name']->getData();
             $sku = $searchForm['sku']->getData();
+            $shortDescription = $searchForm['shortDescription']->getData();
             $minPrice = $searchForm['minPrice']->getData();
             $maxPrice = $searchForm['maxPrice']->getData();
             $stock = $searchForm['stock']->getData();
@@ -52,6 +53,10 @@ class CatalogController extends AbstractController
 
             if (!empty($sku)) {
                 $searchParams['sku'] = $sku;
+            }
+
+            if (!empty($shortDescription)) {
+                $searchParams['shortDescription'] = $shortDescription;
             }
 
             if (isset($minPrice)) {
