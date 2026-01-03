@@ -187,7 +187,7 @@ class ProductControllerTest extends WebTestCase
 
             $product = new Product();
             $product->setName("Product $i");
-            $product->setSlug('product-' . $uniqueId);
+            // $product->setSlug('product-' . $uniqueId);
             $product->setSku('SKU-' . $uniqueId);
             $product->setShortDescription("Short description for product $i");
             $product->setDescription("Description for product $i");

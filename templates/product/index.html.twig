@@ -115,7 +115,7 @@
                         <td>{{ product.category }}</td>
                         <td>{{ product.createdAt|date('d/m/Y') }}</td>
                         <td>
-                            <a href="{{ path('product_show', { id: product.id }) }}" class="btn btn-sm btn-info">Show</a>
+                            <a href="{{ path('product_show', { id: product.id, slug: product.slug }) }}" class="btn btn-sm btn-info">Show</a>
                             <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-sm btn-warning">Edit</a>
                             <form action="{{ path('product_delete', { id: product.id }) }}" method="post" style="display:inline-block">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">

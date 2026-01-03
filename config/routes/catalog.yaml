@@ -2,3 +2,8 @@ catalog_index:
     path: /catalog/
     controller: App\Controller\CatalogController::indexAction
     methods: [GET, POST]
+
+catalog_show:
+    path: /catalog/{id}-{slug}
+    controller: App\Controller\CatalogController::showAction
+    methods: [GET]

@@ -22,13 +22,13 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class CatalogController extends AbstractController
 {
     /**
-    * Displays a list of all products.
-    *
-    * @param EntityManagerInterface $em
-    * @param PaginatorInterface $paginator
-    * @param Request $request
-    * @return Response
-    */
+     * Displays a list of all products.
+     *
+     * @param EntityManagerInterface $em
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return Response
+     */
     public function indexAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
         $productSearch = new ProductSearch();
@@ -87,6 +87,31 @@ class CatalogController extends AbstractController
         return $this->render('catalog/index.html.twig', [
             'pagination' => $pagination,
             'searchForm' => $searchForm->createView()
+        ]);
+    }
+
+    /**
+     * Displays the details of a Product entity.
+     *
+     * This method expects both the Product entity (via ParamConverter)
+     * and the slug from the URL. If the slug in the URL does not match
+     * the product's current slug, a 301 redirect is performed.
+     *
+     * @param Product $product The product entity
+     * @param string $slug The slug from the URL
+     * @return Response
+     */
+    public function showAction(Product $product, string $slug): Response
+    {
+        if ($product->getSlug() != $slug) {
+            return $this->redirectToRoute('product_show', [
+                'id' => $product->getId(),
+                'slug' => $product->getSlug(),
+            ], 301);
+        }
+
+        return $this->render('catalog/show.html.twig', [
+            'product' => $product
         ]);
     }
 

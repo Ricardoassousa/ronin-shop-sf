@@ -102,4 +102,25 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery();
     }
 
+    /**
+    * Finds a single Product entity by its slug.
+    *
+    * This method searches the database for a product with the given slug.
+    * It returns the Product entity if found, or null if no matching product exists.
+    *
+    * @param string $slug The slug to search for
+    *
+    * @return Product|null The product entity if found, otherwise null
+    */
+    public function findOneBySlug(string $slug)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('product')
+            ->from(Product::class, 'product')
+            ->where('product.slug = :slug')
+            ->setParameter('slug', $slug);
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
 }
