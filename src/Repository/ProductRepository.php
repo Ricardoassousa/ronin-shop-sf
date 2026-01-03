@@ -26,23 +26,28 @@ class ProductRepository extends ServiceEntityRepository
     /**
     * Returns a QueryBuilder for filtering products
     *
-    * @param array $search Associative array of filter values (name, description, minPrice, maxPrice, isActive)
+    * @param array $searchParams
     * @return QueryBuilder
     */
-    public function findProductByFilterQuery(array $searchParams)
+    public function findProductByFilterQuery(array $searchParams, bool $isCatalog = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->select('product')
             ->from(Product::class, 'product');
-        
+
         if (array_key_exists('name', $searchParams)) {
-            $qb->andWhere('product.name = ?1');
-            $qb->setParameter(1, $searchParams['name']);
+            $qb->andWhere('product.name LIKE :name');
+            $qb->setParameter('name', '%' . $searchParams['name'] . '%');
         }
 
         if (array_key_exists('sku', $searchParams)) {
-            $qb->andWhere('product.sku = ?2');
-            $qb->setParameter(2, $searchParams['sku']);
+            $qb->andWhere('product.sku = :sku');
+            $qb->setParameter('sku', $searchParams['sku']);
+        }
+
+        if (array_key_exists('shortDescription', $searchParams)) {
+            $qb->andWhere('product.shortDescription LIKE :shortDescription');
+            $qb->setParameter('shortDescription', '%' . $searchParams['shortDescription'] . '%');
         }
 
         if (array_key_exists('minPrice', $searchParams) and array_key_exists('maxPrice', $searchParams)) {
@@ -52,23 +57,28 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if (array_key_exists('minPrice', $searchParams)) {
-            $qb->andWhere('product.price >= ?3');
-            $qb->setParameter(3, $searchParams['minPrice']);
+            $qb->andWhere('product.price >= :minPrice');
+            $qb->setParameter('minPrice', $searchParams['minPrice']);
         }
 
         if (array_key_exists('maxPrice', $searchParams)) {
-            $qb->andWhere('product.price <= ?4');
-            $qb->setParameter(4, $searchParams['maxPrice']);
+            $qb->andWhere('product.price <= :maxPrice');
+            $qb->setParameter('maxPrice', $searchParams['maxPrice']);
         }
 
         if (array_key_exists('stock', $searchParams)) {
-            $qb->andWhere('product.stock = ?5');
-            $qb->setParameter(5, $searchParams['stock']);
+            $qb->andWhere('product.stock = :stock');
+            $qb->setParameter('stock', $searchParams['stock']);
+        }
+
+        if ($isCatalog) {
+            $qb->andWhere('product.isActive = :catalog');
+            $qb->setParameter('catalog', $isCatalog);
         }
 
         if (!empty($searchParams['categoryId'])) {
-            $qb->andWhere('product.category = ?6');
-            $qb->setParameter(6, $searchParams['categoryId']);
+            $qb->andWhere('product.category = :category');
+            $qb->setParameter('category', $searchParams['categoryId']);
         }
 
         if (array_key_exists('startDate', $searchParams) and array_key_exists('endDate', $searchParams)) {
@@ -78,18 +88,39 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if (array_key_exists('startDate', $searchParams)) {
-            $qb->andWhere('product.createdAt >= ?7');
-            $qb->setParameter(7, $searchParams['startDate']);
+            $qb->andWhere('product.createdAt >= :createdAt');
+            $qb->setParameter('createdAt', $searchParams['startDate']);
         }
 
         if (array_key_exists('endDate', $searchParams)) {
-            $qb->andWhere('product.createdAt <= ?8');
-            $qb->setParameter(8, $searchParams['endDate']);
+            $qb->andWhere('product.createdAt <= :updatedAt');
+            $qb->setParameter('updatedAt', $searchParams['endDate']);
         }
 
-        $qb->orderBy('product.id', 'desc');
+        $qb->orderBy('product.createdAt', 'desc');
 
         return $qb->getQuery();
+    }
+
+    /**
+    * Finds a single Product entity by its slug.
+    *
+    * This method searches the database for a product with the given slug.
+    * It returns the Product entity if found, or null if no matching product exists.
+    *
+    * @param string $slug The slug to search for
+    *
+    * @return Product|null The product entity if found, otherwise null
+    */
+    public function findOneBySlug(string $slug)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('product')
+            ->from(Product::class, 'product')
+            ->where('product.slug = :slug')
+            ->setParameter('slug', $slug);
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 
 }

@@ -23,6 +23,10 @@ class ProductSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Product Name'
             ])
+            ->add('shortDescription', TextType::class, [
+                'required' => false,
+                'label' => 'Product Short Description'
+            ])
             ->add('sku', TextType::class, [
                 'required' => false,
                 'label' => 'Stock Keeping Unit'
