@@ -35,9 +35,6 @@ class ProductType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Product Name',
             ])
-            ->add('slug', TextType::class, [
-                'label' => 'Slug',
-            ])
             ->add('sku', TextType::class, [
                 'label' => 'SKU',
             ])

@@ -23,6 +23,11 @@ class ProductSearch
     private $sku;
 
     /**
+     * @var string|null
+     */
+    private $shortDescription;
+
+    /**
      * @var float|null
      */
     private $minPrice;
@@ -94,6 +99,25 @@ class ProductSearch
     public function setSku(?string $sku)
     {
         $this->sku = $sku;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+
+    /**
+     * @param string|null $shortDescription
+     *
+     * @return $this
+     */
+    public function setShortDescription(?string $shortDescription)
+    {
+        $this->shortDescription = $shortDescription;
         return $this;
     }
 

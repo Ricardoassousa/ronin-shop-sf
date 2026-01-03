@@ -13,3 +13,7 @@ product_routes:
 category_routes:
     resource: "routes/category.yaml"
     type: "yaml"
+
+catalog_routes:
+    resource: "routes/catalog.yaml"
+    type: "yaml"

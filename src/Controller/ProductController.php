@@ -7,6 +7,7 @@ use App\Entity\Product;
 use App\Entity\ProductSearch;
 use App\Form\ProductSearchType;
 use App\Form\ProductType;
+use App\Service\SlugGenerator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -109,19 +110,26 @@ class ProductController extends AbstractController
     }
 
     /**
-     * Creates a new product entity and handles the form submission.
-     *
-     * @param Request $request
-     * @param EntityManagerInterface $em
-     * @return Response
-     */
-    public function new(Request $request, EntityManagerInterface $em): Response
+    * Creates a new Product entity and handles the form submission.
+    *
+    * This method processes the request, validates the form,
+    * generates a unique slug for the product using SlugGenerator,
+    * persists the entity to the database, and redirects as needed.
+    *
+    * @param Request $request The current HTTP request
+    * @param EntityManagerInterface $em The Doctrine entity manager
+    * @param SlugGenerator $slugGenerator Service used to generate unique slugs
+    * @return Response The HTTP response
+    */
+    public function new(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $slugGenerator->generate($product->getName());
+            $product->setSlug($slug);
 
             $em->persist($product);
             $em->flush();
@@ -136,14 +144,20 @@ class ProductController extends AbstractController
     }
 
     /**
-    * Edits an existing product entity and handles the form submission.
+    * Edits an existing Product entity and handles the form submission.
     *
-    * @param Request $request
-    * @param Product $product
-    * @param EntityManagerInterface $em
-    * @return Response
+    * This method processes the request, validates the form,
+    * updates the product's data, regenerates the slug if the name changes
+    * using the SlugGenerator service, and persists the changes to the database.
+    * If the slug changes, the show action should handle redirects via 301.
+    *
+    * @param Request $request The current HTTP request
+    * @param Product $product The product entity being edited
+    * @param EntityManagerInterface $em The Doctrine entity manager
+    * @param SlugGenerator $slugGenerator Service used to generate unique slugs
+    * @return Response The HTTP response
     */
-    public function edit(Request $request, Product $product, EntityManagerInterface $em): Response
+    public function edit(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $form = $this->createForm(ProductType::class, $product, [
             'is_edit' => true,
@@ -151,7 +165,12 @@ class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $product->getSlug();
+            $newSlug = $slugGenerator->generate($product->getName());
 
+            if ($slug != $newSlug):
+                $product->setSlug($newSlug);
+            endif;
             $product->setUpdatedAt(new DateTime());
 
             $em->flush();
@@ -184,13 +203,25 @@ class ProductController extends AbstractController
     }
 
     /**
-    * Displays the details of a product entity.
-    *
-    * @param Product
-    * @return Response
-    */
-    public function show(Product $product): Response
+     * Displays the details of a Product entity.
+     *
+     * This method expects both the Product entity (via ParamConverter)
+     * and the slug from the URL. If the slug in the URL does not match
+     * the product's current slug, a 301 redirect is performed.
+     *
+     * @param Product $product The product entity
+     * @param string $slug The slug from the URL
+     * @return Response
+     */
+    public function show(Product $product, string $slug): Response
     {
+        if ($product->getSlug() != $slug) {
+            return $this->redirectToRoute('product_show', [
+                'id' => $product->getId(),
+                'slug' => $product->getSlug(),
+            ], 301);
+        }
+
         return $this->render('product/show.html.twig', [
             'product' => $product
         ]);
