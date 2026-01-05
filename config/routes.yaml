@@ -17,3 +17,7 @@ category_routes:
 catalog_routes:
     resource: "routes/catalog.yaml"
     type: "yaml"
+
+cart_routes:
+    resource: "routes/cart.yaml"
+    type: "yaml"

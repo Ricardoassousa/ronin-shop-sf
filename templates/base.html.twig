@@ -18,12 +18,35 @@
     </head>
     <body>
         <header>
-            <nav>
-                {% if app.user is not null %}
-                    <form action="{{ path('app_logout') }}" method="post">
-                        <button type="submit" class="btn btn-danger">Logout</button>
-                    </form>
-                {% endif %}
+            <nav class="navbar navbar-light bg-light px-4">
+                <div class="container-fluid d-flex justify-content-between align-items-center">
+                    <a class="navbar-brand" href="{{ path('cart_show') }}">
+                        Ronin Shop
+                    </a>
+
+                    <div class="d-flex align-items-center gap-3">
+                        {% if app.user %}
+                            <a href="{{ path('cart_show') }}"
+                               class="btn btn-outline-secondary position-relative"
+                               title="Shopping Cart">
+                            <i class="bi bi-cart fs-5"></i>
+
+                                {% if cart is defined and cart.items|length > 0 %}
+                                    <span
+                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {{ cart.items|length }}
+                                    </span>
+                                {% endif %}
+                            </a>
+
+                            <form action="{{ path('app_logout') }}" method="post" class="m-0">
+                                <button type="submit" class="btn btn-danger">
+                                    Logout
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
             </nav>
         </header>
         {% block body %}{% endblock %}

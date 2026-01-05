@@ -1,0 +1,19 @@
+cart_show:
+    path: /cart
+    controller: App\Controller\CartController::showAction
+    methods: [GET]
+
+cart_add:
+    path: /cart/add/{id}
+    controller: App\Controller\CartController::addAction
+    methods: [GET, POST]
+
+cart_update:
+    path: /cart/update/{id}/{quantity}
+    controller: App\Controller\CartController::updateAction
+    methods: [GET, POST]
+
+cart_remove:
+    path: /cart/remove/{id}
+    controller: App\Controller\CartController::removeAction
+    methods: [DELETE]
