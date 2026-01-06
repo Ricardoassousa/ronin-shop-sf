@@ -38,7 +38,7 @@ class CatalogController extends AbstractController
         $searchForm->handleRequest($request);
         $searchParams = array();
         $user = $this->getUser();
-        $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => 'active']);
+        $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);
         $cartItems = $cart ? $cart->getItems() : [];
 
         if ($searchForm->isSubmitted() && $searchForm->isValid()) {

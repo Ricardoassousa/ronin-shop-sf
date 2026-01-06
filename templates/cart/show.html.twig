@@ -15,7 +15,6 @@
                 Back to Catalog
             </a>
         {% else %}
-
             <table class="table table-bordered align-middle">
                 <thead class="table-light">
                     <tr>
@@ -78,12 +77,34 @@
                             </td>
 
                             <td class="text-center">
-                                <form action="{{ path('cart_remove', { id: item.product.id }) }}" method="post" style="display:inline;">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this product from the cart?');">
-                                        Remove
-                                    </button>
-                                </form>
+                                <!-- Trigger Modal for Remove -->
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal{{ item.product.id }}">
+                                    Remove
+                                </button>
+
+                                <!-- Modal for each item -->
+                                <div class="modal fade" id="removeModal{{ item.product.id }}" tabindex="-1" aria-labelledby="removeModalLabel{{ item.product.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="removeModalLabel{{ item.product.id }}">Confirm Removal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to remove <strong>{{ item.product.name }}</strong> from your cart?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ path('cart_remove', { id: item.product.id }) }}" method="post" style="display:inline;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Yes, remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     {% endfor %}

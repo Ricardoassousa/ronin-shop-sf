@@ -39,13 +39,13 @@ class CartService
     {
         $cart = $this->em->getRepository(Cart::class)->findOneBy([
             'user' => $user,
-            'status' => 'active'
+            'status' => Cart::STATUS_ACTIVE
         ]);
 
         if (!$cart) {
             $cart = new Cart();
             $cart->setUser($user);
-            $cart->setStatus('active');
+            $cart->setStatus(Cart::STATUS_ACTIVE);
 
             $this->em->persist($cart);
             $this->em->flush();
@@ -131,7 +131,7 @@ class CartService
         }
 
         // Validate quantity if provided
-        if ($quantity !== null) {
+        if ($quantity != null) {
             if ($quantity < 1) {
                 throw new InvalidArgumentException('Quantity to remove must be at least 1.');
             }

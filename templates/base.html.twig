@@ -31,7 +31,7 @@
                                title="Shopping Cart">
                             <i class="bi bi-cart fs-5"></i>
 
-                                {% if cart is defined and cart.items|length > 0 %}
+                                {% if cart is defined and cart is not null and cart.items|length > 0 %}
                                     <span
                                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                         {{ cart.items|length }}

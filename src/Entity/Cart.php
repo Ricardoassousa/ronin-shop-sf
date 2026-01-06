@@ -13,6 +13,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Cart
 {
     /**
+     * The cart is active, meaning it is in use and has not been completed or expired.
+     */
+    public const STATUS_ACTIVE = 'active';
+
+    /**
+     * The cart has been ordered, meaning the user has completed the checkout process.
+     */
+    public const STATUS_ORDERED = 'ordered';
+
+    /**
+     * The cart has expired, meaning the user didn't complete the purchase in a given timeframe (30 days).
+     */
+    public const STATUS_EXPIRED = 'expired';
+
+    /**
      * @var int
      */
     private $id;
@@ -23,11 +38,11 @@ class Cart
     private $user;
 
     /**
-     * Whether the cart is active, ordered, expired or cancelled.
+     * Whether the cart is active, ordered or expired.
      * 
      * @var string
      */
-    private $status = 'active';
+    private $status = self::STATUS_ACTIVE;
 
     /**
      * @var Datetime
