@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Cart;
 use App\Entity\CustomerProfile;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -35,6 +37,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var CustomerProfile
      */
     private $customerProfile;
+
+    /**
+     * @var Collection|Cart[]
+     */
+    private $carts;
+
+    /**
+     *
+     */
+    public function __construct()
+    {
+        $this->carts = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -144,6 +159,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $customerProfile->setUser($this);
         }
         $this->customerProfile = $customerProfile;
+
+        return $this;
+    }
+
+    /**
+     * Get the carts of the user.
+     *
+     * @return Collection|Cart[]
+     */
+    public function getCarts()
+    {
+        return $this->carts;
+    }
+
+    /**
+     * Add a cart to the user.
+     *
+     * @param Cart $cart
+     * @return $this
+     */
+    public function addCart(Cart $cart)
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts[] = $cart;
+            $cart->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a cart from the user.
+     *
+     * @param Cart $cart
+     * @return $this
+     */
+    public function removeCart(Cart $cart)
+    {
+        if ($this->carts->contains($cart)) {
+            $this->carts->removeElement($cart);
+            if ($cart->getCart() == $this) {
+                $cart->setCart(null);
+            }
+        }
 
         return $this;
     }

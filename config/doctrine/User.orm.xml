@@ -11,5 +11,6 @@
         <field name="roles" type="json" column="roles"/>
         <field name="password" type="string" column="password" length="255"/>
         <one-to-one field="customerProfile" target-entity="App\Entity\CustomerProfile" mapped-by="user" cascade="persist,remove"/>
+        <one-to-many field="carts" target-entity="App\Entity\Cart" mapped-by="user" cascade="persist,remove"/>
     </entity>
 </doctrine-mapping>
