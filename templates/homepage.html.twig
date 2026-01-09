@@ -15,8 +15,26 @@
         <div class="container text-center">
             <h1 class="display-4">Welcome to Ronin Shop!</h1>
             <p class="lead">The best online store for high-quality products.</p>
-            <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">Sign In</a>
-            <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg">Create Account</a>
+
+            <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                {% if app.user %}
+                    <a href="{{ path('catalog_index') }}"
+                       class="btn btn-primary btn-lg px-4 fw-semibold shadow">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>
+                        Browse Catalog
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Sign In
+                    </a>
+
+                    <a href="{{ path('app_register') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-person-plus me-2"></i>
+                        Create Account
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </section>
 
