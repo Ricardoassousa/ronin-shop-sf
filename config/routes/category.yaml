@@ -1,5 +1,5 @@
 category_index:
-    path: /category/
+    path: /category
     controller: App\Controller\CategoryController::index
     methods: [GET]
 

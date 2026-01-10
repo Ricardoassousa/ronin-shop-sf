@@ -26,16 +26,18 @@
 
                         <div class="d-flex align-items-center gap-3">
                             {% if app.user %}
-                                <a href="{{ path('cart_show') }}"
-                                   class="btn btn-outline-secondary position-relative"
-                                   title="Shopping Cart">
-                                    <i class="bi bi-cart fs-5"></i>
-                                    {% if cart is defined and cart is not null and cart.items|length > 0 %}
-                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            {{ cart.items|length }}
-                                        </span>
-                                    {% endif %}
-                                </a>
+                                {% if app.user and is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('cart_show') }}"
+                                        class="btn btn-outline-secondary position-relative"
+                                        title="Shopping Cart">
+                                        <i class="bi bi-cart fs-5"></i>
+                                        {% if cart is defined and cart is not null and cart.items|length > 0 %}
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                                {{ cart.items|length }}
+                                            </span>
+                                        {% endif %}
+                                    </a>
+                                {% endif %}
 
                                 <div class="dropdown">
                                     <button

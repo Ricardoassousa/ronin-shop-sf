@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Cart;
 use App\Form\UserProfileFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,12 +37,13 @@ class ProfileController extends AbstractController
      * Allows the authenticated user to edit their profile, including updating the password.
      *
      * @param Request $request
-     *
      * @return Response
      */
     public function editProfile(Request $request)
     {
         $user = $this->getUser();
+        $cart = $this->em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);
+        $cartItems = $cart ? $cart->getItems() : [];
         $form = $this->createForm(UserProfileFormType::class, $user);
         $form->handleRequest($request);
 
@@ -58,6 +60,8 @@ class ProfileController extends AbstractController
 
         return $this->render('profile/edit.html.twig', [
             'profileForm' => $form->createView(),
+            'cart' => $cart,
+            'cartItems' => $cartItems
         ]);
     }
 
