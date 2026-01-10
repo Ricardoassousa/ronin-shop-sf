@@ -30,7 +30,6 @@ class AdminController extends AbstractController
      *
      * @param User $user
      * @param Request $request
-     *
      * @return Response
      */
     public function editUserRoles(User $user, Request $request)

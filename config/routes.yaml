@@ -1,6 +1,6 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+homepage:
+   path: /
+   controller: App\Controller\DefaultController::homepageAction
 
 user_routes:
     resource: "routes/user.yaml"
@@ -16,4 +16,8 @@ category_routes:
 
 catalog_routes:
     resource: "routes/catalog.yaml"
+    type: "yaml"
+
+cart_routes:
+    resource: "routes/cart.yaml"
     type: "yaml"

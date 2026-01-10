@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -15,7 +16,6 @@ class SecurityController extends AbstractController
      * It displays the form with the last submitted username and any authentication error.
      *
      * @param AuthenticationUtils $authenticationUtils
-     *
      * @return Response
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -33,12 +33,11 @@ class SecurityController extends AbstractController
      * The firewall will automatically log out the user and redirect them to the configured route.
      *
      * @return void
-     *
-     * @throws \LogicException Always thrown to indicate that this action is handled by the logout firewall.
+     * @throws LogicException
      */
     public function logout(): void
     {
-        throw new \LogicException('Intercepted by the logout firewall.');
+        throw new LogicException('Intercepted by the logout firewall.');
     }
 
 }

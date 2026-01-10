@@ -24,6 +24,7 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+                default_target_path: /catalog
             logout:
                 path: app_logout
                 target: /
@@ -41,6 +42,8 @@ security:
         - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/product, roles: ROLE_ADMIN }
         - { path: ^/category, roles: ROLE_ADMIN }
+        - { path: ^/catalog, roles: ROLE_USER }
+        - { path: ^/cart, roles: ROLE_USER }
 
     encoders:
         App\Entity\User:

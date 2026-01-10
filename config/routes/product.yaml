@@ -1,5 +1,5 @@
 product_index:
-    path: /product/
+    path: /product
     controller: App\Controller\ProductController::index
     methods: [GET, POST]
 

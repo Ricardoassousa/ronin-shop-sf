@@ -96,17 +96,37 @@
                                 Category: {{ product.category }}
                             </p>
 
-                            {% if product.stock > 0 %}
-                                <span class="badge bg-success mb-3">In stock</span>
-                            {% else %}
-                                <span class="badge bg-danger mb-3">Out of stock</span>
-                            {% endif %}
-
-                            <div class="mt-auto">
+                            <div class="mt-auto d-grid gap-2">
                                 <a href="{{ path('catalog_show', { id: product.id, slug: product.slug }) }}"
-                                    class="btn btn-outline-primary w-100">
-                                    View product
+                                   class="btn btn-outline-primary">
+                                   View product
                                 </a>
+
+                                {% set isInCart = false %}
+                                {% for item in cartItems %}
+                                    {% if item.product.id == product.id %}
+                                        {% set isInCart = true %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if app.user and is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
+                                    {% if product.stock > 0 %}
+                                        {% if isInCart %}
+                                            <button class="btn btn-secondary" disabled>
+                                                Already in Cart
+                                            </button>
+                                        {% else %}
+                                            <a href="{{ path('cart_add', { id: product.id }) }}"
+                                                class="btn btn-success">
+                                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                            </a>
+                                        {% endif %}
+                                    {% else %}
+                                        <button class="btn btn-secondary" disabled>
+                                            Out of Stock
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                         </div>
                     </div>

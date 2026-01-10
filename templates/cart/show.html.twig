@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1>Shopping Cart</h1>
+
+        {% if cart.items is empty %}
+            <div class="alert alert-info">
+                Your cart is empty.
+            </div>
+            <a href="{{ path('catalog_index') }}" class="btn btn-secondary w-100 mt-3">
+                Back to Catalog
+            </a>
+        {% else %}
+            <table class="table table-bordered align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-center">Price</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-center">Subtotal</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in cart.items %}
+                        <tr>
+                            <td>
+                                <strong>{{ item.product.name }}</strong>
+                            </td>
+
+                            <td class="text-center">
+                                {{ item.product.price|number_format(2, ',', '.') }} €
+                            </td>
+
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <form
+                                        action="{{ path('cart_update', {id: item.product.id, quantity: item.quantity - 1}) }}"
+                                        method="post"
+                                        class="d-inline"
+                                    >
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" {% if item.quantity <= 1 %} disabled {% endif %}>-</button>
+                                    </form>
+
+                                    <form
+                                        action="{{ path('cart_update', {id: item.product.id, quantity: item.quantity}) }}"
+                                        method="post"
+                                        class="d-inline w-auto mx-2"
+                                    >
+                                        <input
+                                            type="number"
+                                            name="quantity"
+                                            value="{{ item.quantity }}"
+                                            min="1"
+                                            class="form-control form-control-sm text-center w-100"
+                                            readonly
+                                        />
+                                    </form>
+
+                                    <form
+                                        action="{{ path('cart_update', {id: item.product.id, quantity: item.quantity + 1}) }}"
+                                        method="post"
+                                        class="d-inline"
+                                    >
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary" {% if item.quantity >= item.product.stock %} disabled {% endif %}>+</button>
+                                    </form>
+                                </div>
+                            </td>
+
+                            <td class="text-center">
+                                {{ (item.product.price * item.quantity)|number_format(2, ',', '.') }} €
+                            </td>
+
+                            <td class="text-center">
+                                <!-- Trigger Modal for Remove -->
+                                <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal{{ item.product.id }}">
+                                    Remove
+                                </button>
+
+                                <!-- Modal for each item -->
+                                <div class="modal fade" id="removeModal{{ item.product.id }}" tabindex="-1" aria-labelledby="removeModalLabel{{ item.product.id }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="removeModalLabel{{ item.product.id }}">Confirm Removal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to remove <strong>{{ item.product.name }}</strong> from your cart?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ path('cart_remove', { id: item.product.id }) }}" method="post" style="display:inline;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        Yes, remove
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="row justify-content-end">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Total</h4>
+                            <p class="fs-5">
+                                <strong>{{ total|number_format(2, ',', '.') }} €</strong>
+                            </p>
+
+                            <a href="{{ path('cart_show') }}" class="btn btn-success w-100 mb-2">
+                                Checkout
+                            </a>
+                            <a href="{{ path('catalog_index') }}" class="btn btn-secondary w-100">
+                                Back to Catalog
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+{% endblock %}
