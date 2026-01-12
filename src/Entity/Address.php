@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Order;
 use App\Entity\User;
 
 /**
@@ -45,7 +46,7 @@ class Address
     private $country;
 
     /**
-     * @var int
+     * @var Order
      */
     private $order;
 
@@ -172,19 +173,19 @@ class Address
     }
 
     /**
-     * @return int
+     * @return Order
      */
-    public function getOrder(): int
+    public function getOrder(): Order
     {
         return $this->order;
     }
 
     /**
-     * @param int $order
+     * @param Order $order
      *
      * @return $this
      */
-    public function setOrder(int $order): self
+    public function setOrder(Order $order): self
     {
         $this->order = $order;
         return $this;
