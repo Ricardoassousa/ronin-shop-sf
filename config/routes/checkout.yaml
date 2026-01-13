@@ -1,0 +1,4 @@
+checkout_show:
+    path: /checkout/address
+    controller: App\Controller\CheckoutController::addressAction
+    methods: [GET, POST]
