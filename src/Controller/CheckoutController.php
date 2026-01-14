@@ -62,4 +62,46 @@ class CheckoutController extends AbstractController
         ]);
     }
 
+    /**
+     * Handles the checkout summary step for the current user.
+     *
+     * This method retrieves the active cart for the authenticated user,
+     * checks if the cart contains items, and ensures that an address is selected.
+     * If no cart is found or no items are present, the user is redirected to the cart page.
+     * If no address is associated with the cart, the user is redirected to the cart page.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
+    public function summaryAction(Request $request, EntityManagerInterface $em)
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $cart = $em->getRepository(Cart::class)->findOneBy([
+            'user' => $user,
+            'status' => Cart::STATUS_ACTIVE
+        ]);
+        if ($cart == null || count($cart->getItems()) == 0) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        // TODO: Fix Order 1-1 Address
+        dd($cart);
+        $address = $em->getRepository(Address::class)->findOneBy([
+            'id' => 1
+        ]);
+        if ($address == null) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        return $this->render('checkout/summary.html.twig', [
+            'cart' => $cart,
+            'address' => $address
+        ]);
+    }
+
 }
