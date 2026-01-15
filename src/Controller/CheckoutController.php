@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Address;
 use App\Entity\Cart;
+use App\Entity\Order;
+use App\Entity\OrderItem;
 use App\Service\CartService;
 use App\Form\AddressType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -102,6 +104,73 @@ class CheckoutController extends AbstractController
             'cart' => $cart,
             'address' => $address
         ]);
+    }
+
+    /**
+     * Handles the order confirmation step for the current user.
+     *
+     * This method finalizes the checkout process by creating a new order
+     * from the authenticated user's active cart. It ensures that the user
+     * is logged in, that an active cart exists, and that the cart contains
+     * at least one item.
+     *
+     * An address is retrieved and associated with the order (temporary logic).
+     * A new Order entity is created with a pending status, and each cart item
+     * is converted into an OrderItem associated with the order.
+     *
+     * If the user is not authenticated, they are redirected to the login page.
+     * If no active cart exists or the cart is empty, the user is redirected
+     * back to the cart page.
+     *
+     * After successfully persisting the order and its items, the user is
+     * redirected to the checkout success page.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
+    public function confirmAction(Request $request, EntityManagerInterface $em)
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $cart = $em->getRepository(Cart::class)->findOneBy([
+            'user' => $user,
+            'status' => Cart::STATUS_ACTIVE
+        ]);
+        if ($cart == null || count($cart->getItems()) == 0) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        // TODO: Fix Order 1-1 Address
+        dd($cart);
+        $address = $em->getRepository(Address::class)->findOneBy([
+            'id' => 1
+        ]);
+        if ($address == null) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        $order = new Order();
+        $order->setUser(user);
+        $order->setAddress($address);
+        $order->setStatus(Order::STATUS_PENDING);
+        $em->persist($order);
+
+        foreach ($cart->getItems() as $cartItem) {
+            $item = new OrderItem();
+            $item->setOrder($order);
+            $item->setProduct($cartItem->getProduct());
+            $item->setUnitPrice($cartItem->getProduct()->getPrice());
+            $item->setQuantity($cartItem->getQuantity());
+            $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
+            $em->persist($item);
+        }
+        $em->flush();
+
+        return $this->redirectToRoute('checkout_success');
     }
 
 }
