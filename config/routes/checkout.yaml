@@ -12,3 +12,8 @@ checkout_confirm:
     path: /checkout/confirm
     controller: App\Controller\CheckoutController::confirmAction
     methods: [GET, POST]
+
+checkout_success:
+    path: /checkout/success
+    controller: App\Controller\CheckoutController::successAction
+    methods: [GET, POST]

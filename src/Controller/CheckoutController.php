@@ -173,4 +173,54 @@ class CheckoutController extends AbstractController
         return $this->redirectToRoute('checkout_success');
     }
 
+    /**
+     * Handles the checkout success step for the current user.
+     *
+     * This method validates the final stage of the checkout flow by ensuring
+     * that the user is authenticated and has an active cart with at least
+     * one item. If these conditions are not met, the user is redirected
+     * to the appropriate page.
+     *
+     * The user's active cart is retrieved and temporarily associated with
+     * a fixed address (placeholder logic to be improved). The cart and
+     * address are then passed to the checkout success view for display.
+     *
+     * If the user is not authenticated, they are redirected to the login page.
+     * If no active cart exists or the cart is empty, the user is redirected
+     * back to the cart page.
+     *
+     * @param Request $request The current HTTP request.
+     * @param EntityManagerInterface $em The Doctrine entity manager.
+     * @return Response A rendered checkout success page or a redirect response.
+     */
+    public function successAction(Request $request, EntityManagerInterface $em)
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $cart = $em->getRepository(Cart::class)->findOneBy([
+            'user' => $user,
+            'status' => Cart::STATUS_ACTIVE
+        ]);
+        if ($cart == null || count($cart->getItems()) == 0) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        // TODO: Fix Order 1-1 Address
+        dd($cart);
+        $address = $em->getRepository(Address::class)->findOneBy([
+            'id' => 1
+        ]);
+        if ($address == null) {
+            return $this->redirectToRoute('cart_show');
+        }
+
+        return $this->render('checkout/success.html.twig', [
+            'cart' => $cart,
+            'address' => $address
+        ]);
+    }
+
 }
