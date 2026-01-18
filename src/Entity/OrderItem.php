@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Order;
+use App\Entity\OrderShop;
 use App\Entity\Product;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,9 +18,9 @@ class OrderItem
     private $id;
 
     /**
-     * @var Order
+     * @var OrderShop
      */
-    private $order;
+    private $orderShop;
 
     /**
      * @var Product
@@ -74,21 +74,21 @@ class OrderItem
     }
 
     /**
-     * @return Order
+     * @return OrderShop
      */
-    public function getOrder()
+    public function getOrderShop()
     {
-        return $this->order;
+        return $this->orderShop;
     }
 
     /**
-     * @param Order $order
+     * @param OrderShop $orderShop
      *
      * @return $this
      */
-    public function setOrder(Order $order)
+    public function setOrderShop(OrderShop $orderShop)
     {
-        $this->order = $order;
+        $this->orderShop = $orderShop;
         return $this;
     }
 

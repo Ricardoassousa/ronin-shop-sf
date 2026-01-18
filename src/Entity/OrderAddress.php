@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Entity\Order;
+use App\Entity\OrderShop;
 use App\Entity\User;
 
 /**
- * Address
+ * OrderAddress
  */
-class Address
+class OrderAddress
 {
     /**
      * @var int
@@ -46,9 +46,9 @@ class Address
     private $country;
 
     /**
-     * @var Order
+     * @var OrderShop
      */
-    private $order;
+    private $orderShop;
 
     /**
      * @return int
@@ -173,21 +173,21 @@ class Address
     }
 
     /**
-     * @return Order
+     * @return OrderShop
      */
-    public function getOrder(): Order
+    public function getOrderShop(): OrderShop
     {
-        return $this->order;
+        return $this->orderShop;
     }
 
     /**
-     * @param Order $order
+     * @param OrderShop $orderShop
      *
      * @return $this
      */
-    public function setOrder(Order $order): self
+    public function setOrderShop(OrderShop $orderShop): self
     {
-        $this->order = $order;
+        $this->orderShop = $orderShop;
         return $this;
     }
 

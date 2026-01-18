@@ -13,17 +13,11 @@
         <field name="quantity" type="integer" column="quantity"/>
         <field name="createdAt" type="datetime" column="created_at"/>
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>
-        <many-to-one field="order" target-entity="App\Entity\Order" inversed-by="items">
-            <join-column name="order_id" referenced-column-name="id" nullable="false"/>
+        <many-to-one field="orderShop" target-entity="App\Entity\OrderShop" inversed-by="items">
+            <join-column name="order_shop_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
         <many-to-one field="product" target-entity="App\Entity\Product">
             <join-column name="product_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
-        <!-- <many-to-one field="cart" target-entity="App\Entity\Cart" inversed-by="items">
-            <join-column name="cart_id" referenced-column-name="id" nullable="false"/>
-        </many-to-one>
-        <many-to-one field="product" target-entity="App\Entity\Product">
-            <join-column name="product_id" referenced-column-name="id" nullable="false"/>
-        </many-to-one> -->
     </entity>
 </doctrine-mapping>

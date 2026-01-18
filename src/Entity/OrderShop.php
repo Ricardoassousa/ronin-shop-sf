@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Entity\Address;
+use App\Entity\OrderAddress;
 use App\Entity\OrderItem;
 use App\Entity\User;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Order
+ * OrderShop
  */
-class Order
+class OrderShop
 {
     /**
      * The order is created but has not been completed by the user within the expected timeframe.
@@ -64,9 +64,9 @@ class Order
     private $user;
 
     /**
-     * @var Address
+     * @var OrderAddress
      */
-    private $address;
+    private $orderAddress;
 
     /**
      * The current status of the order, which indicates whether the order is active, ordered, or expired.
@@ -137,21 +137,21 @@ class Order
     }
 
     /**
-     * @return Address
+     * @return OrderAddress
      */
-    public function getAddress()
+    public function getOrderAddress()
     {
-        return $this->address;
+        return $this->orderAddress;
     }
 
     /**
-     * @param Address $address
+     * @param OrderAddress $orderAddress
      *
      * @return $this
      */
-    public function setAddress(Address $address)
+    public function setOrderAddress(OrderAddress $orderAddress)
     {
-        $this->address = $address;
+        $this->orderAddress = $orderAddress;
         return $this;
     }
 

@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\Address;
 use App\Entity\Cart;
-use App\Entity\Order;
+use App\Entity\OrderAddress;
 use App\Entity\OrderItem;
+use App\Entity\OrderShop;
 use App\Service\CartService;
 use App\Form\AddressType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,10 +91,8 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        // TODO: Fix Order 1-1 Address
-        dd($cart);
-        $address = $em->getRepository(Address::class)->findOneBy([
-            'id' => 1
+        $address = $em->getRepository(OrderAddress::class)->findOneBy([
+            'id' => 2
         ]);
         if ($address == null) {
             return $this->redirectToRoute('cart_show');
@@ -144,9 +142,7 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        // TODO: Fix Order 1-1 Address
-        dd($cart);
-        $address = $em->getRepository(Address::class)->findOneBy([
+        $address = $em->getRepository(OrderAddress::class)->findOneBy([
             'id' => 1
         ]);
         if ($address == null) {
@@ -208,9 +204,7 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        // TODO: Fix Order 1-1 Address
-        dd($cart);
-        $address = $em->getRepository(Address::class)->findOneBy([
+        $address = $em->getRepository(OrderAddress::class)->findOneBy([
             'id' => 1
         ]);
         if ($address == null) {

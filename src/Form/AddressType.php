@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Address;
+use App\Entity\OrderAddress;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -60,7 +60,7 @@ class AddressType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Address::class,
+            'data_class' => OrderAddress::class,
         ]);
     }
 
