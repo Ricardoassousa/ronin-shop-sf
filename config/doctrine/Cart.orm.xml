@@ -10,6 +10,7 @@
         <field name="status" type="string" column="status" length="20"/>
         <field name="createdAt" type="datetime" column="created_at"/>
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>
+        <one-to-one field="cartAddress" target-entity="App\Entity\CartAddress" mapped-by="cart" cascade="persist,remove"/>
         <one-to-many field="items" target-entity="App\Entity\CartItem" mapped-by="cart" cascade="persist,remove"/>
         <many-to-one field="user" target-entity="App\Entity\User" inversed-by="carts">
             <join-column name="user_id" referenced-column-name="id" nullable="false"/>

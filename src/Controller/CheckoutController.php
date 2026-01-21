@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Cart;
+use App\Entity\CartAddress;
 use App\Entity\OrderAddress;
 use App\Entity\OrderItem;
 use App\Entity\OrderShop;
@@ -43,13 +44,14 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $address = new Address();
+        $address = new CartAddress();
 
         $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $address->setCart($cart);
             $em->persist($address);
             $em->flush();
 
