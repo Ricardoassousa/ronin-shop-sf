@@ -3,7 +3,7 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-    <entity name="App\Entity\CartAddress" table="cart_address" repository-class="App\Repository\CartRepository">
+    <entity name="App\Entity\CartAddress" table="cart_address">
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>

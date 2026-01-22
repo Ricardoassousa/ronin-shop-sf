@@ -93,8 +93,8 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $address = $em->getRepository(OrderAddress::class)->findOneBy([
-            'id' => 2
+        $address = $em->getRepository(CartAddress::class)->findOneBy([
+            'cart' => $cart
         ]);
         if ($address == null) {
             return $this->redirectToRoute('cart_show');
@@ -144,26 +144,35 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $address = $em->getRepository(OrderAddress::class)->findOneBy([
-            'id' => 1
+        $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
+            'cart' => $cart
         ]);
-        if ($address == null) {
+        if ($cartAddress == null) {
             return $this->redirectToRoute('cart_show');
         }
 
-        $order = new Order();
-        $order->setUser(user);
-        $order->setAddress($address);
-        $order->setStatus(Order::STATUS_PENDING);
+        $cart->setStatus(CartStatus::STATUS_ORDERED);
+        $order = new OrderShop();
+        $order->setUser($user);
+        $order->setStatus(OrderShop::STATUS_PENDING);
         $em->persist($order);
+
+        $orderAddress = new OrderAddress();
+        $orderAddress->setOrderShop($order);
+        $orderAddress->setPrimaryAddress($cartAddress->getPrimaryAddress());
+        $orderAddress->setSecondaryAddress($cartAddress->getSecondaryAddress());
+        $orderAddress->setCity($cartAddress->getCity());
+        $orderAddress->setState($cartAddress->getState());
+        $orderAddress->setPostalCode($cartAddress->getPostalCode());
+        $orderAddress->setCountry($cartAddress->getCountry());
 
         foreach ($cart->getItems() as $cartItem) {
             $item = new OrderItem();
-            $item->setOrder($order);
+            $item->setOrderShop($order);
             $item->setProduct($cartItem->getProduct());
             $item->setUnitPrice($cartItem->getProduct()->getPrice());
-            $item->setQuantity($cartItem->getQuantity());
             $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
+            $item->setQuantity($cartItem->getQuantity());
             $em->persist($item);
         }
         $em->flush();
@@ -187,36 +196,16 @@ class CheckoutController extends AbstractController
      * If no active cart exists or the cart is empty, the user is redirected
      * back to the cart page.
      *
-     * @param Request $request The current HTTP request.
-     * @param EntityManagerInterface $em The Doctrine entity manager.
-     * @return Response A rendered checkout success page or a redirect response.
+     * @return Response
      */
-    public function successAction(Request $request, EntityManagerInterface $em)
+    public function successAction()
     {
         $user = $this->getUser();
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
 
-        $cart = $em->getRepository(Cart::class)->findOneBy([
-            'user' => $user,
-            'status' => Cart::STATUS_ACTIVE
-        ]);
-        if ($cart == null || count($cart->getItems()) == 0) {
-            return $this->redirectToRoute('cart_show');
-        }
-
-        $address = $em->getRepository(OrderAddress::class)->findOneBy([
-            'id' => 1
-        ]);
-        if ($address == null) {
-            return $this->redirectToRoute('cart_show');
-        }
-
-        return $this->render('checkout/success.html.twig', [
-            'cart' => $cart,
-            'address' => $address
-        ]);
+        return $this->render('checkout/success.html.twig');
     }
 
 }
