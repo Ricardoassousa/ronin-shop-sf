@@ -8,7 +8,7 @@ use App\Entity\OrderAddress;
 use App\Entity\OrderItem;
 use App\Entity\OrderShop;
 use App\Service\CartService;
-use App\Form\AddressType;
+use App\Form\CartAddressType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,18 +44,19 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $address = new CartAddress();
+        $cartAddress = $cart->getCartAddress();
+        if ($cartAddress == null) {
+            $cartAddress = new CartAddress();
+        }
 
-        $form = $this->createForm(AddressType::class, $address);
+        $form = $this->createForm(CartAddressType::class, $cartAddress);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $address->setCart($cart);
-            $em->persist($address);
+            $cartAddress->setCart($cart);
+            $em->persist($cartAddress);
             $em->flush();
-
-            $request->getSession()->set('checkout_address_id', $address->getId());
 
             return $this->redirectToRoute('checkout_summary');
         }
@@ -93,16 +94,16 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $address = $em->getRepository(CartAddress::class)->findOneBy([
+        $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
             'cart' => $cart
         ]);
-        if ($address == null) {
+        if ($cartAddress == null) {
             return $this->redirectToRoute('cart_show');
         }
 
         return $this->render('checkout/summary.html.twig', [
             'cart' => $cart,
-            'address' => $address
+            'cartAddress' => $cartAddress
         ]);
     }
 
@@ -151,7 +152,8 @@ class CheckoutController extends AbstractController
             return $this->redirectToRoute('cart_show');
         }
 
-        $cart->setStatus(CartStatus::STATUS_ORDERED);
+        $cart->setStatus(Cart::STATUS_ORDERED);
+
         $order = new OrderShop();
         $order->setUser($user);
         $order->setStatus(OrderShop::STATUS_PENDING);
@@ -165,12 +167,20 @@ class CheckoutController extends AbstractController
         $orderAddress->setState($cartAddress->getState());
         $orderAddress->setPostalCode($cartAddress->getPostalCode());
         $orderAddress->setCountry($cartAddress->getCountry());
+        $em->persist($orderAddress);
 
         foreach ($cart->getItems() as $cartItem) {
+
+            $product = $cartItem->getProduct();
+            if ($product->getStock() < $cartItem->getQuantity()) {
+                return $this->redirectToRoute('cart_show');
+            }
+            $product->setStock($product->getStock() - $cartItem->getQuantity());
+
             $item = new OrderItem();
             $item->setOrderShop($order);
-            $item->setProduct($cartItem->getProduct());
-            $item->setUnitPrice($cartItem->getProduct()->getPrice());
+            $item->setProduct($product);
+            $item->setUnitPrice($product->getPrice());
             $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
             $item->setQuantity($cartItem->getQuantity());
             $em->persist($item);
