@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
+use App\Entity\Order;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -42,6 +43,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection|Cart[]
      */
     private $carts;
+
+    /**
+     * @var Collection|Order[]
+     */
+    private $orders;
 
     /**
      *
@@ -201,6 +207,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->carts->removeElement($cart);
             if ($cart->getCart() == $this) {
                 $cart->setCart(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the orders of the user.
+     *
+     * @return Collection|Order[]
+     */
+    public function getOrders()
+    {
+        return $this->orders;
+    }
+
+    /**
+     * Add a order to the user.
+     *
+     * @param Order $order
+     * @return $this
+     */
+    public function addOrder(Order $order)
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a order from the user.
+     *
+     * @param Order $order
+     * @return $this
+     */
+    public function removeOrder(Order $order)
+    {
+        if ($this->orders->contains($order)) {
+            $this->orders->removeElement($order);
+            if ($order->getCart() == $this) {
+                $order->setCart(null);
             }
         }
 

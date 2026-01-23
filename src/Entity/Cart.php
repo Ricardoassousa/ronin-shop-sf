@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\CartAddress;
 use App\Entity\CartItem;
 use App\Entity\User;
 use DateTime;
@@ -36,6 +37,11 @@ class Cart
      * @var User
      */
     private $user;
+
+    /**
+     * @var CartAddress
+     */
+    private $cartAddress;
 
     /**
      * Whether the cart is active, ordered or expired.
@@ -92,6 +98,25 @@ class Cart
     public function setUser(User $user)
     {
         $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * @return CartAddress
+     */
+    public function getCartAddress()
+    {
+        return $this->cartAddress;
+    }
+
+    /**
+     * @param CartAddress $cartAddress
+     *
+     * @return $this
+     */
+    public function setCartAddress(CartAddress $cartAddress)
+    {
+        $this->cartAddress = $cartAddress;
         return $this;
     }
 

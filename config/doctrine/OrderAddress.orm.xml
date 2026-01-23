@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Entity\OrderAddress" table="order_address" repository-class="App\Repository\OrderAddressRepository">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="primaryAddress" type="string" column="primary_address" length="255"/>
+        <field name="secondaryAddress" type="string" column="secondary_address" length="255"/>
+        <field name="city" type="string" column="city" length="255"/>
+        <field name="state" type="string" column="state" length="255" nullable="true"/>
+        <field name="postalCode" type="string" column="postal_code" length="20"/>
+        <field name="country" type="string" column="country" length="100"/>
+        <one-to-one field="orderShop" target-entity="App\Entity\OrderShop" inversed-by="orderAddress">
+            <join-column name="order_shop_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </one-to-one>
+    </entity>
+</doctrine-mapping>
