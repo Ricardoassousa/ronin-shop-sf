@@ -2,10 +2,6 @@
 
 {% block title %}Checkout - Address{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -24,53 +20,74 @@
 
                         {{ form_start(form) }}
 
-                            <div class="form-group">
-                                {{ form_label(form.primaryAddress) }}
-                                {{ form_widget(form.primaryAddress, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.primaryAddress) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.primaryAddress) }}
+                            {{ form_widget(form.primaryAddress, {
+                                'attr': {'class': 'form-control' ~ (form.primaryAddress.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.primaryAddress.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="form-group">
-                                {{ form_label(form.secondaryAddress) }}
-                                {{ form_widget(form.secondaryAddress, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.secondaryAddress) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.secondaryAddress) }}
+                            {{ form_widget(form.secondaryAddress, {
+                                'attr': {'class': 'form-control' ~ (form.secondaryAddress.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.secondaryAddress.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="form-group">
-                                {{ form_label(form.city) }}
-                                {{ form_widget(form.city, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.city) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.city) }}
+                            {{ form_widget(form.city, {
+                                'attr': {'class': 'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.city.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="form-group">
-                                {{ form_label(form.state) }}
-                                {{ form_widget(form.state, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.state) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.state) }}
+                            {{ form_widget(form.state, {
+                                'attr': {'class': 'form-select' ~ (form.state.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.state.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="form-group">
-                                {{ form_label(form.postalCode) }}
-                                {{ form_widget(form.postalCode, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.postalCode) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.postalCode) }}
+                            {{ form_widget(form.postalCode, {
+                                'attr': {'class': 'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.postalCode.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="form-group">
-                                {{ form_label(form.country) }}
-                                {{ form_widget(form.country, {'attr': {'class': 'form-control'}}) }}
-                                {{ form_errors(form.country) }}
-                            </div>
+                        <div class="mb-3">
+                            {{ form_label(form.country) }}
+                            {{ form_widget(form.country, {
+                                'attr': {'class': 'form-select' ~ (form.country.vars.errors|length ? ' is-invalid' : '')}
+                            }) }}
+                            {% for error in form.country.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <button class="btn btn-primary mt-3">
-                                Continue to Summary
-                            </button>
+                        <button class="btn btn-primary mt-3">
+                            Continue to Summary
+                        </button>
+
                         {{ form_end(form) }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
 {% endblock %}

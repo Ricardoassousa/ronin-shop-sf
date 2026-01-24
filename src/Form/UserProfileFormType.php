@@ -16,7 +16,10 @@ class UserProfileFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Email'
+                'label' => 'Email',
+                'disabled' => true,
+                'mapped' => false,
+                'data' => $options['data']->getEmail()
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
