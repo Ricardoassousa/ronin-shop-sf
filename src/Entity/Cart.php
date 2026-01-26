@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\CartAddress;
 use App\Entity\CartItem;
 use App\Entity\User;
 use DateTime;
@@ -38,6 +39,11 @@ class Cart
     private $user;
 
     /**
+     * @var CartAddress
+     */
+    private $cartAddress;
+
+    /**
      * Whether the cart is active, ordered or expired.
      * 
      * @var string
@@ -71,7 +77,7 @@ class Cart
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -79,7 +85,7 @@ class Cart
     /**
      * @return User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -89,16 +95,35 @@ class Cart
      *
      * @return $this
      */
-    public function setUser(User $user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
         return $this;
     }
 
     /**
+     * @return CartAddress
+     */
+    public function getCartAddress(): CartAddress
+    {
+        return $this->cartAddress;
+    }
+
+    /**
+     * @param CartAddress $cartAddress
+     *
+     * @return $this
+     */
+    public function setCartAddress(CartAddress $cartAddress): self
+    {
+        $this->cartAddress = $cartAddress;
+        return $this;
+    }
+
+    /**
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -108,7 +133,7 @@ class Cart
      *
      * @return $this
      */
-    public function setStatus(string $status)
+    public function setStatus(string $status): self
     {
         $this->status = $status;
         return $this;
@@ -117,7 +142,7 @@ class Cart
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -127,7 +152,7 @@ class Cart
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -136,7 +161,7 @@ class Cart
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -146,7 +171,7 @@ class Cart
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
@@ -168,7 +193,7 @@ class Cart
      * @param CartItem $item
      * @return $this
      */
-    public function addItem(CartItem $item)
+    public function addItem(CartItem $item): self
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
@@ -184,7 +209,7 @@ class Cart
      * @param CartItem $item
      * @return $this
      */
-    public function removeItem(CartItem $item)
+    public function removeItem(CartItem $item): self
     {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);

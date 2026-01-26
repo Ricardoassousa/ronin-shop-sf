@@ -67,7 +67,7 @@ class ProductSearch
     /**
      * @return string|null
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -77,7 +77,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setName(?string $name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
         return $this;
@@ -86,7 +86,7 @@ class ProductSearch
     /**
      * @return string|null
      */
-    public function getSku()
+    public function getSku(): ?string
     {
         return $this->sku;
     }
@@ -96,7 +96,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setSku(?string $sku)
+    public function setSku(?string $sku): self
     {
         $this->sku = $sku;
         return $this;
@@ -105,7 +105,7 @@ class ProductSearch
     /**
      * @return string|null
      */
-    public function getShortDescription()
+    public function getShortDescription(): ?string
     {
         return $this->shortDescription;
     }
@@ -115,7 +115,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setShortDescription(?string $shortDescription)
+    public function setShortDescription(?string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
         return $this;
@@ -124,7 +124,7 @@ class ProductSearch
     /**
      * @return float|null
      */
-    public function getMinPrice()
+    public function getMinPrice(): ?float
     {
         return $this->minPrice;
     }
@@ -134,7 +134,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setMinPrice(?float $minPrice)
+    public function setMinPrice(?float $minPrice): self
     {
         $this->minPrice = $minPrice;
         return $this;
@@ -143,7 +143,7 @@ class ProductSearch
     /**
      * @return float|null
      */
-    public function getMaxPrice()
+    public function getMaxPrice(): ?float
     {
         return $this->maxPrice;
     }
@@ -153,7 +153,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setMaxPrice(?float $maxPrice)
+    public function setMaxPrice(?float $maxPrice): self
     {
         $this->maxPrice = $maxPrice;
         return $this;
@@ -162,7 +162,7 @@ class ProductSearch
     /**
      * @return int|null
      */
-    public function getStock()
+    public function getStock(): ?int
     {
         return $this->stock;
     }
@@ -172,7 +172,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setStock(?int $stock)
+    public function setStock(?int $stock): self
     {
         $this->stock = $stock;
         return $this;
@@ -181,7 +181,7 @@ class ProductSearch
     /**
      * @return bool|null
      */
-    public function isActive()
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }
@@ -191,7 +191,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setIsActive(?bool $isActive)
+    public function setIsActive(?bool $isActive): self
     {
         $this->isActive = $isActive;
         return $this;
@@ -200,7 +200,7 @@ class ProductSearch
     /**
      * @return Datetime|null
      */
-    public function getStartDate()
+    public function getStartDate(): ?Datetime
     {
         return $this->startDate;
     }
@@ -210,7 +210,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setStartDate(?Datetime $startDate)
+    public function setStartDate(?Datetime $startDate): self
     {
         $this->startDate = $startDate;
         return $this;
@@ -219,7 +219,7 @@ class ProductSearch
     /**
      * @return Datetime|null
      */
-    public function getEndDate()
+    public function getEndDate(): ?Datetime
     {
         return $this->endDate;
     }
@@ -229,7 +229,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setEndDate(?Datetime $endDate)
+    public function setEndDate(?Datetime $endDate): self
     {
         $this->endDate = $endDate;
         return $this;
@@ -238,7 +238,7 @@ class ProductSearch
     /**
      * @return Category|null
      */
-    public function getCategory()
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
@@ -248,7 +248,7 @@ class ProductSearch
      *
      * @return $this
      */
-    public function setCategory(?Category $category)
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
         return $this;

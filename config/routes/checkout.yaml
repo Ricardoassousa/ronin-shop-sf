@@ -1,0 +1,19 @@
+checkout_address:
+    path: /checkout/address
+    controller: App\Controller\CheckoutController::addressAction
+    methods: [GET, POST]
+
+checkout_summary:
+    path: /checkout/summary
+    controller: App\Controller\CheckoutController::summaryAction
+    methods: [GET, POST]
+
+checkout_confirm:
+    path: /checkout/confirm
+    controller: App\Controller\CheckoutController::confirmAction
+    methods: [GET, POST]
+
+checkout_success:
+    path: /checkout/success
+    controller: App\Controller\CheckoutController::successAction
+    methods: [GET, POST]

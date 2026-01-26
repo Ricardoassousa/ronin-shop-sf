@@ -7,6 +7,12 @@ use Symfony\Component\HttpFoundation\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * Controller responsible for user authentication.
+ *
+ * Handles displaying the login form, processing authentication errors,
+ * and logging out users via the Symfony security firewall.
+ */
 class SecurityController extends AbstractController
 {
     /**

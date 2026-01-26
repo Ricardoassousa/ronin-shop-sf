@@ -21,3 +21,7 @@ catalog_routes:
 cart_routes:
     resource: "routes/cart.yaml"
     type: "yaml"
+
+checkout_routes:
+    resource: "routes/checkout.yaml"
+    type: "yaml"

@@ -19,7 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 /**
- * Controller used to manage a catalog of products.
+ * Controller responsible for managing the product catalog.
+ *
+ * This controller handles catalog-related actions, including:
+ *  - Listing all products with optional search and filters
+ *  - Displaying detailed information for a single product
+ *
+ * It also integrates the user's active cart and items for context in the views.
  */
 class CatalogController extends AbstractController
 {
@@ -104,8 +110,8 @@ class CatalogController extends AbstractController
      * and the slug from the URL. If the slug in the URL does not match
      * the product's current slug, a 301 redirect is performed.
      *
-     * @param Product $product The product entity
-     * @param string $slug The slug from the URL
+     * @param Product $product
+     * @param string $slug
      * @return Response
      */
     public function showAction(Product $product, string $slug): Response

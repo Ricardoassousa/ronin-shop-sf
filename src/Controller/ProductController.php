@@ -18,18 +18,22 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 /**
- * Controller used to manage products (CRUD).
+ * Controller responsible for managing products (CRUD).
+ *
+ * This includes listing products, creating, editing, deleting,
+ * and displaying product details. The controller also handles
+ * search filters, pagination, and slug-based redirections.
  */
 class ProductController extends AbstractController
 {
     /**
-    * Displays a list of all products.
-    *
-    * @param EntityManagerInterface $em
-    * @param PaginatorInterface $paginator
-    * @param Request $request
-    * @return Response
-    */
+     * Displays a list of all products.
+     *
+     * @param EntityManagerInterface $em
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return Response
+     */
     public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
         $productSearch = new ProductSearch();
@@ -110,17 +114,17 @@ class ProductController extends AbstractController
     }
 
     /**
-    * Creates a new Product entity and handles the form submission.
-    *
-    * This method processes the request, validates the form,
-    * generates a unique slug for the product using SlugGenerator,
-    * persists the entity to the database, and redirects as needed.
-    *
-    * @param Request $request The current HTTP request
-    * @param EntityManagerInterface $em The Doctrine entity manager
-    * @param SlugGenerator $slugGenerator Service used to generate unique slugs
-    * @return Response The HTTP response
-    */
+     * Creates a new Product entity and handles the form submission.
+     *
+     * This method processes the request, validates the form,
+     * generates a unique slug for the product using SlugGenerator,
+     * persists the entity to the database, and redirects as needed.
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @param SlugGenerator $slugGenerator
+     * @return Response
+     */
     public function new(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $product = new Product();
@@ -144,19 +148,19 @@ class ProductController extends AbstractController
     }
 
     /**
-    * Edits an existing Product entity and handles the form submission.
-    *
-    * This method processes the request, validates the form,
-    * updates the product's data, regenerates the slug if the name changes
-    * using the SlugGenerator service, and persists the changes to the database.
-    * If the slug changes, the show action should handle redirects via 301.
-    *
-    * @param Request $request The current HTTP request
-    * @param Product $product The product entity being edited
-    * @param EntityManagerInterface $em The Doctrine entity manager
-    * @param SlugGenerator $slugGenerator Service used to generate unique slugs
-    * @return Response The HTTP response
-    */
+     * Edits an existing Product entity and handles the form submission.
+     *
+     * This method processes the request, validates the form,
+     * updates the product's data, regenerates the slug if the name changes
+     * using the SlugGenerator service, and persists the changes to the database.
+     * If the slug changes, the show action should handle redirects via 301.
+     *
+     * @param Request $request
+     * @param Product $product
+     * @param EntityManagerInterface $em
+     * @param SlugGenerator $slugGenerator
+     * @return Response
+     */
     public function edit(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $form = $this->createForm(ProductType::class, $product, [
@@ -185,13 +189,13 @@ class ProductController extends AbstractController
     }
 
     /**
-    * Deletes a product entity after validating the CSRF token.
-    *
-    * @param Request $request
-    * @param Product $product
-    * @param EntityManagerInterface $em
-    * @return Response
-    */
+     * Deletes a product entity after validating the CSRF token.
+     *
+     * @param Request $request
+     * @param Product $product
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
     public function delete(Request $request, Product $product, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
@@ -209,8 +213,8 @@ class ProductController extends AbstractController
      * and the slug from the URL. If the slug in the URL does not match
      * the product's current slug, a 301 redirect is performed.
      *
-     * @param Product $product The product entity
-     * @param string $slug The slug from the URL
+     * @param Product $product
+     * @param string $slug
      * @return Response
      */
     public function show(Product $product, string $slug): Response

@@ -2,10 +2,6 @@
 
 {% block title %}Edit Profile{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-{% endblock %}
-
 {% block body %}
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -20,24 +16,47 @@
                             </div>
                         {% endfor %}
 
-                        {{ form_start(profileForm, {'attr': {'class': 'needs-validation'}}) }}
+                        {{ form_start(profileForm) }}
 
                         <div class="mb-3">
                             {{ form_label(profileForm.email) }}
-                            {{ form_widget(profileForm.email, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_widget(profileForm.email, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'disabled': 'disabled'
+                                }
+                            }) }}
                             {{ form_errors(profileForm.email) }}
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(profileForm.password.first, 'Password') }}
-                            {{ form_widget(profileForm.password.first, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(profileForm.password.first) }}
+                            {{ form_label(profileForm.password.first, 'New Password') }}
+                            {{ form_widget(profileForm.password.first, {
+                                'attr': {
+                                    'class': 'form-control ' ~ (profileForm.password.first.vars.errors|length ? 'is-invalid' : '')
+                                }
+                            }) }}
+
+                            {% for error in profileForm.password.first.vars.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error.message }}
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(profileForm.password.second, 'Confirm Password') }}
-                            {{ form_widget(profileForm.password.second, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(profileForm.password.second) }}
+                            {{ form_label(profileForm.password.second, 'Confirm New Password') }}
+                            {{ form_widget(profileForm.password.second, {
+                                'attr': {
+                                    'class': 'form-control ' ~ (profileForm.password.second.vars.errors|length ? 'is-invalid' : '')
+                                }
+                            }) }}
+
+                            {% for error in profileForm.password.second.vars.errors %}
+                                <div class="invalid-feedback">
+                                    {{ error.message }}
+                                </div>
+                            {% endfor %}
                         </div>
 
                         <div class="d-grid">
@@ -50,8 +69,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
 {% endblock %}

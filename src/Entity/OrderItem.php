@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Entity\Cart;
+use App\Entity\OrderShop;
 use App\Entity\Product;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * CartItem
+ * OrderItem
  */
-class CartItem
+class OrderItem
 {
     /**
      * @var int
@@ -18,14 +18,29 @@ class CartItem
     private $id;
 
     /**
-     * @var Cart
+     * @var OrderShop
      */
-    private $cart;
+    private $orderShop;
 
     /**
      * @var Product
      */
     private $product;
+
+    /**
+     * @var float
+     */
+    private $unitPrice;
+
+    /**
+     * @var float
+     */
+    private $subtotal;
+
+    /**
+     * @var float
+     */
+    private $discount;
 
     /**
      * @var int
@@ -53,27 +68,27 @@ class CartItem
     /**
      * @return int
      */
-    public function getId(): string
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @return Cart
+     * @return OrderShop
      */
-    public function getCart(): Cart
+    public function getOrderShop(): OrderShop
     {
-        return $this->cart;
+        return $this->orderShop;
     }
 
     /**
-     * @param Cart $cart
+     * @param OrderShop $orderShop
      *
      * @return $this
      */
-    public function setCart(Cart $cart): self
+    public function setOrderShop(OrderShop $orderShop): self
     {
-        $this->cart = $cart;
+        $this->orderShop = $orderShop;
         return $this;
     }
 
@@ -93,6 +108,63 @@ class CartItem
     public function setProduct(Product $product): self
     {
         $this->product = $product;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getUnitPrice(): float
+    {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @param float $unitPrice
+     *
+     * @return $this
+     */
+    public function setUnitPrice(float $unitPrice): self
+    {
+        $this->unitPrice = $unitPrice;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSubtotal(): float
+    {
+        return $this->subtotal;
+    }
+
+    /**
+     * @param float $subtotal
+     *
+     * @return $this
+     */
+    public function setSubtotal(float $subtotal): self
+    {
+        $this->subtotal = $subtotal;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDiscount(): float
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @param float $discount
+     *
+     * @return $this
+     */
+    public function setDiscount(float $discount): self
+    {
+        $this->discount = $discount;
         return $this;
     }
 

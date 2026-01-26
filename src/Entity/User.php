@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
+use App\Entity\Order;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -44,6 +45,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $carts;
 
     /**
+     * @var Collection|Order[]
+     */
+    private $orders;
+
+    /**
      *
      */
     public function __construct()
@@ -54,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -62,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -72,7 +78,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return $this
      */
-    public function setEmail($email)
+    public function setEmail($email): self
     {
         $this->email = $email;
         return $this;
@@ -81,7 +87,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return array
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles ? $this->roles : ['ROLE_USER'];
     }
@@ -91,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return $this
      */
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
         return $this;
@@ -100,7 +106,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return string
      */
-    public function getPassword(): ?string {
+    public function getPassword(): string
+    {
         return $this->password;
     }
 
@@ -109,7 +116,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @return $this
      */
-    public function setPassword($password) {
+    public function setPassword($password): self
+    {
         $this->password = $password;
         return $this;
     }
@@ -117,7 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->email;
     }
@@ -125,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return string
      */
-    public function getUserIdentifier()
+    public function getUserIdentifier(): string
     {
         return $this->email;
     }
@@ -141,7 +149,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials() { }
 
     /**
-     * @return CustomerProfile
+     * @return CustomerProfile|null
      */
     public function getCustomerProfile(): ?CustomerProfile
     {
@@ -149,7 +157,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @param CustomerProfile $customerProfile
+     * @param CustomerProfile|null $customerProfile
      *
      * @return $this
      */
@@ -179,7 +187,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @param Cart $cart
      * @return $this
      */
-    public function addCart(Cart $cart)
+    public function addCart(Cart $cart): self
     {
         if (!$this->carts->contains($cart)) {
             $this->carts[] = $cart;
@@ -195,12 +203,56 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @param Cart $cart
      * @return $this
      */
-    public function removeCart(Cart $cart)
+    public function removeCart(Cart $cart): self
     {
         if ($this->carts->contains($cart)) {
             $this->carts->removeElement($cart);
             if ($cart->getCart() == $this) {
                 $cart->setCart(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the orders of the user.
+     *
+     * @return Collection|Order[]
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    /**
+     * Add a order to the user.
+     *
+     * @param Order $order
+     * @return $this
+     */
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a order from the user.
+     *
+     * @param Order $order
+     * @return $this
+     */
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->contains($order)) {
+            $this->orders->removeElement($order);
+            if ($order->getCart() == $this) {
+                $order->setCart(null);
             }
         }
 

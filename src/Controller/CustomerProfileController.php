@@ -12,6 +12,18 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+/**
+ * Controller responsible for managing the customer's profile.
+ *
+ * This controller allows authenticated users to:
+ *  - View and edit their customer profile
+ *  - Create a profile if one does not yet exist
+ *
+ * The controller also integrates the user's active shopping cart
+ * so that cart-related information can be displayed alongside the profile.
+ *
+ * Access is restricted to authenticated users.
+ */
 class CustomerProfileController extends AbstractController
 {
     /**

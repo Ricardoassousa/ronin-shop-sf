@@ -7,8 +7,15 @@ use App\Form\UserProfileFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * Controller responsible for managing the authenticated user's profile.
+ *
+ * This includes editing user information, updating passwords,
+ * and optionally displaying cart-related information for context.
+ */
 class ProfileController extends AbstractController
 {
     /**
@@ -39,7 +46,7 @@ class ProfileController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function editProfile(Request $request)
+    public function editProfile(Request $request): Response
     {
         $user = $this->getUser();
         $cart = $this->em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);

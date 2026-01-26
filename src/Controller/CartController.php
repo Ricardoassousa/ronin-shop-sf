@@ -9,7 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Controller used to manage a cart.
+ * Controller responsible for managing the shopping cart.
+ *
+ * This controller handles all cart-related actions for a user, including:
+ *  - Displaying the current cart
+ *  - Adding products to the cart
+ *  - Updating product quantities in the cart
+ *  - Removing products from the cart
+ *
+ * All actions ensure the cart is tied to the currently authenticated user.
  */
 class CartController extends AbstractController
 {
@@ -19,7 +27,7 @@ class CartController extends AbstractController
      * @param CartService $cartService
      * @return Response
      */
-    public function showAction(CartService $cartService)
+    public function showAction(CartService $cartService): Response
     {
         $cart = $cartService->getCart($this->getUser());
 
@@ -37,9 +45,9 @@ class CartController extends AbstractController
      *
      * @param CartService $cartService
      * @param Product $product
-     * @return RedirectResponse
+     * @return Response
      */
-    public function addAction(CartService $cartService, Product $product)
+    public function addAction(CartService $cartService, Product $product): Response
     {
         $cartService->addProduct($this->getUser(), $product);
         return $this->redirectToRoute('cart_show');
@@ -54,9 +62,9 @@ class CartController extends AbstractController
      * @param CartService $cartService
      * @param Product $product
      * @param int $quantity
-     * @return RedirectResponse
+     * @return Response
      */
-    public function updateAction(CartService $cartService, Product $product, int $quantity)
+    public function updateAction(CartService $cartService, Product $product, int $quantity): Response
     {
         $cartService->updateQuantity($this->getUser(), $product, $quantity);
         return $this->redirectToRoute('cart_show');
@@ -69,9 +77,9 @@ class CartController extends AbstractController
      *
      * @param CartService $cartService
      * @param Product $product
-     * @return RedirectResponse
+     * @return Response
      */
-    public function removeAction(CartService $cartService, Product $product)
+    public function removeAction(CartService $cartService, Product $product): Response
     {
         $cartService->removeProduct($this->getUser(), $product);
         return $this->redirectToRoute('cart_show');
