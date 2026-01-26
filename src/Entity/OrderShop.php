@@ -112,7 +112,7 @@ class OrderShop
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -120,7 +120,7 @@ class OrderShop
     /**
      * @return User
      */
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -130,7 +130,7 @@ class OrderShop
      *
      * @return $this
      */
-    public function setUser(User $user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
         return $this;
@@ -139,7 +139,7 @@ class OrderShop
     /**
      * @return OrderAddress
      */
-    public function getOrderAddress()
+    public function getOrderAddress(): OrderAddress
     {
         return $this->orderAddress;
     }
@@ -149,7 +149,7 @@ class OrderShop
      *
      * @return $this
      */
-    public function setOrderAddress(OrderAddress $orderAddress)
+    public function setOrderAddress(OrderAddress $orderAddress): self
     {
         $this->orderAddress = $orderAddress;
         return $this;
@@ -158,7 +158,7 @@ class OrderShop
     /**
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
@@ -168,7 +168,7 @@ class OrderShop
      *
      * @return $this
      */
-    public function setStatus(string $status)
+    public function setStatus(string $status): self
     {
         $this->status = $status;
         return $this;
@@ -177,7 +177,7 @@ class OrderShop
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -187,7 +187,7 @@ class OrderShop
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -196,7 +196,7 @@ class OrderShop
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -206,7 +206,7 @@ class OrderShop
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
@@ -228,7 +228,7 @@ class OrderShop
      * @param OrderItem $item
      * @return $this
      */
-    public function addItem(OrderItem $item)
+    public function addItem(OrderItem $item): self
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
@@ -244,7 +244,7 @@ class OrderShop
      * @param OrderItem $item
      * @return $this
      */
-    public function removeItem(OrderItem $item)
+    public function removeItem(OrderItem $item): self
     {
         if ($this->items->contains($item)) {
             $this->items->removeElement($item);

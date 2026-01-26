@@ -15,6 +15,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Controller responsible for managing the checkout process.
+ *
+ * This controller handles all steps of the checkout flow for an authenticated user:
+ *  - Address step (addressAction)
+ *  - Order summary step (summaryAction)
+ *  - Order confirmation step (confirmAction)
+ *  - Checkout success step (successAction)
+ *
+ * Each action ensures:
+ *  - The user is authenticated
+ *  - There is an active cart with at least one item
+ *  - Cart addresses are correctly associated
+ *  - Orders and order items are persisted in the database
+ */
 class CheckoutController extends AbstractController
 {
     /**
@@ -29,7 +44,7 @@ class CheckoutController extends AbstractController
      * @param CartService $cartService
      * @return Response
      */
-    public function addressAction(Request $request, EntityManagerInterface $em, CartService $cartService)
+    public function addressAction(Request $request, EntityManagerInterface $em, CartService $cartService): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -79,7 +94,7 @@ class CheckoutController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function summaryAction(Request $request, EntityManagerInterface $em)
+    public function summaryAction(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -130,7 +145,7 @@ class CheckoutController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function confirmAction(Request $request, EntityManagerInterface $em)
+    public function confirmAction(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         if (!$user) {
@@ -208,7 +223,7 @@ class CheckoutController extends AbstractController
      *
      * @return Response
      */
-    public function successAction()
+    public function successAction(): Response
     {
         $user = $this->getUser();
         if (!$user) {

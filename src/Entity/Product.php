@@ -105,7 +105,7 @@ class Product
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -115,7 +115,7 @@ class Product
      *
      * @return Category|null
      */
-    public function getCategory()
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
@@ -127,7 +127,7 @@ class Product
      *
      * @return $this
      */
-    public function setCategory(?Category $category)
+    public function setCategory(?Category $category): self
     {
         $this->category = $category;
         return $this;
@@ -136,7 +136,7 @@ class Product
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -146,7 +146,7 @@ class Product
      *
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -155,7 +155,7 @@ class Product
     /**
      * @return string
      */
-    public function getSlug()
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -165,7 +165,7 @@ class Product
      *
      * @return $this
      */
-    public function setSlug(string $slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
         return $this;
@@ -174,7 +174,7 @@ class Product
     /**
      * @return string
      */
-    public function getSku()
+    public function getSku(): string
     {
         return $this->sku;
     }
@@ -184,7 +184,7 @@ class Product
      *
      * @return $this
      */
-    public function setSku(string $sku)
+    public function setSku(string $sku): self
     {
         $this->sku = $sku;
         return $this;
@@ -193,7 +193,7 @@ class Product
     /**
      * @return string
      */
-    public function getShortDescription()
+    public function getShortDescription(): string
     {
         return $this->shortDescription;
     }
@@ -203,7 +203,7 @@ class Product
      *
      * @return $this
      */
-    public function setShortDescription(string $shortDescription)
+    public function setShortDescription(string $shortDescription): self
     {
         $this->shortDescription = $shortDescription;
         return $this;
@@ -212,7 +212,7 @@ class Product
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -222,7 +222,7 @@ class Product
      *
      * @return $this
      */
-    public function setDescription(string $description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
         return $this;
@@ -251,7 +251,7 @@ class Product
     /**
      * @return string|null
      */
-    public function getImage()
+    public function getImage(): ?string
     {
         return $this->image;
     }
@@ -261,7 +261,7 @@ class Product
      *
      * @return $this
      */
-    public function setImage(?string $image)
+    public function setImage(?string $image): self
     {
         $this->image = $image;
         return $this;
@@ -270,7 +270,7 @@ class Product
     /**
      * @return float
      */
-    public function getPrice()
+    public function getPrice(): float
     {
         return $this->price;
     }
@@ -280,7 +280,7 @@ class Product
      *
      * @return $this
      */
-    public function setPrice(float $price)
+    public function setPrice(float $price): self
     {
         $this->price = $price;
         return $this;
@@ -289,7 +289,7 @@ class Product
     /**
      * @return float|null
      */
-    public function getDiscountPrice()
+    public function getDiscountPrice(): ?float
     {
         return $this->discountPrice;
     }
@@ -299,7 +299,7 @@ class Product
      *
      * @return $this
      */
-    public function setDiscountPrice(?float $discountPrice)
+    public function setDiscountPrice(?float $discountPrice): self
     {
         $this->discountPrice = $discountPrice;
         return $this;
@@ -308,7 +308,7 @@ class Product
     /**
      * @return int
      */
-    public function getStock()
+    public function getStock(): int
     {
         return $this->stock;
     }
@@ -318,7 +318,7 @@ class Product
      *
      * @return $this
      */
-    public function setStock(int $stock)
+    public function setStock(int $stock): self
     {
         $this->stock = $stock;
         return $this;
@@ -327,7 +327,7 @@ class Product
     /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->isActive;
     }
@@ -337,7 +337,7 @@ class Product
      *
      * @return $this
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
         return $this;
@@ -346,7 +346,7 @@ class Product
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -356,7 +356,7 @@ class Product
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -365,7 +365,7 @@ class Product
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -375,7 +375,7 @@ class Product
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;

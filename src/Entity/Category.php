@@ -66,7 +66,7 @@ class Category
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -74,7 +74,7 @@ class Category
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -84,7 +84,7 @@ class Category
      *
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -93,7 +93,7 @@ class Category
     /**
      * @return string
      */
-    public function getSlug()
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -103,7 +103,7 @@ class Category
      *
      * @return $this
      */
-    public function setSlug(string $slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
         return $this;
@@ -112,7 +112,7 @@ class Category
     /**
      * @return string|null
      */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -122,7 +122,7 @@ class Category
      *
      * @return $this
      */
-    public function setDescription(?string $description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
         return $this;
@@ -131,7 +131,7 @@ class Category
     /**
      * @return bool
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->isActive;
     }
@@ -141,7 +141,7 @@ class Category
      *
      * @return $this
      */
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
         return $this;
@@ -150,7 +150,7 @@ class Category
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -160,7 +160,7 @@ class Category
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -169,7 +169,7 @@ class Category
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -179,7 +179,7 @@ class Category
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
@@ -201,7 +201,7 @@ class Category
      * @param Product $product
      * @return $this
      */
-    public function addProduct(Product $product)
+    public function addProduct(Product $product): self
     {
         if (!$this->products->contains($product)) {
             $this->products[] = $product;
@@ -217,7 +217,7 @@ class Category
      * @param Product $product
      * @return $this
      */
-    public function removeProduct(Product $product)
+    public function removeProduct(Product $product): self
     {
         if ($this->products->contains($product)) {
             $this->products->removeElement($product);
@@ -237,7 +237,7 @@ class Category
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }

@@ -7,8 +7,15 @@ use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+/**
+ * Controller responsible for user registration.
+ *
+ * Handles creating new users, processing the registration form,
+ * hashing passwords, and persisting users to the database.
+ */
 class RegistrationController extends AbstractController
 {
     /**
@@ -19,7 +26,7 @@ class RegistrationController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em)
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);

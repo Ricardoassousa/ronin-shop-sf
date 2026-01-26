@@ -53,7 +53,7 @@ class CartItem
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
@@ -61,7 +61,7 @@ class CartItem
     /**
      * @return Cart
      */
-    public function getCart()
+    public function getCart(): Cart
     {
         return $this->cart;
     }
@@ -71,7 +71,7 @@ class CartItem
      *
      * @return $this
      */
-    public function setCart(Cart $cart)
+    public function setCart(Cart $cart): self
     {
         $this->cart = $cart;
         return $this;
@@ -80,7 +80,7 @@ class CartItem
     /**
      * @return Product
      */
-    public function getProduct()
+    public function getProduct(): Product
     {
         return $this->product;
     }
@@ -90,7 +90,7 @@ class CartItem
      *
      * @return $this
      */
-    public function setProduct(Product $product)
+    public function setProduct(Product $product): self
     {
         $this->product = $product;
         return $this;
@@ -99,7 +99,7 @@ class CartItem
     /**
      * @return int
      */
-    public function getQuantity()
+    public function getQuantity(): int
     {
         return $this->quantity;
     }
@@ -109,7 +109,7 @@ class CartItem
      *
      * @return $this
      */
-    public function setQuantity(int $quantity)
+    public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
         return $this;
@@ -118,7 +118,7 @@ class CartItem
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -128,7 +128,7 @@ class CartItem
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -137,7 +137,7 @@ class CartItem
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -147,7 +147,7 @@ class CartItem
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;

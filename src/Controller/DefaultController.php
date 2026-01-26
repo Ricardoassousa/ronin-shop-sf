@@ -7,8 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * DefaultController is used to manage basic routes and render views.
- * It handles the homepage and potentially other default pages of the application.
+ * Controller responsible for handling default pages of the application.
+ *
+ * This includes the homepage and can be extended to include other
+ * general-purpose pages that do not fit into a specific domain.
  */
 class DefaultController extends AbstractController
 {

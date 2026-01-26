@@ -7,8 +7,17 @@ use App\Form\UserRolesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Controller used to manage administrative tasks.
+ *
+ * This controller handles admin-related actions such as:
+ *  - Displaying the admin dashboard
+ *  - Editing user roles
+ *  - Managing other administrative functionalities
+ */
 class AdminController extends AbstractController
 {
     /**
@@ -16,7 +25,7 @@ class AdminController extends AbstractController
      *
      * @return Response
      */
-    public function dashboard()
+    public function dashboard(): Response
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
@@ -32,7 +41,7 @@ class AdminController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function editUserRoles(User $user, Request $request)
+    public function editUserRoles(User $user, Request $request): Response
     {
         $form = $this->createForm(UserRolesType::class, $user);
         $form->handleRequest($request);

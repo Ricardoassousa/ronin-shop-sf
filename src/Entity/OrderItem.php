@@ -68,7 +68,7 @@ class OrderItem
     /**
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -76,7 +76,7 @@ class OrderItem
     /**
      * @return OrderShop
      */
-    public function getOrderShop()
+    public function getOrderShop(): OrderShop
     {
         return $this->orderShop;
     }
@@ -86,7 +86,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setOrderShop(OrderShop $orderShop)
+    public function setOrderShop(OrderShop $orderShop): self
     {
         $this->orderShop = $orderShop;
         return $this;
@@ -95,7 +95,7 @@ class OrderItem
     /**
      * @return Product
      */
-    public function getProduct()
+    public function getProduct(): Product
     {
         return $this->product;
     }
@@ -105,7 +105,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setProduct(Product $product)
+    public function setProduct(Product $product): self
     {
         $this->product = $product;
         return $this;
@@ -114,7 +114,7 @@ class OrderItem
     /**
      * @return float
      */
-    public function getUnitPrice()
+    public function getUnitPrice(): float
     {
         return $this->unitPrice;
     }
@@ -124,7 +124,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setUnitPrice(float $unitPrice)
+    public function setUnitPrice(float $unitPrice): self
     {
         $this->unitPrice = $unitPrice;
         return $this;
@@ -133,7 +133,7 @@ class OrderItem
     /**
      * @return float
      */
-    public function getSubtotal()
+    public function getSubtotal(): float
     {
         return $this->subtotal;
     }
@@ -143,7 +143,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setSubtotal(float $subtotal)
+    public function setSubtotal(float $subtotal): self
     {
         $this->subtotal = $subtotal;
         return $this;
@@ -152,7 +152,7 @@ class OrderItem
     /**
      * @return float
      */
-    public function getDiscount()
+    public function getDiscount(): float
     {
         return $this->discount;
     }
@@ -162,7 +162,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setDiscount(float $discount)
+    public function setDiscount(float $discount): self
     {
         $this->discount = $discount;
         return $this;
@@ -171,7 +171,7 @@ class OrderItem
     /**
      * @return int
      */
-    public function getQuantity()
+    public function getQuantity(): int
     {
         return $this->quantity;
     }
@@ -181,7 +181,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setQuantity(int $quantity)
+    public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
         return $this;
@@ -190,7 +190,7 @@ class OrderItem
     /**
      * @return Datetime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): Datetime
     {
         return $this->createdAt;
     }
@@ -200,7 +200,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setCreatedAt(Datetime $createdAt)
+    public function setCreatedAt(Datetime $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -209,7 +209,7 @@ class OrderItem
     /**
      * @return Datetime
      */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): Datetime
     {
         return $this->updatedAt;
     }
@@ -219,7 +219,7 @@ class OrderItem
      *
      * @return $this
      */
-    public function setUpdatedAt(Datetime $updatedAt)
+    public function setUpdatedAt(Datetime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
         return $this;
