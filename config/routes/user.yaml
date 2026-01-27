@@ -25,3 +25,15 @@ admin_dashboard:
 admin_user_edit:
     path: /admin/user/{id}/edit
     controller: App\Controller\AdminController::editUserRoles
+
+admin_orders_list:
+    path: /admin/orders
+    controller: App\Controller\AdminController::listOrdersAction
+
+admin_order_show:
+    path: /admin/orders/show/{id}
+    controller: App\Controller\AdminController::showOrderAction
+
+admin_order_edit:
+    path: /admin/orders/{id}/edit
+    controller: App\Controller\AdminController::editOrderAction
