@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Orders List</h1>
+
+        {% if pagination|length > 0 %}
+            <ul class="list-group">
+                {% for order in pagination %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>#{{ order.id }}</strong> – {{ order.user.email }}<br>
+                            <small class="text-muted">
+                                {{ order.createdAt|date('d/m/Y H:i') }}
+                            </small>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge
+                                {% if order.status == 'paid' %}bg-success
+                                {% elseif order.status == 'pending' %}bg-warning
+                                {% elseif order.status == 'cancelled' %}bg-danger
+                                {% else %}bg-secondary{% endif %}
+                            ">
+                                {{ order.status|capitalize }}
+                            </span>
+
+                            <a href="{{ path('admin_order_show', { id: order.id }) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                View details
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        {% else %}
+            <div class="alert alert-light border text-center">
+                No orders found.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

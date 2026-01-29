@@ -79,9 +79,9 @@ The Ecommerce application implements the following main features:
 - [x] Update stock (optional)
 
 ### Order Management (Admin)
-- [ ] List orders
-- [ ] View order details
-- [ ] Change order status
+- [x] List orders
+- [x] View order details
+- [x] Change order status
 
 ### Emails (Extra)
 - [ ] Send order confirmation email
