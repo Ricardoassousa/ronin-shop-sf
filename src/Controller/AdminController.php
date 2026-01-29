@@ -6,6 +6,7 @@ use App\Entity\OrderShop;
 use App\Entity\User;
 use App\Form\UserRolesType;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,18 +24,56 @@ use Symfony\Component\Routing\Annotation\Route;
 class AdminController extends AbstractController
 {
     /**
-     * Displays the admin dashboard with the list of all users and the most recent orders.
+     * Displays the admin dashboard with the list of the latest registered users
+     * and the most recent orders.
      *
      * @return Response
      */
     public function dashboard(EntityManagerInterface $em): Response
     {
-        $users = $em->getRepository(User::class)->findAll();
+        $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC'], 3);
         $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC'], 5);
 
         return $this->render('admin/dashboard.html.twig', [
             'users' => $users,
             'orders' => $orders,
+        ]);
+    }
+
+    /**
+     * Displays a paginated list of users in the admin panel.
+     *
+     * This method retrieves User entities from the database, ordered by their
+     * identifier in descending order (most recent users first), and paginates
+     * the results using KnpPaginator.
+     *
+     * It is intended for administrative users to browse and manage registered
+     * users of the e-commerce platform.
+     *
+     * Each user entry may display basic account information such as email,
+     * roles, and optional customer profile details. Additional actions
+     * (e.g. editing user roles) can be accessed from the list.
+     *
+     * The paginated user list is passed to the Twig template
+     * 'admin/list_users.html.twig' for rendering.
+     *
+     * @param EntityManagerInterface $em
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return Response
+     */
+    public function listUsersAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    {
+        $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC']);
+
+        $pagination = $paginator->paginate(
+            $users,
+            $request->query->getInt('page', 1),
+            10
+        );
+
+        return $this->render('admin/list_users.html.twig', [
+            'pagination' => $pagination
         ]);
     }
 
@@ -54,7 +93,7 @@ class AdminController extends AbstractController
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'User roles updated successfully!');
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('admin_users_list');
         }
 
         return $this->render('admin/edit_user_roles.html.twig', [
@@ -79,16 +118,23 @@ class AdminController extends AbstractController
      * list format, optionally showing badges for order status, creation date,
      * and associated user information.
      *
+     * @param EntityManagerInterface $em
+     * @param PaginatorInterface $paginator
+     * @param Request $request
      * @return Response
      */
-    public function listOrdersAction(): Response
+    public function listOrdersAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
-        $orders = $this->getDoctrine()
-            ->getRepository(OrderShop::class)
-            ->findBy([], ['createdAt' => 'DESC']);
+        $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC']);
+
+        $pagination = $paginator->paginate(
+            $orders,
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('admin/list_orders.html.twig', [
-            'orders' => $orders
+            'pagination' => $pagination
         ]);
     }
 
