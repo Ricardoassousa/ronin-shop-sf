@@ -1,0 +1,71 @@
+App\Entity\Product:
+    properties:
+
+        name:
+            - NotBlank:
+                message: "Product name cannot be empty"
+            - Length:
+                min: 2
+                max: 150
+                minMessage: "Product name must have at least {{ limit }} characters"
+                maxMessage: "Product name cannot exceed {{ limit }} characters"
+
+        sku:
+            - NotBlank:
+                message: "SKU cannot be empty"
+            - Length:
+                max: 50
+                maxMessage: "SKU cannot exceed {{ limit }} characters"
+            - Regex:
+                pattern: '/^[A-Z0-9\-]+$/'
+                message: "SKU can contain only uppercase letters, numbers and hyphens"
+
+        shortDescription:
+            - NotBlank:
+                message: "Short description cannot be empty"
+            - Length:
+                max: 255
+                maxMessage: "Short description cannot exceed {{ limit }} characters"
+
+        description:
+            - NotBlank:
+                message: "Description cannot be empty"
+            - Length:
+                max: 5000
+                maxMessage: "Description cannot exceed {{ limit }} characters"
+
+        price:
+            - NotNull:
+                message: "Price is required"
+            - Positive:
+                message: "Price must be greater than zero"
+
+        discountPrice:
+            - PositiveOrZero:
+                message: "Discount price must be zero or greater"
+
+        stock:
+            - NotNull:
+                message: "Stock quantity is required"
+            - GreaterThanOrEqual:
+                value: 0
+                message: "Stock quantity cannot be negative"
+
+        isActive:
+            - Type:
+                type: bool
+                message: "Invalid value for active status"
+
+        imageFile:
+            - Image:
+                maxSize: 5M
+                mimeTypes:
+                    - image/jpeg
+                    - image/png
+                    - image/webp
+                mimeTypesMessage: "Please upload a valid image (JPG, PNG or WEBP)"
+
+        category:
+            - Type:
+                type: App\Entity\Category
+                message: "Invalid category selected"

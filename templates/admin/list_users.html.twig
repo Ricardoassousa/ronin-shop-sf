@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Users List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Users List</h1>
+
+        {% if pagination|length > 0 %}
+            <ul class="list-group">
+                {% for user in pagination %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ user.email }}</strong><br>
+
+                            {% if user.customerProfile is not null %}
+                                <small class="text-muted d-block">
+                                    {{ user.customerProfile.firstName }} {{ user.customerProfile.surname }}
+                                    {% if user.customerProfile.phone %} - {{ user.customerProfile.phone }}{% endif %}
+                                </small>
+                                {% if user.customerProfile.country %}
+                                    <small class="text-muted d-block">
+                                        {{ user.customerProfile.city }} {{ user.customerProfile.country }}
+                                    </small>
+                                {% endif %}
+                            {% endif %}
+
+                            <small class="text-muted d-block">
+                                Roles: {{ user.roles|join(', ') }}
+                            </small>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ path('admin_user_edit', { id: user.id }) }}" 
+                                class="btn btn-sm btn-outline-primary">
+                                Edit roles
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        {% else %}
+            <div class="alert alert-light border text-center">
+                No users found.
+            </div>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
