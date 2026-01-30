@@ -29,7 +29,7 @@ class AdminController extends AbstractController
      *
      * @return Response
      */
-    public function dashboard(EntityManagerInterface $em): Response
+    public function dashboardAction(EntityManagerInterface $em): Response
     {
         $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC'], 3);
         $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC'], 5);
@@ -84,7 +84,7 @@ class AdminController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function editUserRoles(User $user, Request $request): Response
+    public function editUserRolesAction(User $user, Request $request): Response
     {
         $form = $this->createForm(UserRolesType::class, $user);
         $form->handleRequest($request);

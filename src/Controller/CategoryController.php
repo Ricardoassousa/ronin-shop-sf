@@ -34,7 +34,7 @@ class CategoryController extends AbstractController
      * @param PaginatorInterface $paginator
      * @return Response
      */
-    public function index(EntityManagerInterface $em): Response
+    public function indexAction(EntityManagerInterface $em): Response
     {
         $categories = $em->getRepository(Category::class)->findAll();
 
@@ -50,7 +50,7 @@ class CategoryController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function newAction(Request $request, EntityManagerInterface $em): Response
     {
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
@@ -78,7 +78,7 @@ class CategoryController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function edit(Request $request, Category $category, EntityManagerInterface $em): Response
+    public function editAction(Request $request, Category $category, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
@@ -106,7 +106,7 @@ class CategoryController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function delete(Request $request, Category $category, EntityManagerInterface $em): Response
+    public function deleteAction(Request $request, Category $category, EntityManagerInterface $em): Response
     {
         $emptyCategory = count($category->getProducts()) < 1;
         if ($emptyCategory) {
@@ -125,7 +125,7 @@ class CategoryController extends AbstractController
      * @param Category
      * @return Response
      */
-    public function show(Category $category): Response
+    public function showAction(Category $category): Response
     {
         return $this->render('category/show.html.twig', [
             'category' => $category

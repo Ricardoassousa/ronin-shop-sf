@@ -38,13 +38,15 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        # Frontoffice (auth user)
         - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/product, roles: ROLE_ADMIN }
-        - { path: ^/category, roles: ROLE_ADMIN }
+        - { path: ^/customer-profile, roles: ROLE_USER }
         - { path: ^/catalog, roles: ROLE_USER }
         - { path: ^/cart, roles: ROLE_USER }
         - { path: ^/checkout, roles: ROLE_USER }
+
+        # Backoffice (admin)
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
     encoders:
         App\Entity\User:

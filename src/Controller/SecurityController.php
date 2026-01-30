@@ -24,7 +24,7 @@ class SecurityController extends AbstractController
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
      */
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function loginAction(AuthenticationUtils $authenticationUtils): Response
     {
         return $this->render('security/login.html.twig', [
             'last_username' => $authenticationUtils->getLastUsername(),
@@ -41,7 +41,7 @@ class SecurityController extends AbstractController
      * @return void
      * @throws LogicException
      */
-    public function logout(): void
+    public function logoutAction(): void
     {
         throw new LogicException('Intercepted by the logout firewall.');
     }

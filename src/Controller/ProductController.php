@@ -34,7 +34,7 @@ class ProductController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    public function indexAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
     {
         $productSearch = new ProductSearch();
         $searchForm = $this->createForm(ProductSearchType::class, $productSearch);
@@ -125,7 +125,7 @@ class ProductController extends AbstractController
      * @param SlugGenerator $slugGenerator
      * @return Response
      */
-    public function new(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
+    public function newAction(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
@@ -161,7 +161,7 @@ class ProductController extends AbstractController
      * @param SlugGenerator $slugGenerator
      * @return Response
      */
-    public function edit(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
+    public function editAction(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
         $form = $this->createForm(ProductType::class, $product, [
             'is_edit' => true,
@@ -196,7 +196,7 @@ class ProductController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function delete(Request $request, Product $product, EntityManagerInterface $em): Response
+    public function deleteAction(Request $request, Product $product, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
             $em->remove($product);
@@ -217,7 +217,7 @@ class ProductController extends AbstractController
      * @param string $slug
      * @return Response
      */
-    public function show(Product $product, string $slug): Response
+    public function showAction(Product $product, string $slug): Response
     {
         if ($product->getSlug() != $slug) {
             return $this->redirectToRoute('product_show', [

@@ -26,7 +26,7 @@ class RegistrationController extends AbstractController
      * @param EntityManagerInterface $em
      * @return Response
      */
-    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
+    public function registerAction(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $em): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);

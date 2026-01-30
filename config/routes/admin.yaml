@@ -1,0 +1,23 @@
+admin_dashboard:
+    path: /
+    controller: App\Controller\AdminController::dashboardAction
+
+admin_users_list:
+    path: /users
+    controller: App\Controller\AdminController::listUsersAction
+
+admin_user_edit:
+    path: /user/{id}/edit
+    controller: App\Controller\AdminController::editUserRolesAction
+
+admin_orders_list:
+    path: /orders
+    controller: App\Controller\AdminController::listOrdersAction
+
+admin_order_show:
+    path: /order/{id}
+    controller: App\Controller\AdminController::showOrderAction
+
+admin_order_edit:
+    path: /order/{id}/edit
+    controller: App\Controller\AdminController::editOrderAction

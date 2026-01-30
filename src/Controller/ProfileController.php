@@ -46,7 +46,7 @@ class ProfileController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function editProfile(Request $request): Response
+    public function editProfileAction(Request $request): Response
     {
         $user = $this->getUser();
         $cart = $this->em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);

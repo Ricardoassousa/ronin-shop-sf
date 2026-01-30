@@ -1,43 +1,19 @@
 app_register:
     path: /register
-    controller: App\Controller\RegistrationController::register
+    controller: App\Controller\RegistrationController::registerAction
 
 app_login:
     path: /login
-    controller: App\Controller\SecurityController::login
+    controller: App\Controller\SecurityController::loginAction
 
 app_logout:
     path: /logout
-    controller: App\Controller\SecurityController::logout
+    controller: App\Controller\SecurityController::logoutAction
 
 app_profile:
     path: /profile
-    controller: App\Controller\ProfileController::editProfile
+    controller: App\Controller\ProfileController::editProfileAction
 
 app_customer_profile:
     path: /customer-profile
-    controller: App\Controller\CustomerProfileController::edit
-
-admin_dashboard:
-    path: /admin
-    controller: App\Controller\AdminController::dashboard
-
-admin_users_list:
-    path: /admin/users
-    controller: App\Controller\AdminController::listUsersAction
-
-admin_user_edit:
-    path: /admin/user/{id}/edit
-    controller: App\Controller\AdminController::editUserRoles
-
-admin_orders_list:
-    path: /admin/orders
-    controller: App\Controller\AdminController::listOrdersAction
-
-admin_order_show:
-    path: /admin/orders/show/{id}
-    controller: App\Controller\AdminController::showOrderAction
-
-admin_order_edit:
-    path: /admin/orders/{id}/edit
-    controller: App\Controller\AdminController::editOrderAction
+    controller: App\Controller\CustomerProfileController::editAction

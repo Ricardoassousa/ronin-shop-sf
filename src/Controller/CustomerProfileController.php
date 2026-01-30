@@ -44,16 +44,11 @@ class CustomerProfileController extends AbstractController
      * @return Response
      * @throws AccessDeniedException
      */
-    public function edit(Request $request, EntityManagerInterface $em): Response
+    public function editAction(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
         $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);
         $cartItems = $cart ? $cart->getItems() : [];
-
-        if (!$user) {
-            throw $this->createAccessDeniedException('You need to be logged in to access this page.');
-        }
-
         $profile = $user->getCustomerProfile() ?? null;
         if ($profile == null) {
             $profile = new CustomerProfile();

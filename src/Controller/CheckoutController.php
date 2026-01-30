@@ -47,10 +47,6 @@ class CheckoutController extends AbstractController
     public function addressAction(Request $request, EntityManagerInterface $em, CartService $cartService): Response
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
         $cart = $em->getRepository(Cart::class)->findOneBy([
             'user' => $user,
             'status' => Cart::STATUS_ACTIVE
@@ -97,10 +93,6 @@ class CheckoutController extends AbstractController
     public function summaryAction(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
         $cart = $em->getRepository(Cart::class)->findOneBy([
             'user' => $user,
             'status' => Cart::STATUS_ACTIVE
@@ -148,10 +140,6 @@ class CheckoutController extends AbstractController
     public function confirmAction(Request $request, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
         $cart = $em->getRepository(Cart::class)->findOneBy([
             'user' => $user,
             'status' => Cart::STATUS_ACTIVE
