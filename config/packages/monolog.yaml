@@ -1,6 +1,5 @@
 monolog:
-    channels:
-        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+    channels: ['order', 'payment', 'security', 'stock', 'deprecation']
 
 when@dev:
     monolog:
@@ -9,11 +8,31 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
-                channels: ["!event"]
+                channels: ["!event", "!order", "!payment", "!security", "!stock"]
             console:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine", "!console"]
+            order:
+                type: stream
+                path: "%kernel.logs_dir%/order.dev.log"
+                level: debug
+                channels: ["order"]
+            payment:
+                type: stream
+                path: "%kernel.logs_dir%/payment.dev.log"
+                level: debug
+                channels: ["payment"]
+            security:
+                type: stream
+                path: "%kernel.logs_dir%/security.dev.log"
+                level: debug
+                channels: ["security"]
+            stock:
+                type: stream
+                path: "%kernel.logs_dir%/stock.dev.log"
+                level: debug
+                channels: ["stock"]
 
 when@test:
     monolog:
@@ -37,19 +56,39 @@ when@prod:
                 action_level: error
                 handler: nested
                 excluded_http_codes: [404, 405]
-                channels: ["!deprecation"]
                 buffer_size: 50 # How many messages should be saved? Prevent memory leaks
+                channels: ["!deprecation", "!order", "!payment", "!security", "!stock"]
             nested:
                 type: stream
                 path: php://stderr
                 level: debug
                 formatter: monolog.formatter.json
-            console:
-                type: console
-                process_psr_3_messages: false
-                channels: ["!event", "!doctrine"]
+            order:
+                type: stream
+                path: "%kernel.logs_dir%/order.log"
+                level: info
+                channels: ["order"]
+                formatter: monolog.formatter.json
+            payment:
+                type: stream
+                path: "%kernel.logs_dir%/payment.log"
+                level: info
+                channels: ["payment"]
+                formatter: monolog.formatter.json
+            security:
+                type: stream
+                path: "%kernel.logs_dir%/security.log"
+                level: notice
+                channels: ["security"]
+                formatter: monolog.formatter.json
+            stock:
+                type: stream
+                path: "%kernel.logs_dir%/stock.log"
+                level: warning
+                channels: ["stock"]
+                formatter: monolog.formatter.json
             deprecation:
                 type: stream
-                channels: [deprecation]
                 path: php://stderr
+                channels: [deprecation]
                 formatter: monolog.formatter.json
