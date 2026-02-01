@@ -12,6 +12,14 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    App\Logger\AnalyticsLogger:
+        arguments:
+            $logger: '@monolog.logger.analytics'
+
+    App\Logger\CartLogger:
+        arguments:
+            $logger: '@monolog.logger.cart'
+
     App\Logger\OrderLogger:
         arguments:
             $logger: '@monolog.logger.order'
