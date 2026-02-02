@@ -1,7 +1,7 @@
 product_index:
     path: /
     controller: App\Controller\ProductController::indexAction
-    methods: [GET]
+    methods: [GET, POST]
 
 product_new:
     path: /new

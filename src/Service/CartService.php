@@ -6,7 +6,10 @@ use App\Entity\Cart;
 use App\Entity\CartItem;
 use App\Entity\Product;
 use App\Entity\User;
+use App\Logger\CartLogger;
+use App\Logger\StockLogger;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Exception\LogicException;
 use Symfony\Component\HttpFoundation\Exception\InvalidArgumentException;
 
@@ -22,11 +25,27 @@ class CartService
     private $em;
 
     /**
-     *
+     * @var CartLogger
      */
-    public function __construct(EntityManagerInterface $em)
+    private $cartLogger;
+
+    /**
+     * @var StockLogger
+     */
+    private $stockLogger;
+
+    /**
+     * CartService constructor.
+     *
+     * @param EntityManagerInterface $em
+     * @param CartLogger $cartLogger
+     * @param StockLogger $stockLogger
+     */
+    public function __construct(EntityManagerInterface $em, CartLogger $cartLogger, StockLogger $stockLogger)
     {
         $this->em = $em;
+        $this->cartLogger = $cartLogger;
+        $this->stockLogger = $stockLogger;
     }
 
     /**
@@ -37,6 +56,19 @@ class CartService
      */
     public function getCart(User $user): Cart
     {
+        $this->cartLogger->log(
+            'Active cart initialized',
+            [
+                'user_id' => $user->getId(),
+                'cart_id' => $cart->getId(),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ],
+            LogLevel::NOTICE
+        );
+
         $cart = $this->em->getRepository(Cart::class)->findOneBy([
             'user' => $user,
             'status' => Cart::STATUS_ACTIVE
@@ -49,6 +81,18 @@ class CartService
 
             $this->em->persist($cart);
             $this->em->flush();
+
+            $this->cartLogger->log(
+                'Created new active cart for user',
+                [
+                    'user_id' => $user->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
         }
 
         return $cart;
@@ -67,11 +111,38 @@ class CartService
     {
         // Quantity validation
         if ($quantity < 1) {
+            $this->stockLogger->log(
+                'Invalid quantity to add to cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'quantity' => $quantity,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::ERROR
+            );
             throw new InvalidArgumentException('Quantity must be at least 1.');
         }
 
         // Check available stock
         if ($product->getStock() < $quantity) {
+            $this->stockLogger->log(
+                'Not enough stock for the product',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'requested_quantity' => $quantity,
+                    'available_stock' => $product->getStock(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::ERROR
+            );
             throw new LogicException('Not enough stock for this product.');
         }
 
@@ -89,10 +160,38 @@ class CartService
 
             // Check stock again
             if ($newQuantity > $product->getStock()) {
+                $this->stockLogger->log(
+                    'Not enough stock to add more units of product',
+                    [
+                        'user_id' => $user->getId(),
+                        'product_id' => $product->getId(),
+                        'requested_quantity' => $newQuantity,
+                        'available_stock' => $product->getStock(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::ERROR
+                );
                 throw new LogicException('Not enough stock to add more units.');
             }
 
             $item->setQuantity($newQuantity);
+
+            $this->cartLogger->log(
+                'Updated product quantity in cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'new_quantity' => $newQuantity,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
         } else {
             // Create new cart item
             $item = new CartItem();
@@ -101,6 +200,20 @@ class CartService
             $item->setQuantity($quantity);
 
             $this->em->persist($item);
+
+            $this->cartLogger->log(
+                'Added product to cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'quantity' => $quantity,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
         }
 
         // Persist changes
@@ -120,35 +233,97 @@ class CartService
     {
         $cart = $this->getCart($user);
 
-        // Find the item directly
         $item = $this->em->getRepository(CartItem::class)->findOneBy([
             'cart' => $cart,
             'product' => $product
         ]);
 
         if (!$item) {
+            $this->cartLogger->log(
+                'Attempt to remove product not present in cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
             throw new LogicException('Product not found in the cart.');
         }
 
-        // Validate quantity if provided
         if ($quantity != null) {
             if ($quantity < 1) {
+                $this->cartLogger->log(
+                    'Invalid quantity provided to remove product from cart',
+                    [
+                        'user_id' => $user->getId(),
+                        'product_id' => $product->getId(),
+                        'quantity' => $quantity,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::ERROR
+                );
+
                 throw new InvalidArgumentException('Quantity to remove must be at least 1.');
             }
 
             if ($quantity < $item->getQuantity()) {
-                // Remove only part of the quantity
                 $item->setQuantity($item->getQuantity() - $quantity);
+
+                $this->cartLogger->log(
+                    'Reduced product quantity in cart',
+                    [
+                        'user_id' => $user->getId(),
+                        'product_id' => $product->getId(),
+                        'removed_quantity' => $quantity,
+                        'remaining_quantity' => $item->getQuantity(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
             } else {
-                // Remove the entire item
                 $this->em->remove($item);
+
+                $this->cartLogger->log(
+                    'Removed product entirely from cart',
+                    [
+                        'user_id' => $user->getId(),
+                        'product_id' => $product->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
             }
         } else {
-            // No quantity defined → remove the entire item
             $this->em->remove($item);
+
+            $this->cartLogger->log(
+                'Removed product from cart (no quantity specified)',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::NOTICE
+            );
         }
 
-        // Persist changes
         $this->em->flush();
     }
 
@@ -158,7 +333,6 @@ class CartService
      * @param User $user
      * @param Product $product
      * @param int $quantity
-     * @throws LogicException
      * @throws LogicException
      */
     public function updateQuantity(User $user, Product $product, int $quantity): void
@@ -171,24 +345,75 @@ class CartService
         ]);
 
         if (!$item) {
+            $this->cartLogger->log(
+                'Attempt to update quantity for product not in cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
             throw new LogicException('Product not found in the cart.');
         }
 
-        // If the quantity is <= 0, remove the item
         if ($quantity <= 0) {
+            $this->cartLogger->log(
+                'Quantity set to zero or less, removing product from cart',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::NOTICE
+            );
+
             $this->removeProduct($user, $product);
             return;
         }
 
-        // Check stock
         if ($quantity > $product->getStock()) {
+            $this->stockLogger->log(
+                'Insufficient stock while updating cart quantity',
+                [
+                    'user_id' => $user->getId(),
+                    'product_id' => $product->getId(),
+                    'requested_quantity' => $quantity,
+                    'available_stock' => $product->getStock(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
             throw new LogicException('Not enough stock for this quantity.');
         }
 
-        // Update quantity
         $item->setQuantity($quantity);
-
         $this->em->flush();
+
+        $this->cartLogger->log(
+            'Updated product quantity in cart',
+            [
+                'user_id' => $user->getId(),
+                'product_id' => $product->getId(),
+                'new_quantity' => $quantity,
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ],
+            LogLevel::INFO
+        );
     }
 
     /**
@@ -204,7 +429,22 @@ class CartService
 
         foreach ($cart->getItems() as $item) {
             $product = $item->getProduct();
-            if (!$product) continue; // Ignore invalid items
+
+            if (!$product) {
+                $this->cartLogger->log(
+                    'Cart item without product detected',
+                    [
+                        'user_id' => $user->getId(),
+                        'cart_item_id' => $item->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+                continue;
+            }
 
             $price = max(0, $product->getPrice());
             $quantity = max(0, $item->getQuantity());

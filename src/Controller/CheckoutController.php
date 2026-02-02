@@ -7,13 +7,17 @@ use App\Entity\CartAddress;
 use App\Entity\OrderAddress;
 use App\Entity\OrderItem;
 use App\Entity\OrderShop;
+use App\Logger\OrderLogger;
+use App\Logger\PaymentLogger;
 use App\Service\CartService;
 use App\Form\CartAddressType;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Controller responsible for managing the checkout process.
@@ -42,40 +46,105 @@ class CheckoutController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param CartService $cartService
+     * @param OrderLogger $orderLogger
      * @return Response
      */
-    public function addressAction(Request $request, EntityManagerInterface $em, CartService $cartService): Response
+    public function addressAction(Request $request, EntityManagerInterface $em, CartService $cartService, OrderLogger $orderLogger): Response
     {
-        $user = $this->getUser();
-        $cart = $em->getRepository(Cart::class)->findOneBy([
-            'user' => $user,
-            'status' => Cart::STATUS_ACTIVE
-        ]);
-        if ($cart == null || count($cart->getItems()) == 0) {
-            return $this->redirectToRoute('cart_show');
+        try {
+            $user = $this->getUser();
+
+            $orderLogger->log(
+                'Checkout address step accessed',
+                [
+                    'user_id' => $user ? $user->getId() : null,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            $cart = $em->getRepository(Cart::class)->findOneBy([
+                'user' => $user,
+                'status' => Cart::STATUS_ACTIVE
+            ]);
+
+            if ($cart == null || count($cart->getItems()) == 0) {
+                $orderLogger->log(
+                    'Address step with empty or missing cart',
+                    [
+                        'user_id' => $user ? $user->getId() : null,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                return $this->redirectToRoute('cart_show');
+            }
+
+            $cartAddress = $cart->getCartAddress();
+            if ($cartAddress == null) {
+                $cartAddress = new CartAddress();
+
+                $orderLogger->log(
+                    'No cart address found, creating new one',
+                    [
+                        'cart_id' => $cart->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::DEBUG
+                );
+            }
+
+            $form = $this->createForm(CartAddressType::class, $cartAddress);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+
+                $cartAddress->setCart($cart);
+                $em->persist($cartAddress);
+                $em->flush();
+
+                $orderLogger->log(
+                    'Checkout address saved successfully',
+                    [
+                        'cart_id' => $cart->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
+
+                return $this->redirectToRoute('checkout_summary');
+            }
+
+            return $this->render('checkout/address.html.twig', [
+                'form' => $form->createView(),
+                'cart' => $cart
+            ]);
+
+        } catch (Throwable $e) {
+
+            $orderLogger->log(
+                'Error during checkout address step',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        $cartAddress = $cart->getCartAddress();
-        if ($cartAddress == null) {
-            $cartAddress = new CartAddress();
-        }
-
-        $form = $this->createForm(CartAddressType::class, $cartAddress);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $cartAddress->setCart($cart);
-            $em->persist($cartAddress);
-            $em->flush();
-
-            return $this->redirectToRoute('checkout_summary');
-        }
-
-        return $this->render('checkout/address.html.twig', [
-            'form' => $form->createView(),
-            'cart' => $cart
-        ]);
     }
 
     /**
@@ -88,30 +157,84 @@ class CheckoutController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param OrderLogger $orderLogger
      * @return Response
      */
-    public function summaryAction(Request $request, EntityManagerInterface $em): Response
+    public function summaryAction(Request $request, EntityManagerInterface $em, OrderLogger $orderLogger): Response
     {
-        $user = $this->getUser();
-        $cart = $em->getRepository(Cart::class)->findOneBy([
-            'user' => $user,
-            'status' => Cart::STATUS_ACTIVE
-        ]);
-        if ($cart == null || count($cart->getItems()) == 0) {
-            return $this->redirectToRoute('cart_show');
-        }
+        try {
+            $user = $this->getUser();
 
-        $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
-            'cart' => $cart
-        ]);
-        if ($cartAddress == null) {
-            return $this->redirectToRoute('cart_show');
-        }
+            $orderLogger->log(
+                'Checkout summary step accessed',
+                [
+                    'user_id' => $user ? $user->getId() : null,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
 
-        return $this->render('checkout/summary.html.twig', [
-            'cart' => $cart,
-            'cartAddress' => $cartAddress
-        ]);
+            $cart = $em->getRepository(Cart::class)->findOneBy([
+                'user' => $user,
+                'status' => Cart::STATUS_ACTIVE
+            ]);
+
+            if ($cart == null || count($cart->getItems()) == 0) {
+                $orderLogger->log(
+                    'Summary step with empty or missing cart',
+                    [
+                        'user_id' => $user ? $user->getId() : null,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                return $this->redirectToRoute('cart_show');
+            }
+
+            $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
+                'cart' => $cart
+            ]);
+
+            if ($cartAddress == null) {
+                $orderLogger->log(
+                    'Summary step accessed without address',
+                    [
+                        'cart_id' => $cart->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                return $this->redirectToRoute('cart_show');
+            }
+
+            return $this->render('checkout/summary.html.twig', [
+                'cart' => $cart,
+                'cartAddress' => $cartAddress
+            ]);
+
+        } catch (Throwable $e) {
+
+            $orderLogger->log(
+                'Error during checkout summary step',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
     /**
@@ -135,62 +258,186 @@ class CheckoutController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param OrderLogger $orderLogger
+     * @param PaymentLogger $paymentLogger
      * @return Response
      */
-    public function confirmAction(Request $request, EntityManagerInterface $em): Response
+    public function confirmAction(Request $request, EntityManagerInterface $em, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
     {
         $user = $this->getUser();
-        $cart = $em->getRepository(Cart::class)->findOneBy([
-            'user' => $user,
-            'status' => Cart::STATUS_ACTIVE
-        ]);
-        if ($cart == null || count($cart->getItems()) == 0) {
-            return $this->redirectToRoute('cart_show');
-        }
 
-        $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
-            'cart' => $cart
-        ]);
-        if ($cartAddress == null) {
-            return $this->redirectToRoute('cart_show');
-        }
+        try {
+            $orderLogger->log(
+                'Checkout confirmation started',
+                [
+                    'user_id' => $user ? $user->getId() : null,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
 
-        $cart->setStatus(Cart::STATUS_ORDERED);
+            $cart = $em->getRepository(Cart::class)->findOneBy([
+                'user' => $user,
+                'status' => Cart::STATUS_ACTIVE
+            ]);
 
-        $order = new OrderShop();
-        $order->setUser($user);
-        $order->setStatus(OrderShop::STATUS_PENDING);
-        $em->persist($order);
+            if ($cart == null || count($cart->getItems()) == 0) {
+                $orderLogger->log(
+                    'Confirm step with empty cart',
+                    [
+                        'user_id' => $user ? $user->getId() : null,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
 
-        $orderAddress = new OrderAddress();
-        $orderAddress->setOrderShop($order);
-        $orderAddress->setPrimaryAddress($cartAddress->getPrimaryAddress());
-        $orderAddress->setSecondaryAddress($cartAddress->getSecondaryAddress());
-        $orderAddress->setCity($cartAddress->getCity());
-        $orderAddress->setState($cartAddress->getState());
-        $orderAddress->setPostalCode($cartAddress->getPostalCode());
-        $orderAddress->setCountry($cartAddress->getCountry());
-        $em->persist($orderAddress);
-
-        foreach ($cart->getItems() as $cartItem) {
-
-            $product = $cartItem->getProduct();
-            if ($product->getStock() < $cartItem->getQuantity()) {
                 return $this->redirectToRoute('cart_show');
             }
-            $product->setStock($product->getStock() - $cartItem->getQuantity());
 
-            $item = new OrderItem();
-            $item->setOrderShop($order);
-            $item->setProduct($product);
-            $item->setUnitPrice($product->getPrice());
-            $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
-            $item->setQuantity($cartItem->getQuantity());
-            $em->persist($item);
+            $cartAddress = $em->getRepository(CartAddress::class)->findOneBy([
+                'cart' => $cart
+            ]);
+
+            if ($cartAddress == null) {
+                $orderLogger->log(
+                    'Confirm step without address',
+                    [
+                        'cart_id' => $cart->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                return $this->redirectToRoute('cart_show');
+            }
+
+            $cart->setStatus(Cart::STATUS_ORDERED);
+
+            $order = new OrderShop();
+            $order->setUser($user);
+            $order->setStatus(OrderShop::STATUS_PENDING);
+            $em->persist($order);
+
+            $orderLogger->log(
+                'Order entity created',
+                [
+                    'order_id' => $order->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::NOTICE
+            );
+
+            $orderAddress = new OrderAddress();
+            $orderAddress->setOrderShop($order);
+            $orderAddress->setPrimaryAddress($cartAddress->getPrimaryAddress());
+            $orderAddress->setSecondaryAddress($cartAddress->getSecondaryAddress());
+            $orderAddress->setCity($cartAddress->getCity());
+            $orderAddress->setState($cartAddress->getState());
+            $orderAddress->setPostalCode($cartAddress->getPostalCode());
+            $orderAddress->setCountry($cartAddress->getCountry());
+            $em->persist($orderAddress);
+
+            foreach ($cart->getItems() as $cartItem) {
+
+                $product = $cartItem->getProduct();
+
+                if ($product->getStock() < $cartItem->getQuantity()) {
+                    $orderLogger->log(
+                        'Insufficient stock during checkout',
+                        [
+                            'product_id' => $product->getId(),
+                            'requested' => $cartItem->getQuantity(),
+                            'available' => $product->getStock(),
+                            'source' => [
+                                'method' => __METHOD__,
+                                'line' => __LINE__
+                            ]
+                        ],
+                        LogLevel::WARNING
+                    );
+
+                    return $this->redirectToRoute('cart_show');
+                }
+
+                $product->setStock($product->getStock() - $cartItem->getQuantity());
+
+                $item = new OrderItem();
+                $item->setOrderShop($order);
+                $item->setProduct($product);
+                $item->setUnitPrice($product->getPrice());
+                $item->setQuantity($cartItem->getQuantity());
+                $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
+                $em->persist($item);
+
+                $orderLogger->log(
+                    'Order item added',
+                    [
+                        'order_id' => $order->getId(),
+                        'product_id' => $product->getId(),
+                        'quantity' => $item->getQuantity(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::DEBUG
+                );
+            }
+
+            $em->flush();
+
+            $orderLogger->log(
+                'Order confirmed and persisted',
+                [
+                    'order_id' => $order->getId(),
+                    'total_items' => count($cart->getItems()),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::NOTICE
+            );
+
+            $paymentLogger->log(
+                'Payment initiated for order',
+                [
+                    'order_id' => $order->getId(),
+                    'amount' => $this->getTotalPrice($cart),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->redirectToRoute('checkout_success');
+
+        } catch (Throwable $e) {
+
+            $orderLogger->log(
+                'Checkout confirmation failed',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-        $em->flush();
-
-        return $this->redirectToRoute('checkout_success');
     }
 
     /**
@@ -209,14 +456,39 @@ class CheckoutController extends AbstractController
      * If no active cart exists or the cart is empty, the user is redirected
      * back to the cart page.
      *
+     * @param OrderLogger $orderLogger
      * @return Response
      */
-    public function successAction(): Response
+    public function successAction(OrderLogger $orderLogger): Response
     {
         $user = $this->getUser();
+
         if (!$user) {
+            $orderLogger->log(
+                'Checkout success accessed without authentication',
+                [
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
             return $this->redirectToRoute('app_login');
         }
+
+        $orderLogger->log(
+            'Checkout completed successfully',
+            [
+                'user_id' => $user->getId(),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ],
+            LogLevel::NOTICE
+        );
 
         return $this->render('checkout/success.html.twig');
     }

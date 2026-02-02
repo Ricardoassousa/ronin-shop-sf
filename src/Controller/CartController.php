@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Service\CartService;
+use App\Logger\CartLogger;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Throwable;
 
 /**
  * Controller responsible for managing the shopping cart.
@@ -25,16 +27,36 @@ class CartController extends AbstractController
      * Display the user's shopping cart.
      *
      * @param CartService $cartService
+     * @param CartLogger $cartLogger
      * @return Response
      */
-    public function showAction(CartService $cartService): Response
+    public function showAction(CartService $cartService, CartLogger $cartLogger): Response
     {
-        $cart = $cartService->getCart($this->getUser());
+        try {
+            $cart = $cartService->getCart($this->getUser());
+            $total = $cartService->getTotal($this->getUser());
 
-        return $this->render('cart/show.html.twig', [
-            'cart' => $cart,
-            'total' => $cartService->getTotal($this->getUser())
-        ]);
+            $cartLogger->log('Cart viewed', [
+                'user_id' => $this->getUser()->getId(),
+                'cart_items' => count($cart->getItems()),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            return $this->render('cart/show.html.twig', [
+                'cart' => $cart,
+                'total' => $cartService->getTotal($this->getUser())
+            ]);
+
+        } catch (Throwable $e) {
+            $cartLogger->log('Unexpected error in showAction', [
+                'exception' => $e
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -45,12 +67,33 @@ class CartController extends AbstractController
      *
      * @param CartService $cartService
      * @param Product $product
+     * @param CartLogger $cartLogger
      * @return Response
      */
-    public function addAction(CartService $cartService, Product $product): Response
+    public function addAction(CartService $cartService, Product $product, CartLogger $cartLogger): Response
     {
-        $cartService->addProduct($this->getUser(), $product);
-        return $this->redirectToRoute('cart_show');
+        try {
+            $cartService->addProduct($this->getUser(), $product);
+
+            $cartLogger->log('Product added to cart', [
+                'user_id' => $this->getUser()->getId(),
+                'product_id' => $product->getId(),
+                'product_name' => $product->getName(),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            return $this->redirectToRoute('cart_show');
+
+        } catch (Throwable $e) {
+            $cartLogger->log('Unexpected error in addAction', [
+                'exception' => $e
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -62,12 +105,37 @@ class CartController extends AbstractController
      * @param CartService $cartService
      * @param Product $product
      * @param int $quantity
+     * @param CartLogger $cartLogger
      * @return Response
      */
-    public function updateAction(CartService $cartService, Product $product, int $quantity): Response
+    public function updateAction(CartService $cartService, Product $product, int $quantity, CartLogger $cartLogger): Response
     {
-        $cartService->updateQuantity($this->getUser(), $product, $quantity);
-        return $this->redirectToRoute('cart_show');
+        try {
+            $cartService->updateQuantity($this->getUser(), $product, $quantity);
+
+            $cartLogger->log('Cart product updated', [
+                'user_id' => $this->getUser()->getId(),
+                'product_id' => $product->getId(),
+                'quantity' => $quantity,
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            return $this->redirectToRoute('cart_show');
+
+        } catch (Throwable $e) {
+            $cartLogger->log('Unexpected error in updateAction', [
+                'exception' => $e,
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -77,12 +145,37 @@ class CartController extends AbstractController
      *
      * @param CartService $cartService
      * @param Product $product
+     * @param CartLogger $cartLogger
      * @return Response
      */
-    public function removeAction(CartService $cartService, Product $product): Response
+    public function removeAction(CartService $cartService, Product $product, CartLogger $cartLogger): Response
     {
-        $cartService->removeProduct($this->getUser(), $product);
-        return $this->redirectToRoute('cart_show');
+        try {
+            $cartService->removeProduct($this->getUser(), $product);
+
+            $cartLogger->log('Product removed from cart', [
+                'user_id' => $this->getUser()->getId(),
+                'product_id' => $product->getId(),
+                'product_name' => $product->getName(),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            return $this->redirectToRoute('cart_show');
+
+        } catch (Throwable $e) {
+            $cartLogger->log('Unexpected error in removeAction', [
+                'exception' => $e,
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ]);
+
+            throw $e;
+        }
     }
 
 }

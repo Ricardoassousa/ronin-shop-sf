@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Form\CategoryType;
+use App\Logger\AnalyticsLogger;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Throwable;
 
 /**
  * Controller responsible for managing product categories (CRUD).
@@ -29,18 +29,40 @@ class CategoryController extends AbstractController
     /**
      * Displays a list of all categories.
      *
-     * @param Request $request
      * @param EntityManagerInterface $em
-     * @param PaginatorInterface $paginator
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function indexAction(EntityManagerInterface $em): Response
+    public function indexAction(EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
     {
-        $categories = $em->getRepository(Category::class)->findAll();
+        try {
+            $categories = $em->getRepository(Category::class)->findAll();
 
-        return $this->render('category/index.html.twig', [
-            'categories' => $categories
-        ]);
+            $analyticsLogger->log('Category list accessed', [
+                'count' => count($categories),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ],
+                LogLevel::NOTICE
+            ]);
+
+            return $this->render('category/index.html.twig', [
+                'categories' => $categories
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log('Unexpected error in category index', [
+                'exception' => $e,
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ],
+                LogLevel::ERROR
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -48,26 +70,52 @@ class CategoryController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function newAction(Request $request, EntityManagerInterface $em): Response
+    public function newAction(Request $request, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
     {
-        $category = new Category();
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($request);
+        try {
+            $category = new Category();
+            $form = $this->createForm(CategoryType::class, $category);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $em->persist($category);
+                $em->flush();
 
-            $em->persist($category);
-            $em->flush();
+                $analyticsLogger->log(
+                    'New category created',
+                    [
+                        'category_id' => $category->getId(),
+                        'name' => $category->getName(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
 
-            return $this->redirectToRoute('category_index');
+                return $this->redirectToRoute('category_index');
+            }
+
+            return $this->render('category/new.html.twig', [
+                'category' => $category,
+                'form' => $form->createView()
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Unexpected error in category creation',
+                [
+                    'exception' => $e
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        return $this->render('category/new.html.twig', [
-            'category' => $category,
-            'form' => $form->createView()
-        ]);
     }
 
     /**
@@ -76,26 +124,51 @@ class CategoryController extends AbstractController
      * @param Request $request
      * @param Category $category
      * @param EntityManagerInterface $em
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function editAction(Request $request, Category $category, EntityManagerInterface $em): Response
+    public function editAction(Request $request, Category $category, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
     {
-        $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($request);
+        try {
+            $form = $this->createForm(CategoryType::class, $category);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $category->setUpdatedAt(new DateTime());
+                $em->flush();
 
-            $category->setUpdatedAt(new DateTime());
+                $analyticsLogger->log(
+                    'Category edited',
+                    [
+                        'category_id' => $category->getId(),
+                        'name' => $category->getName(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
 
-            $em->flush();
+                return $this->redirectToRoute('category_index');
+            }
 
-            return $this->redirectToRoute('category_index');
+            return $this->render('category/edit.html.twig', [
+                'category' => $category,
+                'form' => $form->createView()
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Unexpected error in category edit',
+                [
+                    'exception' => $e
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        return $this->render('category/edit.html.twig', [
-            'category' => $category,
-            'form' => $form->createView()
-        ]);
     }
 
     /**
@@ -104,19 +177,44 @@ class CategoryController extends AbstractController
      * @param Request $request
      * @param Category $category
      * @param EntityManagerInterface $em
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function deleteAction(Request $request, Category $category, EntityManagerInterface $em): Response
+    public function deleteAction(Request $request, Category $category, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
     {
-        $emptyCategory = count($category->getProducts()) < 1;
-        if ($emptyCategory) {
-            if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->request->get('_token'))) {
+        try {
+            $emptyCategory = count($category->getProducts()) < 1;
+            if ($emptyCategory && $this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
                 $em->remove($category);
                 $em->flush();
-            }
-        }
 
-        return $this->redirectToRoute('category_index');
+                $analyticsLogger->log(
+                    'Category deleted',
+                    [
+                        'category_id' => $category->getId(),
+                        'name' => $category->getName(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ],
+                    ],
+                    LogLevel::WARNING
+                );
+            }
+
+            return $this->redirectToRoute('category_index');
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Unexpected error in category delete',
+                [
+                    'exception' => $e
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
     /**
@@ -125,11 +223,37 @@ class CategoryController extends AbstractController
      * @param Category
      * @return Response
      */
-    public function showAction(Category $category): Response
+    public function showAction(Category $category, AnalyticsLogger $analyticsLogger): Response
     {
-        return $this->render('category/show.html.twig', [
-            'category' => $category
-        ]);
+        try {
+            $analyticsLogger->log(
+                'Category viewed',
+                [
+                    'category_id' => $category->getId(),
+                    'name' => $category->getName(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->render('category/show.html.twig', [
+                'category' => $category
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Unexpected error in category show',
+                [
+                    'exception' => $e
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
 }
