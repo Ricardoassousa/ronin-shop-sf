@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Invalid data{% endblock %}
+
+{% block body %}
+    <h1>422 - Invalid data</h1>
+    <p>Some of the submitted data is invalid.</p>
+
+    <a href="{{ path('homepage') }}">Back to homepage</a>
+{% endblock %}

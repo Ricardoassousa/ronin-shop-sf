@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Internal server error{% endblock %}
+
+{% block body %}
+    <h1>500 - Internal server error</h1>
+    <p>An unexpected error occurred on the server.</p>
+
+    <a href="{{ path('homepage') }}">Back to homepage</a>
+{% endblock %}

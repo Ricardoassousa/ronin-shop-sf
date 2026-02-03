@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Method not allowed{% endblock %}
+
+{% block body %}
+    <h1>405 - Method not allowed</h1>
+    <p>The HTTP method used is not allowed for this route.</p>
+
+    <a href="{{ path('homepage') }}">Back to homepage</a>
+{% endblock %}

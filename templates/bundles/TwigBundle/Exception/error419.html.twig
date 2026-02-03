@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Session expired{% endblock %}
+
+{% block body %}
+    <h1>Session expired</h1>
+    <p>Your session has expired. Please try again.</p>
+
+    <a href="{{ path('homepage') }}">Back to homepage</a>
+{% endblock %}

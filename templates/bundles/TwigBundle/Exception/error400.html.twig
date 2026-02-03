@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bad request{% endblock %}
+
+{% block body %}
+    <h1>400 - Bad request</h1>
+    <p>The request sent to the server is invalid or malformed.</p>
+
+    <a href="{{ path('homepage') }}">Back to homepage</a>
+{% endblock %}
