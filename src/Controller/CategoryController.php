@@ -7,6 +7,7 @@ use App\Form\CategoryType;
 use App\Logger\AnalyticsLogger;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

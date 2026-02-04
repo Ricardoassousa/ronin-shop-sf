@@ -258,11 +258,12 @@ class CheckoutController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param CartService $cartService
      * @param OrderLogger $orderLogger
      * @param PaymentLogger $paymentLogger
      * @return Response
      */
-    public function confirmAction(Request $request, EntityManagerInterface $em, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
+    public function confirmAction(Request $request, EntityManagerInterface $em, CartService $cartService, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
     {
         $user = $this->getUser();
 
@@ -415,7 +416,7 @@ class CheckoutController extends AbstractController
                 'Payment initiated for order',
                 [
                     'order_id' => $order->getId(),
-                    'amount' => $this->getTotalPrice($cart),
+                    'amount' => $cartService->getTotal($user),
                     'source' => [
                         'method' => __METHOD__,
                         'line' => __LINE__

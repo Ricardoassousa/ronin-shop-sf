@@ -56,11 +56,16 @@ class CartService
      */
     public function getCart(User $user): Cart
     {
+        $cart = $this->em->getRepository(Cart::class)->findOneBy([
+            'user' => $user,
+            'status' => Cart::STATUS_ACTIVE
+        ]);
+
         $this->cartLogger->log(
             'Active cart initialized',
             [
                 'user_id' => $user->getId(),
-                'cart_id' => $cart->getId(),
+                'cart_id' => $cart ? $cart->getId() : null,
                 'source' => [
                     'method' => __METHOD__,
                     'line' => __LINE__
@@ -68,11 +73,6 @@ class CartService
             ],
             LogLevel::NOTICE
         );
-
-        $cart = $this->em->getRepository(Cart::class)->findOneBy([
-            'user' => $user,
-            'status' => Cart::STATUS_ACTIVE
-        ]);
 
         if (!$cart) {
             $cart = new Cart();

@@ -11,7 +11,7 @@ use App\Entity\User;
 class OrderAddress
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -51,9 +51,9 @@ class OrderAddress
     private $orderShop;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

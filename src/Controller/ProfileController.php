@@ -53,6 +53,7 @@ class ProfileController extends AbstractController
     public function editProfileAction(Request $request, SecurityLogger $securityLogger): Response
     {
         try {
+            $user = $this->getUser();
             $securityLogger->log(
                 'Profile edit page accessed.',
                 [
@@ -67,7 +68,6 @@ class ProfileController extends AbstractController
                 LogLevel::INFO
             );
 
-            $user = $this->getUser();
             $cart = $this->em->getRepository(Cart::class)->findOneBy([
                 'user' => $user,
                 'status' => Cart::STATUS_ACTIVE

@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
-use App\Entity\Order;
+use App\Entity\OrderShop;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -45,7 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $carts;
 
     /**
-     * @var Collection|Order[]
+     * @var Collection|OrderShop[]
      */
     private $orders;
 
@@ -58,9 +58,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -218,9 +218,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Get the orders of the user.
      *
-     * @return Collection|Order[]
+     * @return Collection|OrderShop[]
      */
-    public function getOrders(): Collection
+    public function getOrders()
     {
         return $this->orders;
     }
@@ -228,10 +228,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Add a order to the user.
      *
-     * @param Order $order
+     * @param OrderShop $order
      * @return $this
      */
-    public function addOrder(Order $order): self
+    public function addOrder(OrderShop $order): self
     {
         if (!$this->orders->contains($order)) {
             $this->orders[] = $order;
@@ -244,10 +244,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Remove a order from the user.
      *
-     * @param Order $order
+     * @param OrderShop $order
      * @return $this
      */
-    public function removeOrder(Order $order): self
+    public function removeOrder(OrderShop $order): self
     {
         if ($this->orders->contains($order)) {
             $this->orders->removeElement($order);

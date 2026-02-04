@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class CartItem
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -51,9 +51,9 @@ class CartItem
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): string
+    public function getId(): ?int
     {
         return $this->id;
     }

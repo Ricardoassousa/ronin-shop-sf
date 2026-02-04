@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 class Category
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -64,9 +64,9 @@ class Category
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
