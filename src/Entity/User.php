@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
 use App\Entity\OrderShop;
+use App\Entity\PasswordResetToken;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -48,6 +49,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection|OrderShop[]
      */
     private $orders;
+
+    /**
+     * @var Collection|PasswordResetToken[]
+     */
+    private $passwordResetTokens;
 
     /**
      *
@@ -259,4 +265,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Get the password reset tokens of the user.
+     *
+     * @return Collection|PasswordResetToken[]
+     */
+    public function getPasswordResetTokens()
+    {
+        return $this->passwordResetToken;
+    }
+
+    /**
+     * Add a password reset token to the user.
+     *
+     * @param PasswordResetToken $password reset tokens
+     * @return $this
+     */
+    public function addPasswordResetToken(PasswordResetToken $passwordResetToken): self
+    {
+        if (!$this->passwordResetTokens->contains($passwordResetToken)) {
+            $this->passwordResetTokens[] = $passwordResetToken;
+            $passwordResetToken->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a password reset token from the user.
+     *
+     * @param PasswordResetToken $passwordResetToken
+     * @return $this
+     */
+    public function removePasswordResetToken(PasswordResetToken $passwordResetToken): self
+    {
+        if ($this->passwordResetTokens->contains($passwordResetToken)) {
+            $this->passwordResetTokens->removeElement($passwordResetToken);
+            if ($passwordResetToken->getCart() == $this) {
+                $passwordResetToken->setCart(null);
+            }
+        }
+
+        return $this;
+    }
 }

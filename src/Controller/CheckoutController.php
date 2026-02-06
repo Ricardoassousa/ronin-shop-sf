@@ -10,6 +10,7 @@ use App\Entity\OrderShop;
 use App\Logger\OrderLogger;
 use App\Logger\PaymentLogger;
 use App\Service\CartService;
+use App\Service\EmailNotificationService;
 use App\Form\CartAddressType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
@@ -259,11 +260,12 @@ class CheckoutController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param CartService $cartService
+     * @param EmailNotificationService $emailNotificationService
      * @param OrderLogger $orderLogger
      * @param PaymentLogger $paymentLogger
      * @return Response
      */
-    public function confirmAction(Request $request, EntityManagerInterface $em, CartService $cartService, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
+    public function confirmAction(Request $request, EntityManagerInterface $em, CartService $cartService, EmailNotificationService $emailNotificationService, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
     {
         $user = $this->getUser();
 
@@ -398,6 +400,8 @@ class CheckoutController extends AbstractController
             }
 
             $em->flush();
+
+            $emailNotificationService->sendOrderConfirmation($order);
 
             $orderLogger->log(
                 'Order confirmed and persisted',
