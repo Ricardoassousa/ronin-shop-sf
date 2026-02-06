@@ -3,11 +3,13 @@
 namespace App\Command;
 
 use App\Entity\Cart;
+use App\Logger\CartLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 /**
  * Command to check and expire inactive shopping carts older than 30 days.
@@ -30,12 +32,18 @@ class CheckInactiveShoppingCartsCommand extends Command
     private $em;
 
     /**
+     * @var CartLogger
+     */
+    private $cartLogger;
+
+    /**
      *
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, CartLogger $cartLogger)
     {
         parent::__construct();
         $this->em = $em;
+        $this->cartLogger = $cartLogger;
     }
 
     /**
@@ -60,30 +68,62 @@ class CheckInactiveShoppingCartsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        // Find all active carts that are older than 30 days
-        $shoppingCarts = $this->em->getRepository(Cart::class)->findInactiveCartsOlderThan30Days();
+        try {
+            $shoppingCarts = $this->em->getRepository(Cart::class)->findInactiveCartsOlderThan30Days();
 
-        // Check if there are any carts to expire
-        if (empty($shoppingCarts)) {
-            $io->success('No active carts to expire.');
+            if (empty($shoppingCarts)) {
+                $io->success('No active carts to expire.');
+                $this->cartLogger->log(
+                    'No inactive carts to expire',
+                    [
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
+                return Command::SUCCESS;
+            }
+
+            $expiredCartsCount = 0;
+            foreach ($shoppingCarts as $cart) {
+                $cart->setStatus(Cart::STATUS_EXPIRED);
+                $this->em->persist($cart);
+                $expiredCartsCount++;
+            }
+
+            $this->em->flush();
+
+            $io->success(sprintf('%d inactive shopping carts older than 30 days have been expired.', $expiredCartsCount));
+
+            $this->cartLogger->log(
+                'Expired inactive carts',
+                [
+                    'expired_count' => $expiredCartsCount,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
             return Command::SUCCESS;
+
+        } catch (Throwable $e) {
+            $this->cartLogger->log(
+                'Unexpected error in CheckInactiveShoppingCartsCommand',
+                [
+                    'exception' => $e
+                ],
+                LogLevel::ERROR
+            );
+
+            $io->error('An unexpected error occurred while expiring carts.');
+
+            return Command::FAILURE;
         }
-
-        // Change the status of each cart to "expired" and persist
-        $expiredCartsCount = 0;
-        foreach ($shoppingCarts as $cart) {
-            $cart->setStatus(Cart::STATUS_EXPIRED);
-            $this->em->persist($cart); // Mark the cart for update in the database
-            $expiredCartsCount++;
-        }
-
-        // Save all changes to the database
-        $this->em->flush();
-
-        // Show a success message
-        $io->success(sprintf('%d inactive shopping carts older than 30 days have been expired.', $expiredCartsCount));
-
-        return Command::SUCCESS;
     }
 
 }

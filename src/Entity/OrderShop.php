@@ -54,7 +54,7 @@ class OrderShop
     public const STATUS_REFUNDED = 'refunded';
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -110,9 +110,9 @@ class OrderShop
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

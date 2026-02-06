@@ -29,7 +29,7 @@ class Cart
     public const STATUS_EXPIRED = 'expired';
 
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -75,9 +75,9 @@ class Cart
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -102,19 +102,19 @@ class Cart
     }
 
     /**
-     * @return CartAddress
+     * @return CartAddress|null
      */
-    public function getCartAddress(): CartAddress
+    public function getCartAddress(): ?CartAddress
     {
         return $this->cartAddress;
     }
 
     /**
-     * @param CartAddress $cartAddress
+     * @param CartAddress|null $cartAddress
      *
      * @return $this
      */
-    public function setCartAddress(CartAddress $cartAddress): self
+    public function setCartAddress(?CartAddress $cartAddress): self
     {
         $this->cartAddress = $cartAddress;
         return $this;

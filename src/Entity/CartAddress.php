@@ -11,7 +11,7 @@ use App\Entity\User;
 class CartAddress
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -51,9 +51,9 @@ class CartAddress
     private $cart;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

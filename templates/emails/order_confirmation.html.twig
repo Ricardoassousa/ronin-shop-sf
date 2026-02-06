@@ -1,0 +1,27 @@
+{% extends 'emails/base_email.html.twig' %}
+
+{% block title %}Order Confirmation{% endblock %}
+
+{% block body %}
+    <h2 class="mb-3">Thank you for your purchase!</h2>
+
+    <p>
+        Order No. <strong>#{{ order.id }}</strong>
+    </p>
+
+    <ul class="list-group list-group-flush my-4">
+        {% for item in order.items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <span>
+                    {{ item.product.name }}
+                    <small class="text-muted">× {{ item.quantity }}</small>
+                </span>
+                <span>{{ item.unitPrice }} €</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <p class="text-end">
+        {# <strong>Total: {{ order.total }} €</strong> #}
+    </p>
+{% endblock %}

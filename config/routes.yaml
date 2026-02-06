@@ -6,22 +6,32 @@ user_routes:
     resource: "routes/user.yaml"
     type: "yaml"
 
+admin_routes:
+    resource: "routes/admin.yaml"
+    type: "yaml"
+    prefix: /admin
+
 product_routes:
     resource: "routes/product.yaml"
     type: "yaml"
+    prefix: /admin/product
 
 category_routes:
     resource: "routes/category.yaml"
     type: "yaml"
+    prefix: /admin/category
 
 catalog_routes:
     resource: "routes/catalog.yaml"
     type: "yaml"
+    prefix: /catalog
 
 cart_routes:
     resource: "routes/cart.yaml"
     type: "yaml"
+    prefix: /cart
 
 checkout_routes:
     resource: "routes/checkout.yaml"
     type: "yaml"
+    prefix: /checkout

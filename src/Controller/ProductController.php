@@ -7,15 +7,19 @@ use App\Entity\Product;
 use App\Entity\ProductSearch;
 use App\Form\ProductSearchType;
 use App\Form\ProductType;
+use App\Logger\AnalyticsLogger;
+use App\Logger\StockLogger;
 use App\Service\SlugGenerator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Throwable;
 
 /**
  * Controller responsible for managing products (CRUD).
@@ -29,88 +33,115 @@ class ProductController extends AbstractController
     /**
      * Displays a list of all products.
      *
+     * @param Request $request
      * @param EntityManagerInterface $em
      * @param PaginatorInterface $paginator
-     * @param Request $request
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function index(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    public function indexAction(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator, AnalyticsLogger $analyticsLogger): Response
     {
-        $productSearch = new ProductSearch();
-        $searchForm = $this->createForm(ProductSearchType::class, $productSearch);
-        $searchForm->handleRequest($request);
-        $searchParams = array();
+        try {
+            $productSearch = new ProductSearch();
+            $searchForm = $this->createForm(ProductSearchType::class, $productSearch);
+            $searchForm->handleRequest($request);
+            $searchParams = array();
 
-        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            if ($searchForm->isSubmitted() && $searchForm->isValid()) {
 
-            $name = $searchForm['name']->getData();
-            $sku = $searchForm['sku']->getData();
-            $minPrice = $searchForm['minPrice']->getData();
-            $maxPrice = $searchForm['maxPrice']->getData();
-            $stock = $searchForm['stock']->getData();
-            $category = $searchForm['category']->getData();
-            $startDate = $searchForm['startDate']->getData();
-            $endDate = $searchForm['endDate']->getData();
+                $name = $searchForm['name']->getData();
+                $sku = $searchForm['sku']->getData();
+                $minPrice = $searchForm['minPrice']->getData();
+                $maxPrice = $searchForm['maxPrice']->getData();
+                $stock = $searchForm['stock']->getData();
+                $category = $searchForm['category']->getData();
+                $startDate = $searchForm['startDate']->getData();
+                $endDate = $searchForm['endDate']->getData();
 
 
-            if (!empty($name)) {
-                $searchParams['name'] = $name;
+                if (!empty($name)) {
+                    $searchParams['name'] = $name;
+                }
+
+                if (!empty($sku)) {
+                    $searchParams['sku'] = $sku;
+                }
+
+                if (isset($minPrice)) {
+                    $searchParams['minPrice'] = $minPrice;
+                }
+
+                if (isset($maxPrice)) {
+                    $searchParams['maxPrice'] = $maxPrice;
+                }
+
+                if (isset($stock)) {
+                    $searchParams['stock'] = $stock;
+                }
+
+                if ($category instanceof Category) {
+                    $searchParams['categoryId'] = $category->getId();
+                }
+
+                if (!empty($startDate)) {
+                    $searchParams['startDate'] = $startDate;
+                } else {
+                    $startDate = new DateTime();
+                    $startDate->setTime(0, 0, 0);
+                    $startDate->setDate(2000, 1, 1);
+                    $startDate->format('yyyy-mm-dd');
+
+                    $searchParams['startDate'] = $startDate;
+                }
+
+                if (!empty($endDate)) {
+                    $searchParams['endDate'] = $endDate->setTime(23, 59, 59);
+                } else {
+                    $endDate = new DateTime();
+                    $endDate->setTime(23, 59, 59);
+                    $endDate->setDate(date('Y'), date('m'), date('d'));
+                    $endDate->format('yyyy-mm-dd');
+                    $searchParams['endDate'] = $endDate;
+                }
             }
 
-            if (!empty($sku)) {
-                $searchParams['sku'] = $sku;
-            }
+            $query = $em->getRepository(Product::class)->findProductByFilterQuery($searchParams);
 
-            if (isset($minPrice)) {
-                $searchParams['minPrice'] = $minPrice;
-            }
+            $pagination = $paginator->paginate(
+                $query,
+                $request->query->getInt('page', 1),
+                10
+            );
 
-            if (isset($maxPrice)) {
-                $searchParams['maxPrice'] = $maxPrice;
-            }
+            $analyticsLogger->log(
+                'Products list accessed',
+                [
+                    'search_params' => $searchParams,
+                    'page' => $request->query->getInt('page', 1),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
 
-            if (isset($stock)) {
-                $searchParams['stock'] = $stock;
-            }
+            return $this->render('product/index.html.twig', [
+                'pagination' => $pagination,
+                'searchForm' => $searchForm->createView()
+            ]);
 
-            if ($category instanceof Category) {
-                $searchParams['categoryId'] = $category->getId();
-            }
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error rendering product list',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
 
-            if (!empty($startDate)) {
-                $searchParams['startDate'] = $startDate;
-            } else {
-                $startDate = new DateTime();
-                $startDate->setTime(0, 0, 0);
-                $startDate->setDate(2000, 1, 1);
-                $startDate->format('yyyy-mm-dd');
-
-                $searchParams['startDate'] = $startDate;
-            }
-
-            if (!empty($endDate)) {
-                $searchParams['endDate'] = $endDate->setTime(23, 59, 59);
-            } else {
-                $endDate = new DateTime();
-                $endDate->setTime(23, 59, 59);
-                $endDate->setDate(date('Y'), date('m'), date('d'));
-                $endDate->format('yyyy-mm-dd');
-                $searchParams['endDate'] = $endDate;
-            }
+            throw($e);
         }
-
-        $query = $em->getRepository(Product::class)->findProductByFilterQuery($searchParams);
-
-        $pagination = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            10
-        );
-
-        return $this->render('product/index.html.twig', [
-            'pagination' => $pagination,
-            'searchForm' => $searchForm->createView()
-        ]);
     }
 
     /**
@@ -123,28 +154,55 @@ class ProductController extends AbstractController
      * @param Request $request
      * @param EntityManagerInterface $em
      * @param SlugGenerator $slugGenerator
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function new(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
+    public function newAction(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator, AnalyticsLogger $analyticsLogger): Response
     {
-        $product = new Product();
-        $form = $this->createForm(ProductType::class, $product);
-        $form->handleRequest($request);
+        try {
+            $product = new Product();
+            $form = $this->createForm(ProductType::class, $product);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $slug = $slugGenerator->generate($product->getName());
-            $product->setSlug($slug);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $slug = $slugGenerator->generate($product->getName());
+                $product->setSlug($slug);
+                $em->persist($product);
+                $em->flush();
 
-            $em->persist($product);
-            $em->flush();
+                $analyticsLogger->log(
+                    'Product created',
+                    [
+                        'product_id' => $product->getId(),
+                        'name' => $product->getName(),
+                        'slug' => $slug,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
 
-            return $this->redirectToRoute('product_index');
+                return $this->redirectToRoute('product_index');
+            }
+
+            return $this->render('product/new.html.twig', [
+                'product' => $product,
+                'form' => $form->createView()
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error creating product',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        return $this->render('product/new.html.twig', [
-            'product' => $product,
-            'form' => $form->createView()
-        ]);
     }
 
     /**
@@ -159,33 +217,74 @@ class ProductController extends AbstractController
      * @param Product $product
      * @param EntityManagerInterface $em
      * @param SlugGenerator $slugGenerator
+     * @param AnalyticsLogger $analyticsLogger
+     * @param StockLogger $stockLogger
      * @return Response
      */
-    public function edit(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
+    public function editAction(Request $request, Product $product, EntityManagerInterface $em, SlugGenerator $slugGenerator, AnalyticsLogger $analyticsLogger, StockLogger $stockLogger): Response
     {
-        $form = $this->createForm(ProductType::class, $product, [
-            'is_edit' => true,
-        ]);
-        $form->handleRequest($request);
+        try {
+            $form = $this->createForm(ProductType::class, $product, ['is_edit' => true]);
+            $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $slug = $product->getSlug();
-            $newSlug = $slugGenerator->generate($product->getName());
+            if ($form->isSubmitted() && $form->isValid()) {
+                $oldSlug = $product->getSlug();
+                $newSlug = $slugGenerator->generate($product->getName());
 
-            if ($slug != $newSlug):
-                $product->setSlug($newSlug);
-            endif;
-            $product->setUpdatedAt(new DateTime());
+                if ($oldSlug != $newSlug) {
+                    $product->setSlug($newSlug);
+                }
 
-            $em->flush();
+                $product->setUpdatedAt(new DateTime());
+                $em->flush();
 
-            return $this->redirectToRoute('product_index');
+                $analyticsLogger->log(
+                    'Product updated',
+                    [
+                        'product_id' => $product->getId(),
+                        'old_slug' => $oldSlug,
+                        'new_slug' => $newSlug,
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
+
+                $stockLogger->log(
+                    'Stock updated for product',
+                    [
+                        'product_id' => $product->getId(),
+                        'new_stock' => $product->getStock(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
+
+                return $this->redirectToRoute('product_index');
+            }
+
+            return $this->render('product/edit.html.twig', [
+                'product' => $product,
+                'form' => $form->createView()
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error editing product',
+                [
+                    'product_id' => $product->getId(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        return $this->render('product/edit.html.twig', [
-            'product' => $product,
-            'form' => $form->createView()
-        ]);
     }
 
     /**
@@ -194,16 +293,56 @@ class ProductController extends AbstractController
      * @param Request $request
      * @param Product $product
      * @param EntityManagerInterface $em
+     * @param AnalyticsLogger $analyticsLogger
+     * @param StockLogger $stockLogger
      * @return Response
      */
-    public function delete(Request $request, Product $product, EntityManagerInterface $em): Response
+    public function deleteAction(Request $request, Product $product, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger, StockLogger $stockLogger): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-            $em->remove($product);
-            $em->flush();
-        }
+        try {
+            if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+                $em->remove($product);
+                $em->flush();
 
-        return $this->redirectToRoute('product_index');
+                $analyticsLogger->log(
+                    'Product deleted',
+                    [
+                        'product_id' => $product->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                $stockLogger->log(
+                    'Stock removed for deleted product',
+                    [
+                        'product_id' => $product->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
+            }
+
+            return $this->redirectToRoute('product_index');
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error deleting product',
+                [
+                    'product_id' => $product->getId(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
     /**
@@ -215,20 +354,61 @@ class ProductController extends AbstractController
      *
      * @param Product $product
      * @param string $slug
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function show(Product $product, string $slug): Response
+    public function showAction(Product $product, string $slug, AnalyticsLogger $analyticsLogger): Response
     {
-        if ($product->getSlug() != $slug) {
-            return $this->redirectToRoute('product_show', [
-                'id' => $product->getId(),
-                'slug' => $product->getSlug(),
-            ], 301);
-        }
+        try {
+            if ($product->getSlug() != $slug) {
+                $analyticsLogger->log(
+                    'Product slug mismatch, redirecting',
+                    [
+                        'product_id' => $product->getId(),
+                        'requested_slug' => $slug,
+                        'actual_slug' => $product->getSlug(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
 
-        return $this->render('product/show.html.twig', [
-            'product' => $product
-        ]);
+                return $this->redirectToRoute('product_show', [
+                    'id' => $product->getId(),
+                    'slug' => $product->getSlug()
+                ], 301);
+            }
+
+            $analyticsLogger->log(
+                'Product detail viewed',
+                [
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->render('product/show.html.twig', [
+                'product' => $product
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error displaying product',
+                [
+                    'product_id' => $product->getId(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
 }

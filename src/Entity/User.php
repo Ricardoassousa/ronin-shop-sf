@@ -4,7 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
-use App\Entity\Order;
+use App\Entity\OrderShop;
+use App\Entity\PasswordResetToken;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -45,9 +46,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $carts;
 
     /**
-     * @var Collection|Order[]
+     * @var Collection|OrderShop[]
      */
     private $orders;
+
+    /**
+     * @var Collection|PasswordResetToken[]
+     */
+    private $passwordResetTokens;
 
     /**
      *
@@ -58,9 +64,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -218,9 +224,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Get the orders of the user.
      *
-     * @return Collection|Order[]
+     * @return Collection|OrderShop[]
      */
-    public function getOrders(): Collection
+    public function getOrders()
     {
         return $this->orders;
     }
@@ -228,10 +234,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Add a order to the user.
      *
-     * @param Order $order
+     * @param OrderShop $order
      * @return $this
      */
-    public function addOrder(Order $order): self
+    public function addOrder(OrderShop $order): self
     {
         if (!$this->orders->contains($order)) {
             $this->orders[] = $order;
@@ -244,10 +250,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Remove a order from the user.
      *
-     * @param Order $order
+     * @param OrderShop $order
      * @return $this
      */
-    public function removeOrder(Order $order): self
+    public function removeOrder(OrderShop $order): self
     {
         if ($this->orders->contains($order)) {
             $this->orders->removeElement($order);
@@ -259,4 +265,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Get the password reset tokens of the user.
+     *
+     * @return Collection|PasswordResetToken[]
+     */
+    public function getPasswordResetTokens()
+    {
+        return $this->passwordResetToken;
+    }
+
+    /**
+     * Add a password reset token to the user.
+     *
+     * @param PasswordResetToken $password reset tokens
+     * @return $this
+     */
+    public function addPasswordResetToken(PasswordResetToken $passwordResetToken): self
+    {
+        if (!$this->passwordResetTokens->contains($passwordResetToken)) {
+            $this->passwordResetTokens[] = $passwordResetToken;
+            $passwordResetToken->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a password reset token from the user.
+     *
+     * @param PasswordResetToken $passwordResetToken
+     * @return $this
+     */
+    public function removePasswordResetToken(PasswordResetToken $passwordResetToken): self
+    {
+        if ($this->passwordResetTokens->contains($passwordResetToken)) {
+            $this->passwordResetTokens->removeElement($passwordResetToken);
+            if ($passwordResetToken->getCart() == $this) {
+                $passwordResetToken->setCart(null);
+            }
+        }
+
+        return $this;
+    }
 }

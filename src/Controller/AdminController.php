@@ -5,13 +5,18 @@ namespace App\Controller;
 use App\Entity\OrderShop;
 use App\Entity\User;
 use App\Form\UserRolesType;
+use App\Logger\AnalyticsLogger;
+use App\Logger\OrderLogger;
+use App\Logger\SecurityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
 
 /**
  * Controller used to manage administrative tasks.
@@ -27,17 +32,45 @@ class AdminController extends AbstractController
      * Displays the admin dashboard with the list of the latest registered users
      * and the most recent orders.
      *
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function dashboard(EntityManagerInterface $em): Response
+    public function dashboardAction(EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
     {
-        $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC'], 3);
-        $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC'], 5);
+        try {
+            $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC'], 3);
+            $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC'], 5);
 
-        return $this->render('admin/dashboard.html.twig', [
-            'users' => $users,
-            'orders' => $orders,
-        ]);
+            $analyticsLogger->log(
+                'Admin dashboard accessed',
+                [
+                    'latest_users' => count($users),
+                    'latest_orders' => count($orders),
+                    'admin_id' => $this->getUser() ? $this->getUser()->getId() : null,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->render('admin/dashboard.html.twig', [
+                'users' => $users,
+                'orders' => $orders
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error loading admin dashboard',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
+        }
     }
 
     /**
@@ -57,48 +90,115 @@ class AdminController extends AbstractController
      * The paginated user list is passed to the Twig template
      * 'admin/list_users.html.twig' for rendering.
      *
+     * @param Request $request
      * @param EntityManagerInterface $em
      * @param PaginatorInterface $paginator
-     * @param Request $request
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function listUsersAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    public function listUsersAction(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator, AnalyticsLogger $analyticsLogger): Response
     {
-        $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC']);
+        try {
+            $users = $em->getRepository(User::class)->findBy([], ['id' => 'DESC']);
 
-        $pagination = $paginator->paginate(
-            $users,
-            $request->query->getInt('page', 1),
-            10
-        );
+            $pagination = $paginator->paginate(
+                $users,
+                $request->query->getInt('page', 1),
+                10
+            );
 
-        return $this->render('admin/list_users.html.twig', [
-            'pagination' => $pagination
-        ]);
+            $analyticsLogger->log(
+                'Admin viewed user list',
+                [
+                    'page' => $request->query->getInt('page', 1),
+                    'total_users' => count($users),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->render('admin/list_users.html.twig', [
+                'pagination' => $pagination
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error listing users in admin',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw($e);
+        }
     }
 
     /**
      * Allows editing the roles of a specific user.
      *
-     * @param User $user
      * @param Request $request
+     * @param User $user
+     * @param AnalyticsLogger $analyticsLogger
+     * @param SecurityLogger $securityLogger
      * @return Response
      */
-    public function editUserRoles(User $user, Request $request): Response
+    public function editUserRolesAction(Request $request, User $user, AnalyticsLogger $analyticsLogger, SecurityLogger $securityLogger): Response
     {
         $form = $this->createForm(UserRolesType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', 'User roles updated successfully!');
-            return $this->redirectToRoute('admin_users_list');
+                $securityLogger->log(
+                    'User roles updated by admin',
+                    [
+                        'target_user_id' => $user->getId(),
+                        'new_roles' => $user->getRoles(),
+                        'admin_id' => $this->getUser()->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::WARNING
+                );
+
+                $analyticsLogger->log(
+                    'Admin edited user roles',
+                    [
+                        'user_id' => $user->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
+
+                $this->addFlash('success', 'User roles updated successfully!');
+                return $this->redirectToRoute('admin_users_list');
+            }
+
+        } catch (Throwable $e) {
+            $securityLogger->log(
+                'Error editing user roles',
+                [
+                    'user_id' => $user->getId(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
         }
 
         return $this->render('admin/edit_user_roles.html.twig', [
             'form' => $form->createView(),
-            'user' => $user,
+            'user' => $user
         ]);
     }
 
@@ -118,24 +218,51 @@ class AdminController extends AbstractController
      * list format, optionally showing badges for order status, creation date,
      * and associated user information.
      *
+     * @param Request $request
      * @param EntityManagerInterface $em
      * @param PaginatorInterface $paginator
-     * @param Request $request
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function listOrdersAction(EntityManagerInterface $em, PaginatorInterface $paginator, Request $request): Response
+    public function listOrdersAction(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator, AnalyticsLogger $analyticsLogger): Response
     {
-        $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC']);
+        try {
+            $orders = $em->getRepository(OrderShop::class)->findBy([], ['createdAt' => 'DESC']);
 
-        $pagination = $paginator->paginate(
-            $orders,
-            $request->query->getInt('page', 1),
-            10
-        );
+            $pagination = $paginator->paginate(
+                $orders,
+                $request->query->getInt('page', 1),
+                10
+            );
 
-        return $this->render('admin/list_orders.html.twig', [
-            'pagination' => $pagination
-        ]);
+            $analyticsLogger->log(
+                'Admin viewed orders list',
+                [
+                    'page' => $request->query->getInt('page', 1),
+                    'total_orders' => count($orders),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+            return $this->render('admin/list_orders.html.twig', [
+                'pagination' => $pagination
+            ]);
+
+        } catch (Throwable $e) {
+            $analyticsLogger->log(
+                'Error listing orders in admin',
+                [
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+
+            throw ($e);
+        }
     }
 
     /**
@@ -155,10 +282,24 @@ class AdminController extends AbstractController
      * such as editing the order status or returning to the orders list.
      *
      * @param OrderShop $order
+     * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function showOrderAction(OrderShop $order): Response
+    public function showOrderAction(OrderShop $order, AnalyticsLogger $analyticsLogger): Response
     {
+        $analyticsLogger->log(
+            'Admin viewed order details',
+            [
+                'order_id' => $order->getId(),
+                'status' => $order->getStatus(),
+                'source' => [
+                    'method' => __METHOD__,
+                    'line' => __LINE__
+                ]
+            ],
+            LogLevel::INFO
+        );
+
         return $this->render('admin/show_order.html.twig', [
             'order' => $order
         ]);
@@ -185,12 +326,16 @@ class AdminController extends AbstractController
      * The form is rendered in the Twig template 'admin/edit_order.html.twig', which
      * can also display order details for context.
      *
-     * @param OrderShop $order
      * @param Request $request
+     * @param OrderShop $order
+     * @param AnalyticsLogger $analyticsLogger
+     * @param OrderLogger $orderLogger
      * @return Response
      */
-    public function editOrderAction(OrderShop $order, Request $request): Response
+    public function editOrderAction(Request $request, OrderShop $order, AnalyticsLogger $analyticsLogger, OrderLogger $orderLogger): Response
     {
+        $oldStatus = $order->getStatus();
+
         $form = $this->createFormBuilder($order)
             ->add('status', ChoiceType::class, [
                 'choices' => [
@@ -205,16 +350,55 @@ class AdminController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
 
-            $this->addFlash('success', 'Order status updated successfully!');
-            return $this->redirectToRoute('admin_order_show', ['id' => $order->getId()]);
+                $orderLogger->log(
+                    'Order status changed by admin',
+                    [
+                        'order_id' => $order->getId(),
+                        'old_status' => $oldStatus,
+                        'new_status' => $order->getStatus(),
+                        'admin_id' => $this->getUser()->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
+
+                $analyticsLogger->log(
+                    'Admin updated order status',
+                    [
+                        'order_id' => $order->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
+
+                $this->addFlash('success', 'Order status updated successfully!');
+                return $this->redirectToRoute('admin_order_show', ['id' => $order->getId()]);
+            }
+
+        } catch (Throwable $e) {
+            $orderLogger->log(
+                'Error updating order status in admin',
+                [
+                    'order_id' => $order->getId(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
         }
 
         return $this->render('admin/edit_order.html.twig', [
             'order' => $order,
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ]);
     }
 

@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Entity\Cart;
 use App\Entity\CustomerProfile;
 use App\Form\CustomerProfileType;
+use App\Logger\SecurityLogger;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Throwable;
 
 /**
  * Controller responsible for managing the customer's profile.
@@ -41,42 +43,103 @@ class CustomerProfileController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param SecurityLogger $securityLogger
      * @return Response
      * @throws AccessDeniedException
      */
-    public function edit(Request $request, EntityManagerInterface $em): Response
+    public function editAction(Request $request, EntityManagerInterface $em, SecurityLogger $securityLogger): Response
     {
-        $user = $this->getUser();
-        $cart = $em->getRepository(Cart::class)->findOneBy(['user' => $user, 'status' => Cart::STATUS_ACTIVE]);
-        $cartItems = $cart ? $cart->getItems() : [];
+        try {
+            $user = $this->getUser();
+            if (!$user) {
+                throw new AccessDeniedException('User must be logged in.');
+            }
 
-        if (!$user) {
-            throw $this->createAccessDeniedException('You need to be logged in to access this page.');
-        }
+            $securityLogger->log(
+                'Customer profile page accessed.',
+                [
+                    'user_id' => $user->getId(),
+                    'ip' => $request->getClientIp(),
+                    'user_agent' => $request->headers->get('User-Agent'),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
 
-        $profile = $user->getCustomerProfile() ?? null;
-        if ($profile == null) {
-            $profile = new CustomerProfile();
+            $cart = $em->getRepository(Cart::class)->findOneBy([
+                'user' => $user,
+                'status' => Cart::STATUS_ACTIVE
+            ]);
+            $cartItems = $cart ? $cart->getItems() : [];
+
+            $profile = $user->getCustomerProfile() ?? new CustomerProfile();
             $profile->setUser($user);
+
+            $form = $this->createForm(CustomerProfileType::class, $profile);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+                $securityLogger->log(
+                    'Customer profile form submitted.',
+                    [
+                        'user_id' => $user->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::INFO
+                );
+            }
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $isNewProfile = $profile->getId() === null;
+
+                $em->persist($profile);
+                $em->flush();
+
+                $securityLogger->log(
+                    $isNewProfile ? 'New customer profile created.' : 'Customer profile updated.',
+                    [
+                        'user_id' => $user->getId(),
+                        'profile_id' => $profile->getId(),
+                        'source' => [
+                            'method' => __METHOD__,
+                            'line' => __LINE__
+                        ]
+                    ],
+                    LogLevel::NOTICE
+                );
+
+                $this->addFlash('success', 'Profile saved successfully!');
+                return $this->redirectToRoute('app_customer_profile');
+            }
+
+            return $this->render('customer_profile/edit.html.twig', [
+                'form' => $form->createView(),
+                'cart' => $cart,
+                'cartItems' => $cartItems
+            ]);
+
+        } catch (Throwable $e) {
+            $securityLogger->log(
+                'Unexpected error during customer profile edit.',
+                [
+                    'user_id' => $this->getUser() ? $this->getUser()->getId() : null,
+                    'exception' => $e,
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::ERROR
+            );
+
+            throw $e;
         }
-
-        $form = $this->createForm(CustomerProfileType::class, $profile);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em->persist($profile);
-            $em->flush();
-
-            $this->addFlash('success', 'Profile saved successfully!');
-
-            return $this->redirectToRoute('app_customer_profile');
-        }
-
-        return $this->render('customer_profile/edit.html.twig', [
-            'form' => $form->createView(),
-            'cart' => $cart,
-            'cartItems' => $cartItems
-        ]);
     }
 
 }

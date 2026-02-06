@@ -13,7 +13,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 class Product
 {
     /**
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -103,9 +103,9 @@ class Product
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
