@@ -69,4 +69,39 @@ class EmailNotificationService
         }
     }
 
+    /**
+     * Sends a password reset email to the user with a unique token.
+     *
+     * @param User $user
+     * @param PasswordResetToken $resetToken
+     * @return void
+     */
+    public function sendPasswordResetEmail(User $user, PasswordResetToken $resetToken): void
+    {
+        try {
+            $email = (new TemplatedEmail())
+                ->from('no-reply@mystore.com')
+                ->to($user->getUser()->getEmail())
+                ->subject('Password Reset Request')
+                ->htmlTemplate('emails/reset_password.html.twig')
+                ->context([
+                    'token' => $resetToken->getToken(),
+                    'user' => $user,
+                ]);
+
+            $this->mailer->send($email);
+
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->error(
+                'Password reset email failed to send.',
+                [
+                    'user_id' => $user->getId(),
+                    'user_email' => $user->getEmail(),
+                    'exception' => $e->getMessage()
+                ],
+                LogLevel::ERROR
+            );
+        }
+    }
+
 }

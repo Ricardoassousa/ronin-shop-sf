@@ -17,3 +17,15 @@ app_profile:
 app_customer_profile:
     path: /customer-profile
     controller: App\Controller\CustomerProfileController::editAction
+
+app_forgot_password:
+    path: /forgot-password
+    controller: App\Controller\ResetPasswordController::forgotPasswordAction
+    methods: [GET, POST]
+
+app_reset_password:
+    path: /reset-password/{token}
+    controller: App\Controller\ResetPasswordController::resetPasswordAction
+    methods: [GET, POST]
+    requirements:
+        token: '[a-f0-9]{64}'

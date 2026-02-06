@@ -85,7 +85,7 @@ The Ecommerce application implements the following main features:
 
 ### Emails (Extra)
 - [x] Send order confirmation email
-- [ ] Password recovery
+- [x] Password recovery
 
 ### REST API (Extra)
 - [ ] Product list endpoint
