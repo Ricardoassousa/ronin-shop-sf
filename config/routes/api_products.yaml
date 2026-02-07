@@ -1,0 +1,16 @@
+api_products_list:
+    path: /api/products
+    controller: App\Controller\Api\ProductController::listAction
+    methods: [GET]
+
+api_product_details:
+    path: /api/products/{id}
+    controller: App\Controller\Api\ProductController::detailsAction
+    methods: [GET]
+    requirements:
+        id: '\d+'
+
+api_product_search:
+    path: /api/products/search
+    controller: App\Controller\Api\ProductController::searchAction
+    methods: [GET]
