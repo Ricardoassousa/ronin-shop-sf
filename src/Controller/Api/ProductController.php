@@ -182,11 +182,11 @@ class ProductController extends AbstractController
             $minPrice = $request->query->get('minPrice');
             $maxPrice = $request->query->get('maxPrice');
 
-            $searchParams = [
+            $searchParams = array_filter([
                 'name' => $name,
                 'minPrice' => $minPrice,
                 'maxPrice' => $maxPrice,
-            ];
+            ]);
 
             // Validate name
             if ($name != null && !is_string($name)) {
@@ -202,7 +202,7 @@ class ProductController extends AbstractController
                     'status' => 'Error',
                     'message' => 'Invalid parameter: minPrice must be a number.'
                 ], 400);
-            } elseif ($minPrice !== null) {
+            } elseif ($minPrice != null) {
                 $searchParams['minPrice'] = (float)$minPrice;
             }
 
