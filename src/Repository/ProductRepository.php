@@ -123,4 +123,27 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getOneOrNullResult();
     }
 
+    /**
+     * Finds a paginated list of active Product entities.
+     *
+     * This method retrieves products where `isActive` is true,
+     * ordered by creation date descending, and applies pagination
+     * based on the provided page number and limit.
+     *
+     * @param int $page
+     * @param int $limit
+     * @return Product[]
+     */
+    public function findActivePaginated(int $page = 1, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->where('p.isActive = :active')
+            ->setParameter('active', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
 }

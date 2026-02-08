@@ -88,9 +88,9 @@ The Ecommerce application implements the following main features:
 - [x] Password recovery
 
 ### REST API (Extra)
-- [ ] Product list endpoint
-- [ ] Product details endpoint
-- [ ] Product search endpoint
+- [x] Product list endpoint
+- [x] Product details endpoint
+- [x] Product search endpoint
 
 ### UX/UI (Extra)
 - [ ] Breadcrumbs

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\OrderShop;
+use App\Entity\PasswordResetToken;
 use App\Entity\User;
 use App\Logger\OrderLogger;
 use Psr\Log\LogLevel;
@@ -81,7 +82,7 @@ class EmailNotificationService
         try {
             $email = (new TemplatedEmail())
                 ->from('no-reply@mystore.com')
-                ->to($user->getUser()->getEmail())
+                ->to($user->getEmail())
                 ->subject('Password Reset Request')
                 ->htmlTemplate('emails/reset_password.html.twig')
                 ->context([
