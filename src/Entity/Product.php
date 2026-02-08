@@ -381,4 +381,24 @@ class Product
         return $this;
     }
 
+    /**
+     * Converts the Product entity into an array suitable for JSON serialization.
+     *
+     * This method includes only the public fields that should be exposed
+     * via the API, omitting any internal or sensitive data such as internal codes
+     * or database-only fields. It is designed to be used in API responses.
+     *
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'price' => $this->getPrice(),
+            'stock' => $this->getStock(),
+            'description' => $this->getDescription()
+        ];
+    }
+
 }
