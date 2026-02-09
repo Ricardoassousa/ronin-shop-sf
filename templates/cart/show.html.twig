@@ -11,6 +11,14 @@
 
         <h1>Shopping Cart</h1>
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% if cart.items is empty %}
             <div class="alert alert-info">
                 Your cart is empty.

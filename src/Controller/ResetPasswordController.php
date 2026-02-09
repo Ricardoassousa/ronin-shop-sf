@@ -199,6 +199,7 @@ class ResetPasswordController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', 'Your password has been reset successfully. You can now log in.');
                 return $this->redirectToRoute('app_login');
             }
 

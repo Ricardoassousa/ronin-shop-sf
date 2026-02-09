@@ -85,6 +85,7 @@ class CheckoutController extends AbstractController
                     LogLevel::WARNING
                 );
 
+                $this->addFlash('warning', 'Your cart is empty. Please add products before checkout.');
                 return $this->redirectToRoute('cart_show');
             }
 
@@ -126,6 +127,7 @@ class CheckoutController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', 'Shipping address saved successfully.');
                 return $this->redirectToRoute('checkout_summary');
             }
 
@@ -196,6 +198,7 @@ class CheckoutController extends AbstractController
                     LogLevel::WARNING
                 );
 
+                $this->addFlash('warning', 'Your cart is empty.');
                 return $this->redirectToRoute('cart_show');
             }
 
@@ -216,6 +219,7 @@ class CheckoutController extends AbstractController
                     LogLevel::WARNING
                 );
 
+                $this->addFlash('warning', 'Please provide a shipping address before continuing.');
                 return $this->redirectToRoute('cart_show');
             }
 
@@ -300,6 +304,7 @@ class CheckoutController extends AbstractController
                     LogLevel::WARNING
                 );
 
+                $this->addFlash('warning', 'Your cart is empty.');
                 return $this->redirectToRoute('cart_show');
             }
 
@@ -320,6 +325,7 @@ class CheckoutController extends AbstractController
                     LogLevel::WARNING
                 );
 
+                $this->addFlash('warning', 'Please add a shipping address before confirming your order.');
                 return $this->redirectToRoute('cart_show');
             }
 
@@ -371,6 +377,7 @@ class CheckoutController extends AbstractController
                         LogLevel::WARNING
                     );
 
+                    $this->addFlash('warning', sprintf('Not enough stock for "%s". Please update your cart.', $product->getName()));
                     return $this->redirectToRoute('cart_show');
                 }
 

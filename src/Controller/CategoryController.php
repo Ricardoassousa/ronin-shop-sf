@@ -98,6 +98,7 @@ class CategoryController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', sprintf('Category "%s" created successfully.', $category->getName()));
                 return $this->redirectToRoute('category_index');
             }
 
@@ -151,6 +152,7 @@ class CategoryController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', sprintf('Category "%s" updated successfully.', $category->getName()));
                 return $this->redirectToRoute('category_index');
             }
 
@@ -185,6 +187,11 @@ class CategoryController extends AbstractController
     {
         try {
             $emptyCategory = count($category->getProducts()) < 1;
+            if (!$emptyCategory) {
+                $this->addFlash('warning', 'Cannot delete category with associated products.');
+                return $this->redirectToRoute('category_index');
+            }
+
             if ($emptyCategory && $this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
                 $em->remove($category);
                 $em->flush();
@@ -203,6 +210,7 @@ class CategoryController extends AbstractController
                 );
             }
 
+            $this->addFlash('success', sprintf('Category "%s" deleted successfully.', $category->getName()));
             return $this->redirectToRoute('category_index');
 
         } catch (Throwable $e) {

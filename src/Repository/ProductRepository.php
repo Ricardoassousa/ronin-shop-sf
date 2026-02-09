@@ -24,11 +24,12 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
-    * Returns a QueryBuilder for filtering products
-    *
-    * @param array $searchParams
-    * @return QueryBuilder
-    */
+     * Returns a QueryBuilder for filtering products
+     *
+     * @param array $searchParams
+     * @param bool $isCatalog
+     * @return QueryBuilder
+     */
     public function findProductByFilterQuery(array $searchParams, bool $isCatalog = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
@@ -109,7 +110,6 @@ class ProductRepository extends ServiceEntityRepository
     * It returns the Product entity if found, or null if no matching product exists.
     *
     * @param string $slug The slug to search for
-    *
     * @return Product|null The product entity if found, otherwise null
     */
     public function findOneBySlug(string $slug)

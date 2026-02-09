@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\OrderItem;
 use App\Entity\Product;
 use App\Entity\ProductSearch;
 use App\Form\ProductSearchType;
@@ -184,6 +185,7 @@ class ProductController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', 'Product created successfully.');
                 return $this->redirectToRoute('product_index');
             }
 
@@ -265,6 +267,7 @@ class ProductController extends AbstractController
                     LogLevel::INFO
                 );
 
+                $this->addFlash('success', 'Product updated successfully.');
                 return $this->redirectToRoute('product_index');
             }
 
@@ -300,14 +303,18 @@ class ProductController extends AbstractController
     public function deleteAction(Request $request, Product $product, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger, StockLogger $stockLogger): Response
     {
         try {
-            if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-                $em->remove($product);
-                $em->flush();
+            if (!$this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+                $this->addFlash('danger', 'Invalid CSRF token.');
+                return $this->redirectToRoute('product_index');
+            }
 
+            $associatedOrderItem = $em->getRepository(OrderItem::class)->findOneBy(['product' => $product]);
+            if ($associatedOrderItem) {
                 $analyticsLogger->log(
-                    'Product deleted',
+                    'Attempted to delete product associated with an order',
                     [
                         'product_id' => $product->getId(),
+                        'order_item_id' => $associatedOrderItem->getId(),
                         'source' => [
                             'method' => __METHOD__,
                             'line' => __LINE__
@@ -316,20 +323,39 @@ class ProductController extends AbstractController
                     LogLevel::WARNING
                 );
 
-                $stockLogger->log(
-                    'Stock removed for deleted product',
-                    [
-                        'product_id' => $product->getId(),
-                        'source' => [
-                            'method' => __METHOD__,
-                            'line' => __LINE__
-                        ]
-                    ],
-                    LogLevel::INFO
-                );
+                $this->addFlash('danger', 'Cannot delete product. It is associated with existing orders.');
+                return $this->redirectToRoute('product_index');
             }
 
-            return $this->redirectToRoute('product_index');
+            $em->remove($product);
+            $em->flush();
+
+            $analyticsLogger->log(
+                'Product deleted',
+                [
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
+            $stockLogger->log(
+                'Stock removed for deleted product',
+                [
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+        $this->addFlash('success', 'Product deleted successfully.');
+        return $this->redirectToRoute('product_index');
 
         } catch (Throwable $e) {
             $analyticsLogger->log(

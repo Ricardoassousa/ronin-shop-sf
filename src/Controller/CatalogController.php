@@ -161,13 +161,6 @@ class CatalogController extends AbstractController
     public function showAction(Product $product, string $slug, AnalyticsLogger $analyticsLogger): Response
     {
         try {
-            if ($product->getSlug() != $slug) {
-                return $this->redirectToRoute('product_show', [
-                    'id' => $product->getId(),
-                    'slug' => $product->getSlug(),
-                ], 301);
-            }
-
             $analyticsLogger->log(
                 'Product detail viewed',
                 [
@@ -180,6 +173,14 @@ class CatalogController extends AbstractController
                 ],
                 LogLevel::INFO
             );
+
+            if ($product->getSlug() != $slug) {
+                $this->addFlash('info', 'The product URL was updated to the latest version.');
+                return $this->redirectToRoute('product_show', [
+                    'id' => $product->getId(),
+                    'slug' => $product->getSlug(),
+                ], 301);
+            }
 
             return $this->render('catalog/show.html.twig', [
                 'product' => $product

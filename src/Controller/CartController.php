@@ -85,6 +85,7 @@ class CartController extends AbstractController
                 ]
             ]);
 
+            $this->addFlash('success', sprintf('"%s" added to your cart.', $product->getName()));
             return $this->redirectToRoute('cart_show');
 
         } catch (Throwable $e) {
@@ -123,6 +124,7 @@ class CartController extends AbstractController
                 ]
             ]);
 
+            $this->addFlash('success', 'Cart updated successfully.');
             return $this->redirectToRoute('cart_show');
 
         } catch (Throwable $e) {
@@ -163,6 +165,7 @@ class CartController extends AbstractController
                 ]
             ]);
 
+            $this->addFlash('success', sprintf('"%s" removed from your cart.', $product->getName()));
             return $this->redirectToRoute('cart_show');
 
         } catch (Throwable $e) {
