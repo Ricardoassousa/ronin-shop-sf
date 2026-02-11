@@ -127,7 +127,6 @@ class CheckoutController extends AbstractController
                     LogLevel::NOTICE
                 );
 
-                $this->addFlash('success', 'Shipping address saved successfully.');
                 return $this->redirectToRoute('checkout_summary');
             }
 
@@ -223,9 +222,16 @@ class CheckoutController extends AbstractController
                 return $this->redirectToRoute('cart_show');
             }
 
+            $total = 0.0;
+            foreach ($cart->getItems() as $cartItem) {
+                $product = $cartItem->getProduct();
+                $total += $product->getTotalPrice() * $cartItem->getQuantity();
+            }
+
             return $this->render('checkout/summary.html.twig', [
                 'cart' => $cart,
-                'cartAddress' => $cartAddress
+                'cartAddress' => $cartAddress,
+                'total' => $total
             ]);
 
         } catch (Throwable $e) {

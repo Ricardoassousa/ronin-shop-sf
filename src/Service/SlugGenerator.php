@@ -48,18 +48,19 @@ class SlugGenerator
     }
 
     /**
-     * Generates a unique slug for a given product name.
+     * Generates a unique slug for a given product or category name.
      *
      * The method will attempt to generate a slug and, if a conflict is found in the database,
      * it will append a numeric suffix. If a unique slug cannot be generated after a maximum
      * number of attempts, a LogicException is thrown.
      *
      * @param string $name
+     * @param string $entityClass
      * @return string
      * @throws InvalidArgumentException
      * @throws LogicException
      */
-    public function generate(string $name): string
+    public function generate(string $name, string $entityClass): string
     {
         if (empty(trim($name))) {
             $this->analyticsLogger->log(
@@ -95,7 +96,7 @@ class SlugGenerator
             LogLevel::INFO
         );
 
-        while ($this->em->getRepository(Product::class)->findOneBySlug($slug)) {
+        while ($this->em->getRepository($entityClass)->findOneBySlug($slug)) {
             $slug = $baseSlug . '-' . $index;
             $index++;
 

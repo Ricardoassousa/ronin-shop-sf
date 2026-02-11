@@ -27,9 +27,6 @@ class CategoryType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Category Name',
             ])
-            ->add('slug', TextType::class, [
-                'label' => 'Slug',
-            ])
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false

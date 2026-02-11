@@ -20,7 +20,6 @@
 
         <div class="card shadow-sm p-4 mb-4">
             {{ form_start(searchForm) }}
-
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
@@ -29,7 +28,6 @@
                         {{ form_errors(searchForm.name) }}
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.sku) }}
@@ -39,7 +37,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.minPrice) }}
@@ -47,7 +45,6 @@
                         {{ form_errors(searchForm.minPrice) }}
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.maxPrice) }}
@@ -57,7 +54,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.stock) }}
@@ -65,7 +62,6 @@
                         {{ form_errors(searchForm.stock) }}
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.category) }}
@@ -75,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.startDate) }}
@@ -83,7 +79,6 @@
                         {{ form_errors(searchForm.startDate) }}
                     </div>
                 </div>
-
                 <div class="col-md-6">
                     <div class="form-group">
                         {{ form_label(searchForm.endDate) }}
@@ -95,7 +90,7 @@
 
             {% do searchForm.shortDescription.setRendered() %}
 
-            <button class="btn btn-primary mt-2">{{ button_label|default('Search') }}</button>
+            <button class="btn btn-primary mt-3">{{ button_label|default('Search') }}</button>
             {{ form_end(searchForm) }}
         </div>
 

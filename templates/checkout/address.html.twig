@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Checkout - Address{% endblock %}
+{% block title %}Checkout - Shipping Address{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-lg-8 col-md-10 col-sm-12">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h2 class="card-title mb-4 text-center">Shipping Address</h2>
@@ -20,69 +20,102 @@
 
                         {{ form_start(form) }}
 
-                        <div class="mb-3">
-                            {{ form_label(form.primaryAddress) }}
-                            {{ form_widget(form.primaryAddress, {
-                                'attr': {'class': 'form-control' ~ (form.primaryAddress.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.primaryAddress.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.primaryAddress) }}
+                                    {{ form_widget(form.primaryAddress, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.primaryAddress.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.primaryAddress.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.secondaryAddress) }}
+                                    {{ form_widget(form.secondaryAddress, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.secondaryAddress.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.secondaryAddress.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.city) }}
+                                    {{ form_widget(form.city, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.city.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.state) }}
+                                    {{ form_widget(form.state, {
+                                        'attr': {
+                                            'class': 'form-select' ~ (form.state.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.state.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.postalCode) }}
+                                    {{ form_widget(form.postalCode, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.postalCode.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    {{ form_label(form.country) }}
+                                    {{ form_widget(form.country, {
+                                        'attr': {
+                                            'class': 'form-select' ~ (form.country.vars.errors|length ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    {% for error in form.country.vars.errors %}
+                                        <div class="invalid-feedback">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div class="mb-3">
-                            {{ form_label(form.secondaryAddress) }}
-                            {{ form_widget(form.secondaryAddress, {
-                                'attr': {'class': 'form-control' ~ (form.secondaryAddress.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.secondaryAddress.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
+                        <div class="d-grid gap-3 mt-3">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                Continue to Summary
+                            </button>
+                            <a href="{{ path('cart_show') }}" class="btn btn-secondary btn-block">
+                                Back to Address
+                            </a>
                         </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.city) }}
-                            {{ form_widget(form.city, {
-                                'attr': {'class': 'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.city.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.state) }}
-                            {{ form_widget(form.state, {
-                                'attr': {'class': 'form-select' ~ (form.state.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.state.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.postalCode) }}
-                            {{ form_widget(form.postalCode, {
-                                'attr': {'class': 'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.postalCode.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.country) }}
-                            {{ form_widget(form.country, {
-                                'attr': {'class': 'form-select' ~ (form.country.vars.errors|length ? ' is-invalid' : '')}
-                            }) }}
-                            {% for error in form.country.vars.errors %}
-                                <div class="invalid-feedback">{{ error.message }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <button class="btn btn-primary mt-3">
-                            Continue to Summary
-                        </button>
 
                         {{ form_end(form) }}
                     </div>

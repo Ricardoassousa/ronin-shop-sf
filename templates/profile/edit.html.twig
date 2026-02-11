@@ -38,7 +38,6 @@
                                     'class': 'form-control ' ~ (profileForm.password.first.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in profileForm.password.first.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}
@@ -53,7 +52,6 @@
                                     'class': 'form-control ' ~ (profileForm.password.second.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in profileForm.password.second.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}

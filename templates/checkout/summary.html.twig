@@ -37,7 +37,7 @@
                                     <li class="list-group-item">
                                         <div class="d-flex justify-content-between">
                                             <span>{{ item.product.name }}</span>
-                                            {# <span>{{ item.quantity }} x {{ item.product.price|number_format(2, '.', ',') }} {{ currency }}</span> #}
+                                            <span>{{ item.quantity }} x {{ item.product.getTotalPrice()|number_format(2, '.', ',') }} USD</span>
                                         </div>
                                     </li>
                                 {% endfor %}
@@ -49,13 +49,13 @@
                         <h4>Total</h4>
                         <div class="mb-4">
                             <p class="lead">
-                                {# Total: {{ cart.totalPrice|number_format(2, '.', ',') }} {{ currency }} #}
+                                Total: {{ total|number_format(2, '.', ',') }} USD
                             </p>
                         </div>
 
-                        <div class="text-center">
-                            <a href="{{ path('checkout_address') }}" class="btn btn-secondary">Back to Address</a>
-                            <a href="{{ path('checkout_confirm') }}" class="btn btn-primary">Confirm Order</a>
+                        <div class="d-grid gap-3">
+                            <a href="{{ path('checkout_confirm') }}" class="btn btn-primary btn-block">Confirm Order</a>
+                            <a href="{{ path('checkout_address') }}" class="btn btn-secondary btn-block">Back to Address</a>
                         </div>
                     </div>
                 </div>

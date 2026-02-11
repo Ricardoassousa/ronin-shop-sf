@@ -176,10 +176,10 @@ class ResetPasswordController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $data = $form->getData();
                 $user = $resetToken->getUser();
+                $password = $form->get('password')->getData();
 
-                $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
                 $user->setPassword($hashedPassword);
 
@@ -199,7 +199,6 @@ class ResetPasswordController extends AbstractController
                     LogLevel::NOTICE
                 );
 
-                $this->addFlash('success', 'Your password has been reset successfully. You can now log in.');
                 return $this->redirectToRoute('app_login');
             }
 

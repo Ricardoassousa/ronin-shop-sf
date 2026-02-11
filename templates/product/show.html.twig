@@ -22,7 +22,10 @@
 
                 {% if product.image %}
                     <div class="text-center mb-4">
-                        <img src="{{ asset('uploads/products/' ~ product.image) }}" alt="{{ product.name }}" class="img-fluid" style="max-width:300px;">
+                        <img src="{{ asset('uploads/products/' ~ product.image) }}"
+                             alt="{{ product.name }}"
+                             class="img-fluid"
+                             style="max-width:300px;">
                     </div>
                 {% endif %}
 
@@ -38,9 +41,9 @@
                     <li class="list-group-item"><strong>Description:</strong> {{ product.description }}</li>
                 </ul>
 
-                <div class="mt-4 d-flex justify-content-between">
-                    <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-warning">Edit</a>
-                    <a href="{{ path('product_index') }}" class="btn btn-secondary">Back to list</a>
+                <div class="mt-4 d-flex justify-content-between flex-column">
+                    <a href="{{ path('product_edit', { id: product.id }) }}" class="btn btn-warning btn-block mb-2">Edit</a>
+                    <a href="{{ path('product_index') }}" class="btn btn-secondary btn-block">Back to list</a>
                 </div>
             </div>
         </div>

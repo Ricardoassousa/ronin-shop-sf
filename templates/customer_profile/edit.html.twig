@@ -22,7 +22,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.firstName) }}
-                            {{ form_widget(form.firstName, {'attr': {'class': 'form-control' ~ (form.firstName.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.firstName, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.firstName.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.firstName.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -30,7 +34,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.surname) }}
-                            {{ form_widget(form.surname, {'attr': {'class': 'form-control' ~ (form.surname.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.surname, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.surname.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.surname.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -38,7 +46,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.phone) }}
-                            {{ form_widget(form.phone, {'attr': {'class': 'form-control' ~ (form.phone.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.phone, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.phone.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.phone.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -46,7 +58,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.countryPrefixCode) }}
-                            {{ form_widget(form.countryPrefixCode, {'attr': {'class': 'form-control' ~ (form.countryPrefixCode.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.countryPrefixCode, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.countryPrefixCode.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.countryPrefixCode.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -54,7 +70,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.primaryAddress) }}
-                            {{ form_widget(form.primaryAddress, {'attr': {'class': 'form-control' ~ (form.primaryAddress.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.primaryAddress, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.primaryAddress.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.primaryAddress.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -62,7 +82,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.secondaryAddress) }}
-                            {{ form_widget(form.secondaryAddress, {'attr': {'class': 'form-control' ~ (form.secondaryAddress.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.secondaryAddress, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.secondaryAddress.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.secondaryAddress.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -70,7 +94,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.city) }}
-                            {{ form_widget(form.city, {'attr': {'class': 'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.city, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.city.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.city.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -78,7 +106,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.country) }}
-                            {{ form_widget(form.country, {'attr': {'class': 'form-select' ~ (form.country.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.country, {
+                                'attr': {
+                                    'class': 'form-select' ~ (form.country.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.country.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -86,7 +118,11 @@
 
                         <div class="mb-3">
                             {{ form_label(form.state) }}
-                            {{ form_widget(form.state, {'attr': {'class': 'form-select' ~ (form.state.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.state, {
+                                'attr': {
+                                    'class': 'form-select' ~ (form.state.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.state.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
@@ -94,13 +130,19 @@
 
                         <div class="mb-3">
                             {{ form_label(form.postalCode) }}
-                            {{ form_widget(form.postalCode, {'attr': {'class': 'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')}}) }}
+                            {{ form_widget(form.postalCode, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.postalCode.vars.errors|length ? ' is-invalid' : '')
+                                }
+                            }) }}
                             {% for error in form.postalCode.vars.errors %}
                                 <div class="invalid-feedback">{{ error.message }}</div>
                             {% endfor %}
                         </div>
 
-                        <button class="btn btn-primary mt-2">{{ button_label|default('Save') }}</button>
+                        <div class="d-grid mt-3">
+                            <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+                        </div>
 
                         {{ form_end(form) }}
                     </div>

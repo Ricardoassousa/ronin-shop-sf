@@ -124,7 +124,6 @@ class CartController extends AbstractController
                 ]
             ]);
 
-            $this->addFlash('success', 'Cart updated successfully.');
             return $this->redirectToRoute('cart_show');
 
         } catch (Throwable $e) {

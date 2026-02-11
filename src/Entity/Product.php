@@ -306,6 +306,18 @@ class Product
     }
 
     /**
+     * @return float
+     */
+    public function getTotalPrice(): float
+    {
+        if ($this->discountPrice == null || $this->discountPrice <= 0) {
+            return $this->price;
+        }
+
+        return $this->price * (1 - $this->discountPrice);
+    }
+
+    /**
      * @return int
      */
     public function getStock(): int

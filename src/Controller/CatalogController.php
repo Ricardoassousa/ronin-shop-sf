@@ -176,7 +176,7 @@ class CatalogController extends AbstractController
 
             if ($product->getSlug() != $slug) {
                 $this->addFlash('info', 'The product URL was updated to the latest version.');
-                return $this->redirectToRoute('product_show', [
+                return $this->redirectToRoute('catalog_show', [
                     'id' => $product->getId(),
                     'slug' => $product->getSlug(),
                 ], 301);

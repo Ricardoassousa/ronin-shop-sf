@@ -166,7 +166,7 @@ class ProductController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $slug = $slugGenerator->generate($product->getName());
+                $slug = $slugGenerator->generate($product->getName(), Product::class);
                 $product->setSlug($slug);
                 $em->persist($product);
                 $em->flush();
@@ -231,7 +231,7 @@ class ProductController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $oldSlug = $product->getSlug();
-                $newSlug = $slugGenerator->generate($product->getName());
+                $newSlug = $slugGenerator->generate($product->getName(), Product::class);
 
                 if ($oldSlug != $newSlug) {
                     $product->setSlug($newSlug);

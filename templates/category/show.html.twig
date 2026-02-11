@@ -8,20 +8,30 @@
 
 {% block body %}
     <div class="container mt-5">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h2 class="card-title mb-4 text-center">{{ category.name }}</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="card-title mb-4 text-center">{{ category.name }}</h2>
 
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Name:</strong> {{ category.name }}</li>
-                    <li class="list-group-item"><strong>Slug:</strong> {{ category.slug }}</li>
-                    <li class="list-group-item"><strong>Description:</strong> {{ category.description }}</li>
-                    <li class="list-group-item"><strong>Active:</strong> {{ category.isActive ? 'Yes' : 'No' }}</li>
-                </ul>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Name:</strong> {{ category.name }}</li>
+                            <li class="list-group-item"><strong>Slug:</strong> {{ category.slug }}</li>
+                            <li class="list-group-item"><strong>Description:</strong> {{ category.description }}</li>
+                            <li class="list-group-item"><strong>Active:</strong> {{ category.isActive ? 'Yes' : 'No' }}</li>
+                        </ul>
 
-                <div class="mt-4 d-flex justify-content-between">
-                    <a href="{{ path('category_edit', { id: category.id }) }}" class="btn btn-warning">Edit</a>
-                    <a href="{{ path('category_index') }}" class="btn btn-secondary">Back to list</a>
+                        <div class="mt-4">
+                            <div class="d-grid gap-3">
+                                <a href="{{ path('category_edit', { id: category.id }) }}" class="btn btn-warning">
+                                    Edit
+                                </a>
+                                <a href="{{ path('category_index') }}" class="btn btn-secondary">
+                                    Back to list
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

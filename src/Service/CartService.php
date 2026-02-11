@@ -446,7 +446,7 @@ class CartService
                 continue;
             }
 
-            $price = max(0, $product->getPrice());
+            $price = max(0, $product->getTotalPrice());
             $quantity = max(0, $item->getQuantity());
 
             $total += $price * $quantity;
