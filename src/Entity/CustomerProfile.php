@@ -88,6 +88,7 @@ class CustomerProfile
     public function __construct()
     {
         $this->createdAt = new DateTime();
+        $this->country = '';
     }
 
     /**

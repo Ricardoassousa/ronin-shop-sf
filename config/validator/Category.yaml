@@ -9,16 +9,6 @@ App\Entity\Category:
                 minMessage: "Category name must have at least {{ limit }} characters"
                 maxMessage: "Category name cannot exceed {{ limit }} characters"
 
-        slug:
-            - NotBlank:
-                message: "Slug cannot be empty"
-            - Length:
-                max: 100
-                maxMessage: "Slug cannot exceed {{ limit }} characters"
-            - Regex:
-                pattern: '/^[a-z0-9]+(?:-[a-z0-9]+)*$/'
-                message: "Slug must contain only lowercase letters, numbers and hyphens"
-
         description:
             - Length:
                 max: 1000
