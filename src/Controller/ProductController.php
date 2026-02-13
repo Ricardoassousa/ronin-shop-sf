@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\OrderItem;
 use App\Entity\Product;
 use App\Entity\ProductSearch;
 use App\Form\ProductSearchType;
@@ -53,7 +54,9 @@ class ProductController extends AbstractController
                 $sku = $searchForm['sku']->getData();
                 $minPrice = $searchForm['minPrice']->getData();
                 $maxPrice = $searchForm['maxPrice']->getData();
-                $stock = $searchForm['stock']->getData();
+                $availability = $searchForm['availability']->getData();
+                $onSale = $searchForm['onSale']->getData();
+                $sort = $searchForm['sort']->getData();
                 $category = $searchForm['category']->getData();
                 $startDate = $searchForm['startDate']->getData();
                 $endDate = $searchForm['endDate']->getData();
@@ -75,8 +78,16 @@ class ProductController extends AbstractController
                     $searchParams['maxPrice'] = $maxPrice;
                 }
 
-                if (isset($stock)) {
-                    $searchParams['stock'] = $stock;
+                if (isset($availability)) {
+                    $searchParams['availability'] = $availability;
+                }
+
+                if (isset($onSale)) {
+                    $searchParams['onSale'] = $onSale;
+                }
+
+                if (isset($sort)) {
+                    $searchParams['sort'] = $sort;
                 }
 
                 if ($category instanceof Category) {
@@ -165,8 +176,12 @@ class ProductController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $slug = $slugGenerator->generate($product->getName());
+                $slug = $slugGenerator->generate($product->getName(), Product::class);
                 $product->setSlug($slug);
+                if ($product->getDiscountPrice() != null) {
+                    $product->setDiscountPrice($product->getDiscountPrice() / 100);
+                }
+                $product->setFinalPrice($product->calculateFinalPrice());
                 $em->persist($product);
                 $em->flush();
 
@@ -184,6 +199,7 @@ class ProductController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', 'Product created successfully.');
                 return $this->redirectToRoute('product_index');
             }
 
@@ -229,12 +245,16 @@ class ProductController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $oldSlug = $product->getSlug();
-                $newSlug = $slugGenerator->generate($product->getName());
+                $newSlug = $slugGenerator->generate($product->getName(), Product::class);
 
                 if ($oldSlug != $newSlug) {
                     $product->setSlug($newSlug);
                 }
 
+                if ($product->getDiscountPrice() != null) {
+                    $product->setDiscountPrice($product->getDiscountPrice() / 100);
+                }
+                $product->setFinalPrice($product->calculateFinalPrice());
                 $product->setUpdatedAt(new DateTime());
                 $em->flush();
 
@@ -265,6 +285,7 @@ class ProductController extends AbstractController
                     LogLevel::INFO
                 );
 
+                $this->addFlash('success', 'Product updated successfully.');
                 return $this->redirectToRoute('product_index');
             }
 
@@ -300,14 +321,18 @@ class ProductController extends AbstractController
     public function deleteAction(Request $request, Product $product, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger, StockLogger $stockLogger): Response
     {
         try {
-            if ($this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
-                $em->remove($product);
-                $em->flush();
+            if (!$this->isCsrfTokenValid('delete' . $product->getId(), $request->request->get('_token'))) {
+                $this->addFlash('danger', 'Invalid CSRF token.');
+                return $this->redirectToRoute('product_index');
+            }
 
+            $associatedOrderItem = $em->getRepository(OrderItem::class)->findOneBy(['product' => $product]);
+            if ($associatedOrderItem) {
                 $analyticsLogger->log(
-                    'Product deleted',
+                    'Attempted to delete product associated with an order',
                     [
                         'product_id' => $product->getId(),
+                        'order_item_id' => $associatedOrderItem->getId(),
                         'source' => [
                             'method' => __METHOD__,
                             'line' => __LINE__
@@ -316,20 +341,39 @@ class ProductController extends AbstractController
                     LogLevel::WARNING
                 );
 
-                $stockLogger->log(
-                    'Stock removed for deleted product',
-                    [
-                        'product_id' => $product->getId(),
-                        'source' => [
-                            'method' => __METHOD__,
-                            'line' => __LINE__
-                        ]
-                    ],
-                    LogLevel::INFO
-                );
+                $this->addFlash('danger', 'Cannot delete product. It is associated with existing orders.');
+                return $this->redirectToRoute('product_index');
             }
 
-            return $this->redirectToRoute('product_index');
+            $em->remove($product);
+            $em->flush();
+
+            $analyticsLogger->log(
+                'Product deleted',
+                [
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::WARNING
+            );
+
+            $stockLogger->log(
+                'Stock removed for deleted product',
+                [
+                    'product_id' => $product->getId(),
+                    'source' => [
+                        'method' => __METHOD__,
+                        'line' => __LINE__
+                    ]
+                ],
+                LogLevel::INFO
+            );
+
+        $this->addFlash('success', 'Product deleted successfully.');
+        return $this->redirectToRoute('product_index');
 
         } catch (Throwable $e) {
             $analyticsLogger->log(

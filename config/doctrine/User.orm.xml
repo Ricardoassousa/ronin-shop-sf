@@ -10,6 +10,13 @@
         <field name="email" type="string" column="email" length="255" unique="true"/>
         <field name="roles" type="json" column="roles"/>
         <field name="password" type="string" column="password" length="255"/>
+        <field name="createdAt" type="datetime" column="created_at">
+            <options>
+                <option name="default">CURRENT_TIMESTAMP</option>
+            </options>
+        </field>
+        <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>
+        <field name="lastLoginAt" type="datetime" column="last_login_at" nullable="true"/>
         <one-to-one field="customerProfile" target-entity="App\Entity\CustomerProfile" mapped-by="user" cascade="persist,remove"/>
         <one-to-many field="carts" target-entity="App\Entity\Cart" mapped-by="user" cascade="persist,remove"/>
         <one-to-many field="passwordResetTokens" target-entity="App\Entity\PasswordResetToken" mapped-by="user" cascade="persist,remove"/>

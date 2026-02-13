@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -39,9 +40,35 @@ class ProductSearchType extends AbstractType
                 'required' => false,
                 'label' => 'Max Price'
             ])
-            ->add('stock', IntegerType::class, [
+            ->add('availability', ChoiceType::class, [
                 'required' => false,
-                'label' => 'Stock'
+                'placeholder' => '',
+                'choices' => [
+                    'In Stock' => 'in_stock',
+                    'Out of Stock' => 'out_stock',
+                ],
+                'attr' => [
+                    'class' => 'form-select'
+                ]
+            ])
+            ->add('onSale', CheckboxType::class, [
+                'required' => false,
+                'label' => 'On Sale Only'
+            ])
+            ->add('sort', ChoiceType::class, [
+                'required' => false,
+                'placeholder' => 'Sort by...',
+                'choices' => [
+                    'Price: Low to High' => 'price_asc',
+                    'Price: High to Low' => 'price_desc',
+                    'Name: A to Z' => 'name_asc',
+                    'Name: Z to A' => 'name_desc',
+                    'Newest' => 'newest',
+                    'Biggest Discount' => 'discount_desc',
+                ],
+                'attr' => [
+                    'class' => 'form-select'
+                ]
             ])
             ->add('startDate', DateType::class, [
                 'required' => false,

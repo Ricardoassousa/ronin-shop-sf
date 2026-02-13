@@ -15,20 +15,6 @@
 </div>
 
 <div class="mb-3">
-    {{ form_label(form.slug) }}
-    {{ form_widget(form.slug, {
-        attr: {
-            class: 'form-control' ~ (form.slug.vars.errors|length ? ' is-invalid' : '')
-        }
-    }) }}
-    {% for error in form.slug.vars.errors %}
-        <div class="invalid-feedback">
-            {{ error.message }}
-        </div>
-    {% endfor %}
-</div>
-
-<div class="mb-3">
     {{ form_label(form.description) }}
     {{ form_widget(form.description, {
         attr: {
@@ -49,7 +35,6 @@
         }
     }) }}
     {{ form_label(form.isActive, null, { label_attr: { class: 'form-check-label' } }) }}
-
     {% for error in form.isActive.vars.errors %}
         <div class="invalid-feedback d-block">
             {{ error.message }}
@@ -57,8 +42,10 @@
     {% endfor %}
 </div>
 
-<button class="btn btn-primary mt-2">
-    {{ button_label|default('Save') }}
-</button>
+<div class="d-grid">
+    <button class="btn btn-primary">
+        {{ button_label|default('Save') }}
+    </button>
+</div>
 
 {{ form_end(form) }}

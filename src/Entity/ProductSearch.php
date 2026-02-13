@@ -40,7 +40,17 @@ class ProductSearch
     /**
      * @var int|null
      */
-    private $stock;
+    private $availability;
+
+    /**
+     * @var bool|null
+     */
+    private $onSale;
+
+    /**
+     * @var string|null
+     */
+    private $sort;
 
     /**
      * Whether the product is active and visible.
@@ -160,21 +170,59 @@ class ProductSearch
     }
 
     /**
-     * @return int|null
+     * @return string|null
      */
-    public function getStock(): ?int
+    public function getAvailability(): ?string
     {
-        return $this->stock;
+        return $this->availability;
     }
 
     /**
-     * @param int|null $stock
+     * @param string|null $availability
      *
      * @return $this
      */
-    public function setStock(?int $stock): self
+    public function setAvailability(?string $availability): self
     {
-        $this->stock = $stock;
+        $this->availability = $availability;
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isOnSale(): ?bool
+    {
+        return $this->onSale;
+    }
+
+    /**
+     * @param bool|null $onSale
+     *
+     * @return $this
+     */
+    public function setOnSale(?bool $onSale): self
+    {
+        $this->onSale = $onSale;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSort(): ?string
+    {
+        return $this->sort;
+    }
+
+    /**
+     * @param string|null $sort
+     *
+     * @return $this
+     */
+    public function setSort(?string $sort): self
+    {
+        $this->sort = $sort;
         return $this;
     }
 

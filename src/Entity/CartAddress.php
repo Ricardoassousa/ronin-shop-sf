@@ -21,7 +21,7 @@ class CartAddress
     private $primaryAddress;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $secondaryAddress;
 
@@ -59,6 +59,25 @@ class CartAddress
     }
 
     /**
+     * @return Cart
+     */
+    public function getCart(): Cart
+    {
+        return $this->cart;
+    }
+
+    /**
+     * @param Cart $cart
+     *
+     * @return $this
+     */
+    public function setCart(Cart $cart): self
+    {
+        $this->cart = $cart;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getPrimaryAddress(): string
@@ -78,19 +97,19 @@ class CartAddress
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSecondaryAddress(): string
+    public function getSecondaryAddress(): ?string
     {
         return $this->secondaryAddress;
     }
 
     /**
-     * @param string $secondaryAddress
+     * @param string|null $secondaryAddress
      *
      * @return $this
      */
-    public function setSecondaryAddress(string $secondaryAddress): self
+    public function setSecondaryAddress(?string $secondaryAddress): self
     {
         $this->secondaryAddress = $secondaryAddress;
         return $this;
@@ -169,25 +188,6 @@ class CartAddress
     public function setCountry(string $country): self
     {
         $this->country = $country;
-        return $this;
-    }
-
-    /**
-     * @return Cart
-     */
-    public function getCart(): Cart
-    {
-        return $this->cart;
-    }
-
-    /**
-     * @param Cart $cart
-     *
-     * @return $this
-     */
-    public function setCart(Cart $cart): self
-    {
-        $this->cart = $cart;
         return $this;
     }
 

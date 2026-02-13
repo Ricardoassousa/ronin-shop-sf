@@ -8,6 +8,7 @@ use App\Form\UserRolesType;
 use App\Logger\AnalyticsLogger;
 use App\Logger\OrderLogger;
 use App\Logger\SecurityLogger;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LogLevel;
@@ -153,6 +154,7 @@ class AdminController extends AbstractController
 
         try {
             if ($form->isSubmitted() && $form->isValid()) {
+                $user->setUpdatedAt(new Datetime());
                 $this->getDoctrine()->getManager()->flush();
 
                 $securityLogger->log(
@@ -194,6 +196,8 @@ class AdminController extends AbstractController
                 ],
                 LogLevel::ERROR
             );
+
+            throw($e);
         }
 
         return $this->render('admin/edit_user_roles.html.twig', [

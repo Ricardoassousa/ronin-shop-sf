@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -48,10 +49,17 @@ class ProductType extends AbstractType
                 'label' => 'Price',
                 'currency' => 'USD'
             ])
-            ->add('discountPrice', MoneyType::class, [
-                'label' => 'Discount Price',
-                'currency' => 'USD',
-                'required' => false
+            ->add('discountPrice', IntegerType::class, [
+                'label' => 'Discount (%)',
+                'required' => false,
+                'attr' => [
+                    'min' => 1,
+                    'max' => 99,
+                    'step' => 1
+                ],
+                'data' => isset($options['data']) && $options['data']->getDiscountPrice() != null
+                ? $options['data']->getDiscountPrice() * 100
+                : null,
             ])
             ->add('stock', IntegerType::class, [
                 'label' => 'Stock Quantity'

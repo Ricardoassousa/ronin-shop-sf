@@ -6,9 +6,11 @@ use App\Entity\Cart;
 use App\Entity\CustomerProfile;
 use App\Form\CustomerProfileType;
 use App\Logger\SecurityLogger;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -96,8 +98,9 @@ class CustomerProfileController extends AbstractController
             }
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $isNewProfile = $profile->getId() === null;
+                $isNewProfile = $profile->getId() == null;
 
+                $profile->setUpdatedAt(new Datetime());
                 $em->persist($profile);
                 $em->flush();
 
@@ -140,6 +143,41 @@ class CustomerProfileController extends AbstractController
 
             throw $e;
         }
+    }
+
+    /**
+     * Retrieve the list of states for a given country via AJAX.
+     *
+     * This method returns a JSON response containing the states/provinces
+     * associated with the provided country code. If the country code
+     * is not found, an empty array is returned.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getStatesAjaxAction(Request $request): JsonResponse
+    {
+        $country = $request->query->get('country');
+
+        $states = [
+            'US' => [
+                ['code' => 'AL', 'name' => 'Alabama'],
+                ['code' => 'CA', 'name' => 'California'],
+                ['code' => 'NY', 'name' => 'New York'],
+            ],
+            'CA' => [
+                ['code' => 'AB', 'name' => 'Alberta'],
+                ['code' => 'ON', 'name' => 'Ontario'],
+                ['code' => 'QC', 'name' => 'Quebec'],
+            ],
+            'BR' => [
+                ['code' => 'SP', 'name' => 'São Paulo'],
+                ['code' => 'RJ', 'name' => 'Rio de Janeiro'],
+                ['code' => 'MG', 'name' => 'Minas Gerais'],
+            ],
+        ];
+
+        return new JsonResponse($states[$country] ?? []);
     }
 
 }

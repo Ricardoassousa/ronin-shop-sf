@@ -63,14 +63,19 @@ class Product
     private $image;
 
     /**
-     * @var float
+     * @var string
      */
     private $price;
 
     /**
-     * @var float|null
+     * @var string|null
      */
     private $discountPrice;
+
+    /**
+     * @var string
+     */
+    private $finalPrice;
 
     /**
      * @var int
@@ -95,7 +100,9 @@ class Product
     private $updatedAt;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime.
      */
     public function __construct()
     {
@@ -268,41 +275,72 @@ class Product
     }
 
     /**
-     * @return float
+     * @return string
      */
-    public function getPrice(): float
+    public function getPrice(): string
     {
         return $this->price;
     }
 
     /**
-     * @param float $price
+     * @param string $price
      *
      * @return $this
      */
-    public function setPrice(float $price): self
+    public function setPrice(string $price): self
     {
         $this->price = $price;
         return $this;
     }
 
     /**
-     * @return float|null
+     * @return string|null
      */
-    public function getDiscountPrice(): ?float
+    public function getDiscountPrice(): ?string
     {
         return $this->discountPrice;
     }
 
     /**
-     * @param float|null $discountPrice
+     * @param string|null $discountPrice
      *
      * @return $this
      */
-    public function setDiscountPrice(?float $discountPrice): self
+    public function setDiscountPrice(?string $discountPrice): self
     {
         $this->discountPrice = $discountPrice;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFinalPrice(): string
+    {
+        return $this->finalPrice;
+    }
+
+    /**
+     * @param string $finalPrice
+     *
+     * @return $this
+     */
+    public function setFinalPrice(string $finalPrice): self
+    {
+        $this->finalPrice = $finalPrice;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function calculateFinalPrice(): string
+    {
+        if ($this->discountPrice == null || $this->discountPrice <= 0) {
+            return $this->price;
+        }
+
+        return $this->price * (1 - $this->discountPrice);
     }
 
     /**

@@ -41,8 +41,10 @@ App\Entity\Product:
                 message: "Price must be greater than zero"
 
         discountPrice:
-            - PositiveOrZero:
-                message: "Discount price must be zero or greater"
+            - Range:
+                min: 0
+                max: 99
+                notInRangeMessage: "Discount must be between {{ min }} and {{ max }}"
 
         stock:
             - NotNull:

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\User;
+use DateTime;
 
 /**
  * CustomerProfile
@@ -40,7 +41,7 @@ class CustomerProfile
     private $primaryAddress;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $secondaryAddress;
 
@@ -70,11 +71,50 @@ class CustomerProfile
     private $user;
 
     /**
+     * @var Datetime
+     */
+    private $createdAt;
+
+    /**
+     * @var Datetime
+     */
+    private $updatedAt;
+
+    /**
+     * Constructor to initialize default values for the entity.
+     *
+     * This constructor sets the creation date to the current DateTime.
+     */
+    public function __construct()
+    {
+        $this->createdAt = new DateTime();
+    }
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param string $user
+     *
+     * @return $this
+     */
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+        return $this;
     }
 
     /**
@@ -173,19 +213,19 @@ class CustomerProfile
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSecondaryAddress(): string
+    public function getSecondaryAddress(): ?string
     {
         return $this->secondaryAddress;
     }
 
     /**
-     * @param string $secondaryAddress
+     * @param string|null $secondaryAddress
      *
      * @return $this
      */
-    public function setSecondaryAddress(string $secondaryAddress): self
+    public function setSecondaryAddress(?string $secondaryAddress): self
     {
         $this->secondaryAddress = $secondaryAddress;
         return $this;
@@ -268,21 +308,40 @@ class CustomerProfile
     }
 
     /**
-     * @return User
+     * @return Datetime
      */
-    public function getUser(): User
+    public function getCreatedAt(): Datetime
     {
-        return $this->user;
+        return $this->createdAt;
     }
 
     /**
-     * @param string $user
+     * @param Datetime $createdAt
      *
      * @return $this
      */
-    public function setUser(User $user): self
+    public function setCreatedAt(Datetime $createdAt): self
     {
-        $this->user = $user;
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return Datetime
+     */
+    public function getUpdatedAt(): Datetime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param Datetime $updatedAt
+     *
+     * @return $this
+     */
+    public function setUpdatedAt(Datetime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
