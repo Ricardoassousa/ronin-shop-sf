@@ -43,7 +43,9 @@ class CartItem
     private $updatedAt;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime.
      */
     public function __construct()
     {

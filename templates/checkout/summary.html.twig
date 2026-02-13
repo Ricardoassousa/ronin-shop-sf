@@ -37,7 +37,7 @@
                                     <li class="list-group-item">
                                         <div class="d-flex justify-content-between">
                                             <span>{{ item.product.name }}</span>
-                                            <span>{{ item.quantity }} x {{ item.product.getTotalPrice()|number_format(2, '.', ',') }} USD</span>
+                                            <span>${{ item.quantity }} x {{ item.product.finalPrice|number_format(2, '.', ',') }}</span>
                                         </div>
                                     </li>
                                 {% endfor %}
@@ -49,7 +49,7 @@
                         <h4>Total</h4>
                         <div class="mb-4">
                             <p class="lead">
-                                Total: {{ total|number_format(2, '.', ',') }} USD
+                                Total: ${{ total|number_format(2, '.', ',') }}
                             </p>
                         </div>
 

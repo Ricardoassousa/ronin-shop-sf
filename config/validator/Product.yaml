@@ -43,8 +43,8 @@ App\Entity\Product:
         discountPrice:
             - Range:
                 min: 0
-                max: 0.99
-                notInRangeMessage: "Discount price must be between {{ min }} and {{ max }}"
+                max: 99
+                notInRangeMessage: "Discount must be between {{ min }} and {{ max }}"
 
         stock:
             - NotNull:

@@ -66,11 +66,16 @@ class Cart
     private $items;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime
+     * and initializes the items collection to ensure it is ready
+     * for use when adding or removing related entities.
      */
     public function __construct()
     {
         $this->createdAt = new DateTime();
+        $this->status = self::STATUS_ACTIVE;
         $this->items = new ArrayCollection();
     }
 
@@ -197,7 +202,7 @@ class Cart
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
-            $item->setCategory($this);
+            $item->setCart($this);
         }
 
         return $this;

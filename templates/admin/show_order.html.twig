@@ -57,7 +57,7 @@
                                     <tr>
                                         <td>{{ item.product.name }}</td>
                                         <td>{{ item.quantity }}</td>
-                                        <td>{{ item.unitPrice|number_format(2, '.', ',') }} €</td>
+                                        <td>${{ item.unitPrice|number_format(2, '.', ',') }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

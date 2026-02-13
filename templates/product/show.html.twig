@@ -31,10 +31,26 @@
 
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item"><strong>SKU:</strong> {{ product.sku }}</li>
-                    <li class="list-group-item"><strong>Price:</strong> {{ product.price | number_format(2, '.', ',') }} USD</li>
-                    {% if product.discountPrice %}
-                        <li class="list-group-item"><strong>Discount Price:</strong> {{ product.discountPrice | number_format(2, '.', ',') }} USD</li>
-                    {% endif %}
+                    <li class="list-group-item"><strong>Price:</strong>
+                        {% if product.discountPrice and product.discountPrice > 0 %}
+                            <span class="text-muted text-decoration-line-through">
+                                ${{ product.price|number_format(2, '.', ',') }}
+                            </span>
+                            <span class="text-danger ms-2">
+                                ${{ product.finalPrice|number_format(2, '.', ',') }}
+                            </span>
+                        {% else %}
+                            ${{ product.price|number_format(2, '.', ',') }}
+                        {% endif %}
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Discount Price:</strong>
+                        {% if product.discountPrice and product.discountPrice > 0 %}
+                            {{ (product.discountPrice * 100)|number_format(0, '.', ',') }}%
+                        {% else %}
+                            <span class="text-muted">No discount</span>
+                        {% endif %}
+                    </li>
                     <li class="list-group-item"><strong>Stock:</strong> {{ product.stock ?: 'N/A' }}</li>
                     <li class="list-group-item"><strong>Active:</strong> {{ product.isActive ? 'Yes' : 'No' }}</li>
                     <li class="list-group-item"><strong>Short Description:</strong> {{ product.shortDescription }}</li>

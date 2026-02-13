@@ -43,7 +43,7 @@
                                 </td>
 
                                 <td class="text-center">
-                                    {{ item.product.getTotalPrice()|number_format(2, ',', '.') }} €
+                                    ${{ item.product.finalPrice|number_format(2, ',', '.') }}
                                 </td>
 
                                 <td class="text-center">
@@ -79,11 +79,10 @@
                                 </td>
 
                                 <td class="text-center">
-                                    {{ (item.product.getTotalPrice() * item.quantity)|number_format(2, ',', '.') }} €
+                                    ${{ (item.product.finalPrice * item.quantity)|number_format(2, ',', '.') }}
                                 </td>
 
                                 <td class="text-center">
-                                    <!-- Remove Modal Trigger -->
                                     <button type="button"
                                             class="btn btn-sm btn-danger"
                                             data-bs-toggle="modal"
@@ -91,7 +90,6 @@
                                         Remove
                                     </button>
 
-                                    <!-- Remove Modal -->
                                     <div class="modal fade"
                                          id="removeModal{{ item.product.id }}"
                                          tabindex="-1"
@@ -132,7 +130,7 @@
                         <div class="card-body">
                             <h4>Total</h4>
                             <p class="fs-5">
-                                <strong>{{ total|number_format(2, ',', '.') }} €</strong>
+                                <strong>${{ total|number_format(2, ',', '.') }}</strong>
                             </p>
                             <a href="{{ path('checkout_address') }}" class="btn btn-success w-100 mb-2">Checkout</a>
                             <a href="{{ path('catalog_index') }}" class="btn btn-secondary w-100">Back to Catalog</a>

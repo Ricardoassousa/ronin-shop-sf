@@ -116,7 +116,7 @@
                             {% endfor %}
                         </div>
 
-                        <div class="mb-3">
+                        <div id="state-wrapper" class="mb-3">
                             {{ form_label(form.state) }}
                             {{ form_widget(form.state, {
                                 'attr': {
@@ -150,4 +150,39 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var $country = $('#{{ form.country.vars.id }}');
+            var $stateWrapper = $('#state-wrapper');
+            var $stateSelect = $('#{{ form.state.vars.id }}');
+
+            var states = {
+                'US': {'AL': 'Alabama', 'CA': 'California', 'NY': 'New York'},
+                'CA': {'AB': 'Alberta', 'ON': 'Ontario', 'QC': 'Quebec'},
+                'BR': {'SP': 'São Paulo', 'RJ': 'Rio de Janeiro', 'MG': 'Minas Gerais'}
+            };
+
+            function updateStates(country) {
+                var selected = $stateSelect.val(); // take the value if selected value
+                $stateSelect.html('<option value=""></option>'); // clear options
+
+                if (states[country]) {
+                    $.each(states[country], function(code, name) {
+                        // mark as selected if current value
+                        var selectedAttr = (code == selected) ? ' selected' : '';
+                        $stateSelect.append('<option value="' + code + '"' + selectedAttr + '>' + name + '</option>');
+                    });
+                    $stateWrapper.show();
+                } else {
+                    $stateWrapper.hide();
+                }
+            }
+        });
+    </script>
 {% endblock %}

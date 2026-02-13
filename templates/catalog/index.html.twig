@@ -12,63 +12,77 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.name) }}
-                        {{ form_widget(searchForm.name, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.name) }}
+                    {{ form_label(searchForm.name) }}
+                    {{ form_widget(searchForm.name, {'attr': {'class': 'form-control'}}) }}
+                    <div class="form-text text-muted small">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Partial matches supported.
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.shortDescription) }}
-                        {{ form_widget(searchForm.shortDescription, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.shortDescription) }}
+                    {{ form_label(searchForm.shortDescription) }}
+                    {{ form_widget(searchForm.shortDescription, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Price Range</label>
+                    <div id="price-slider"></div>
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-muted">
+                            Min: $<span id="min-price"></span>
+                        </small>
+                        <small class="text-muted">
+                            Max: $<span id="max-price"></span>
+                        </small>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-3 mt-2">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.minPrice) }}
-                        {{ form_widget(searchForm.minPrice, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.minPrice) }}
-                    </div>
+            {{ form_widget(searchForm.minPrice, {'attr': {'hidden': true}}) }}
+            {{ form_widget(searchForm.maxPrice, {'attr': {'hidden': true}}) }}
+
+            <div class="row g-3 mt-4">
+
+                <div class="col-md-4">
+                    {{ form_label(searchForm.category) }}
+                    {{ form_widget(searchForm.category, {'attr': {'class': 'form-select'}}) }}
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.maxPrice) }}
-                        {{ form_widget(searchForm.maxPrice, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.maxPrice) }}
-                    </div>
+                <div class="col-md-4">
+                    {{ form_label(searchForm.availability) }}
+                    {{ form_widget(searchForm.availability, {'attr': {'class': 'form-select'}}) }}
                 </div>
+
+                <div class="col-md-4">
+                    {{ form_label(searchForm.sort) }}
+                    {{ form_widget(searchForm.sort, {'attr': {'class': 'form-select'}}) }}
+                </div>
+
             </div>
 
-            <div class="row g-3 mt-2">
+            <div class="row mt-4 align-items-center">
                 <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.stock) }}
-                        {{ form_widget(searchForm.stock, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.stock) }}
+                    <div class="form-check">
+                        {{ form_widget(searchForm.onSale, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(searchForm.onSale, null, {'label_attr': {'class': 'form-check-label'}}) }}
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="form-group">
-                        {{ form_label(searchForm.category) }}
-                        {{ form_widget(searchForm.category, {'attr': {'class': 'form-control'}}) }}
-                        {{ form_errors(searchForm.category) }}
-                    </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-primary px-4">
+                        <i class="bi bi-search me-1"></i>
+                        {{ button_label|default('Search') }}
+                    </button>
                 </div>
             </div>
 
             {% do searchForm.sku.setRendered() %}
             {% do searchForm.startDate.setRendered() %}
             {% do searchForm.endDate.setRendered() %}
-
-            <button class="btn btn-primary mt-3">{{ button_label|default('Search') }}</button>
 
             {{ form_end(searchForm) }}
         </div>
@@ -93,13 +107,13 @@
                             <p class="fw-bold mb-2">
                                 {% if product.discountPrice and product.discountPrice > 0 %}
                                     <span class="text-muted text-decoration-line-through">
-                                        {{ product.price|number_format(2, '.', ',') }} USD
+                                        ${{ product.price|number_format(2, '.', ',') }}
                                     </span>
                                     <span class="text-danger ms-2">
-                                        {{ product.getTotalPrice()|number_format(2, '.', ',') }} USD
+                                        ${{ product.finalPrice|number_format(2, '.', ',') }}
                                     </span>
                                 {% else %}
-                                    {{ product.price|number_format(2, '.', ',') }} USD
+                                    ${{ product.price|number_format(2, '.', ',') }}
                                 {% endif %}
                             </p>
 
@@ -155,4 +169,47 @@
 
 {% block javascripts %}
     {{ parent() }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var slider = document.getElementById('price-slider');
+
+            if (!slider || typeof noUiSlider === 'undefined') {
+                return;
+            }
+
+            var minInput = document.getElementById('{{ searchForm.minPrice.vars.id }}');
+            var maxInput = document.getElementById('{{ searchForm.maxPrice.vars.id }}');
+
+            var minDisplay = document.getElementById('min-price');
+            var maxDisplay = document.getElementById('max-price');
+
+            var startMin = minInput.value ? parseInt(minInput.value) : 0;
+            var startMax = maxInput.value ? parseInt(maxInput.value) : 1000;
+
+            noUiSlider.create(slider, {
+                start: [startMin, startMax],
+                connect: true,
+                step: 10,
+                range: {
+                    'min': 0,
+                    'max': 1000
+                }
+            });
+
+            slider.noUiSlider.on('update', function (values) {
+
+                var min = Math.round(values[0]);
+                var max = Math.round(values[1]);
+
+                minInput.value = min;
+                maxInput.value = max;
+
+                minDisplay.innerText = min;
+                maxDisplay.innerText = max;
+            });
+
+        });
+    </script>
 {% endblock %}

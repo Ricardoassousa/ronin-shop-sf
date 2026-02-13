@@ -7,9 +7,15 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        <field name="unitPrice" type="float" column="unit_price" scale="2" precision="10"/>
-        <field name="subtotal" type="float" column="subtotal" scale="2" precision="10"/>
-        <field name="discount" type="float" column="discount" scale="2" precision="10" nullable="true"/>
+        <field name="productName" type="string" column="product_name" length="255"/>
+        <field name="productSlug" type="string" column="product_slug" length="255" nullable="true"/>
+        <field name="productSku" type="string" column="product_sku" length="100"/>
+        <field name="productShortDescription" type="string" column="product_short_description" nullable="true"/>
+        <field name="productImage" type="string" column="product_image" length="255" nullable="true"/>
+        <field name="unitPrice" type="decimal" column="unit_price" scale="2" precision="10"/>
+        <field name="subtotal" type="decimal" column="subtotal" scale="2" precision="10"/>
+        <field name="discount" type="decimal" column="discount" scale="2" precision="5" nullable="true"/>
+        <field name="finalPrice" type="decimal" column="final_price" scale="2" precision="10"/>
         <field name="quantity" type="integer" column="quantity"/>
         <field name="createdAt" type="datetime" column="created_at"/>
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true"/>

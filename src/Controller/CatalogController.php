@@ -82,19 +82,16 @@ class CatalogController extends AbstractController
                 );
 
                 $name = $searchForm['name']->getData();
-                $sku = $searchForm['sku']->getData();
                 $shortDescription = $searchForm['shortDescription']->getData();
                 $minPrice = $searchForm['minPrice']->getData();
                 $maxPrice = $searchForm['maxPrice']->getData();
-                $stock = $searchForm['stock']->getData();
+                $availability = $searchForm['availability']->getData();
+                $onSale = $searchForm['onSale']->getData();
+                $sort = $searchForm['sort']->getData();
                 $category = $searchForm['category']->getData();
 
                 if (!empty($name)) {
                     $searchParams['name'] = $name;
-                }
-
-                if (!empty($sku)) {
-                    $searchParams['sku'] = $sku;
                 }
 
                 if (!empty($shortDescription)) {
@@ -109,8 +106,16 @@ class CatalogController extends AbstractController
                     $searchParams['maxPrice'] = $maxPrice;
                 }
 
-                if (isset($stock)) {
-                    $searchParams['stock'] = $stock;
+                if (isset($availability)) {
+                    $searchParams['availability'] = $availability;
+                }
+
+                if (isset($onSale)) {
+                    $searchParams['onSale'] = $onSale;
+                }
+
+                if (isset($sort)) {
+                    $searchParams['sort'] = $sort;
                 }
 
                 if ($category instanceof Category) {

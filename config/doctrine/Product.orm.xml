@@ -13,8 +13,9 @@
         <field name="shortDescription" type="string" column="short_description" length="255"/>
         <field name="description" type="text" column="description"/>
         <field name="image" type="string" column="image" length="255" nullable="true"/>
-        <field name="price" type="float" column="price"/>
-        <field name="discountPrice" type="float" column="discount_price" nullable="true"/>
+        <field name="price" type="decimal" column="price" scale="2" precision="10"/>
+        <field name="discountPrice" type="decimal" column="discount_price" scale="2" precision="5" nullable="true"/>
+        <field name="finalPrice" type="decimal" column="final_price" scale="2" precision="10"/>
         <field name="stock" type="integer" column="stock"/>
         <field name="isActive" type="boolean" column="is_active"/>
         <field name="createdAt" type="datetime" column="created_at"/>

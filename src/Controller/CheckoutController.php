@@ -12,6 +12,7 @@ use App\Logger\PaymentLogger;
 use App\Service\CartService;
 use App\Service\EmailNotificationService;
 use App\Form\CartAddressType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -165,6 +166,7 @@ class CheckoutController extends AbstractController
     public function summaryAction(Request $request, EntityManagerInterface $em, OrderLogger $orderLogger): Response
     {
         try {
+            $total = 0.0;
             $user = $this->getUser();
 
             $orderLogger->log(
@@ -222,10 +224,9 @@ class CheckoutController extends AbstractController
                 return $this->redirectToRoute('cart_show');
             }
 
-            $total = 0.0;
             foreach ($cart->getItems() as $cartItem) {
                 $product = $cartItem->getProduct();
-                $total += $product->getTotalPrice() * $cartItem->getQuantity();
+                $total += $product->getFinalPrice() * $cartItem->getQuantity();
             }
 
             return $this->render('checkout/summary.html.twig', [
@@ -277,6 +278,7 @@ class CheckoutController extends AbstractController
      */
     public function confirmAction(Request $request, EntityManagerInterface $em, CartService $cartService, EmailNotificationService $emailNotificationService, OrderLogger $orderLogger, PaymentLogger $paymentLogger): Response
     {
+        $total = 0.0;
         $user = $this->getUser();
 
         try {
@@ -392,9 +394,18 @@ class CheckoutController extends AbstractController
                 $item = new OrderItem();
                 $item->setOrderShop($order);
                 $item->setProduct($product);
+                $item->setProductName($product->getName());
+                $item->setProductSlug($product->getSlug());
+                $item->setProductSku($product->getSku());
+                $item->setProductShortDescription($product->getShortDescription());
+                $item->setProductImage($product->getImage());
                 $item->setUnitPrice($product->getPrice());
                 $item->setQuantity($cartItem->getQuantity());
-                $item->setSubtotal($item->getUnitPrice() * $item->getQuantity());
+                $item->setFinalPrice($product->getFinalPrice());
+                $item->setSubtotal($item->getFinalPrice() * $item->getQuantity());
+                $item->setDiscount($product->getDiscountPrice());
+                $item->setUpdatedAt(new Datetime());
+                $total += $item->getSubTotal();
                 $em->persist($item);
 
                 $orderLogger->log(
@@ -410,8 +421,11 @@ class CheckoutController extends AbstractController
                     ],
                     LogLevel::DEBUG
                 );
+
             }
 
+            $order->setTotal($total);
+            $em->persist($order);
             $em->flush();
 
             $emailNotificationService->sendOrderConfirmation($order);

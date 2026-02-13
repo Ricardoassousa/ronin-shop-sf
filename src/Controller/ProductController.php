@@ -54,7 +54,9 @@ class ProductController extends AbstractController
                 $sku = $searchForm['sku']->getData();
                 $minPrice = $searchForm['minPrice']->getData();
                 $maxPrice = $searchForm['maxPrice']->getData();
-                $stock = $searchForm['stock']->getData();
+                $availability = $searchForm['availability']->getData();
+                $onSale = $searchForm['onSale']->getData();
+                $sort = $searchForm['sort']->getData();
                 $category = $searchForm['category']->getData();
                 $startDate = $searchForm['startDate']->getData();
                 $endDate = $searchForm['endDate']->getData();
@@ -76,8 +78,16 @@ class ProductController extends AbstractController
                     $searchParams['maxPrice'] = $maxPrice;
                 }
 
-                if (isset($stock)) {
-                    $searchParams['stock'] = $stock;
+                if (isset($availability)) {
+                    $searchParams['availability'] = $availability;
+                }
+
+                if (isset($onSale)) {
+                    $searchParams['onSale'] = $onSale;
+                }
+
+                if (isset($sort)) {
+                    $searchParams['sort'] = $sort;
                 }
 
                 if ($category instanceof Category) {
@@ -168,6 +178,10 @@ class ProductController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
                 $slug = $slugGenerator->generate($product->getName(), Product::class);
                 $product->setSlug($slug);
+                if ($product->getDiscountPrice() != null) {
+                    $product->setDiscountPrice($product->getDiscountPrice() / 100);
+                }
+                $product->setFinalPrice($product->calculateFinalPrice());
                 $em->persist($product);
                 $em->flush();
 
@@ -237,6 +251,10 @@ class ProductController extends AbstractController
                     $product->setSlug($newSlug);
                 }
 
+                if ($product->getDiscountPrice() != null) {
+                    $product->setDiscountPrice($product->getDiscountPrice() / 100);
+                }
+                $product->setFinalPrice($product->calculateFinalPrice());
                 $product->setUpdatedAt(new DateTime());
                 $em->flush();
 

@@ -8,6 +8,7 @@ use App\Entity\Product;
 use App\Entity\User;
 use App\Logger\CartLogger;
 use App\Logger\StockLogger;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\Exception\LogicException;
@@ -77,7 +78,6 @@ class CartService
         if (!$cart) {
             $cart = new Cart();
             $cart->setUser($user);
-            $cart->setStatus(Cart::STATUS_ACTIVE);
 
             $this->em->persist($cart);
             $this->em->flush();
@@ -399,6 +399,7 @@ class CartService
         }
 
         $item->setQuantity($quantity);
+        $item->setUpdatedAt(new Datetime());
         $this->em->flush();
 
         $this->cartLogger->log(
@@ -446,8 +447,8 @@ class CartService
                 continue;
             }
 
-            $price = max(0, $product->getTotalPrice());
-            $quantity = max(0, $item->getQuantity());
+            $price = $product->getFinalPrice();
+            $quantity = $item->getQuantity();
 
             $total += $price * $quantity;
         }

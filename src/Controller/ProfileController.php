@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Cart;
 use App\Form\UserProfileFormType;
 use App\Logger\SecurityLogger;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -92,9 +93,8 @@ class ProfileController extends AbstractController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 if ($form->get('password')->getData()) {
-                    $user->setPassword(
-                        $this->passwordEncoder->encodePassword($user, $form->get('password')->getData())
-                    );
+                    $user->setPassword($this->passwordEncoder->encodePassword($user, $form->get('password')->getData()));
+                    $user->setUpdatedAt(new Datetime());
 
                     $securityLogger->log(
                         'User password updated.',

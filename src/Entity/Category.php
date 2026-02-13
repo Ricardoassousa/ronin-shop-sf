@@ -55,7 +55,11 @@ class Category
     private $products;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime
+     * and initializes the items collection to ensure it is ready
+     * for use when adding or removing related entities.
      */
     public function __construct()
     {
