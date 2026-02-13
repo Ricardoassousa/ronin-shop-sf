@@ -16,12 +16,12 @@
                     {{ item.product.name }}
                     <small class="text-muted">× {{ item.quantity }}</small>
                 </span>
-                <span>{{ item.unitPrice }} €</span>
+                <span>${{ item.unitPrice }} </span>
             </li>
         {% endfor %}
     </ul>
 
     <p class="text-end">
-        {# <strong>Total: {{ order.total }} €</strong> #}
+        <strong>Total: ${{ order.total }} </strong>
     </p>
 {% endblock %}

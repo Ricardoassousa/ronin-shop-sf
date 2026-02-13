@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Logger\AnalyticsLogger;
+use App\Service\SlugGenerator;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LogLevel;
@@ -71,10 +72,11 @@ class CategoryController extends AbstractController
      *
      * @param Request $request
      * @param EntityManagerInterface $em
+     * @param SlugGenerator $slugGenerator
      * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function newAction(Request $request, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
+    public function newAction(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator, AnalyticsLogger $analyticsLogger): Response
     {
         try {
             $category = new Category();
@@ -82,6 +84,8 @@ class CategoryController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $slug = $slugGenerator->generate($category->getName(), Category::class);
+                $category->setSlug($slug);
                 $em->persist($category);
                 $em->flush();
 
@@ -98,6 +102,7 @@ class CategoryController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', sprintf('Category "%s" created successfully.', $category->getName()));
                 return $this->redirectToRoute('category_index');
             }
 
@@ -125,16 +130,25 @@ class CategoryController extends AbstractController
      * @param Request $request
      * @param Category $category
      * @param EntityManagerInterface $em
+     * @param SlugGenerator $slugGenerator
      * @param AnalyticsLogger $analyticsLogger
      * @return Response
      */
-    public function editAction(Request $request, Category $category, EntityManagerInterface $em, AnalyticsLogger $analyticsLogger): Response
+    public function editAction(Request $request, Category $category, EntityManagerInterface $em, SlugGenerator $slugGenerator, AnalyticsLogger $analyticsLogger): Response
     {
         try {
             $form = $this->createForm(CategoryType::class, $category);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+
+                $oldSlug = $category->getSlug();
+                $newSlug = $slugGenerator->generate($category->getName(), Category::class);
+
+                if ($oldSlug != $newSlug) {
+                    $category->setSlug($newSlug);
+                }
+
                 $category->setUpdatedAt(new DateTime());
                 $em->flush();
 
@@ -151,6 +165,7 @@ class CategoryController extends AbstractController
                     LogLevel::NOTICE
                 );
 
+                $this->addFlash('success', sprintf('Category "%s" updated successfully.', $category->getName()));
                 return $this->redirectToRoute('category_index');
             }
 
@@ -185,6 +200,11 @@ class CategoryController extends AbstractController
     {
         try {
             $emptyCategory = count($category->getProducts()) < 1;
+            if (!$emptyCategory) {
+                $this->addFlash('warning', 'Cannot delete category with associated products.');
+                return $this->redirectToRoute('category_index');
+            }
+
             if ($emptyCategory && $this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
                 $em->remove($category);
                 $em->flush();
@@ -203,6 +223,7 @@ class CategoryController extends AbstractController
                 );
             }
 
+            $this->addFlash('success', sprintf('Category "%s" deleted successfully.', $category->getName()));
             return $this->redirectToRoute('category_index');
 
         } catch (Throwable $e) {

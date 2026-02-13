@@ -24,11 +24,12 @@ class ProductRepository extends ServiceEntityRepository
     }
 
     /**
-    * Returns a QueryBuilder for filtering products
-    *
-    * @param array $searchParams
-    * @return QueryBuilder
-    */
+     * Returns a QueryBuilder for filtering products
+     *
+     * @param array $searchParams
+     * @param bool $isCatalog
+     * @return QueryBuilder
+     */
     public function findProductByFilterQuery(array $searchParams, bool $isCatalog = false)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
@@ -51,24 +52,37 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if (array_key_exists('minPrice', $searchParams) and array_key_exists('maxPrice', $searchParams)) {
-            $qb->andWhere('product.price BETWEEN :minPrice AND :maxPrice');
+            $qb->andWhere('product.finalPrice BETWEEN :minPrice AND :maxPrice');
             $qb->setParameter('minPrice', $searchParams['minPrice']);
             $qb->setParameter('maxPrice', $searchParams['maxPrice']);
         }
 
         if (array_key_exists('minPrice', $searchParams)) {
-            $qb->andWhere('product.price >= :minPrice');
+            $qb->andWhere('product.finalPrice >= :minPrice');
             $qb->setParameter('minPrice', $searchParams['minPrice']);
         }
 
         if (array_key_exists('maxPrice', $searchParams)) {
-            $qb->andWhere('product.price <= :maxPrice');
+            $qb->andWhere('product.finalPrice <= :maxPrice');
             $qb->setParameter('maxPrice', $searchParams['maxPrice']);
         }
 
-        if (array_key_exists('stock', $searchParams)) {
-            $qb->andWhere('product.stock = :stock');
-            $qb->setParameter('stock', $searchParams['stock']);
+        if (array_key_exists('availability', $searchParams)) {
+            if ($searchParams['availability'] == 'in_stock') {
+                $qb->andWhere('product.stock > :stock');
+                $qb->setParameter('stock', $searchParams['availability']);
+            }
+            if ($searchParams['availability'] == 'out_stock') {
+                $qb->andWhere('product.stock = :stock');
+                $qb->setParameter('stock', $searchParams['availability']);
+            }
+        }
+
+        if (array_key_exists('onSale', $searchParams)) {
+            if ($searchParams['onSale'] == true) {
+                $qb->andWhere('product.discountPrice IS NOT NULL');
+                $qb->andWhere('product.discountPrice > 0');
+            }
         }
 
         if ($isCatalog) {
@@ -97,7 +111,32 @@ class ProductRepository extends ServiceEntityRepository
             $qb->setParameter('updatedAt', $searchParams['endDate']);
         }
 
-        $qb->orderBy('product.createdAt', 'desc');
+        if (array_key_exists('sort', $searchParams)) {
+            switch ($searchParams['sort']) {
+                case 'price_asc':
+                    $qb->orderBy('product.finalPrice', 'ASC');
+                    break;
+                case 'price_desc':
+                    $qb->orderBy('product.finalPrice', 'DESC');
+                    break;
+                case 'name_asc':
+                    $qb->orderBy('product.name', 'ASC');
+                    break;
+                case 'name_desc':
+                    $qb->orderBy('product.name', 'DESC');
+                    break;
+                case 'newest':
+                    $qb->orderBy('product.createdAt', 'DESC');
+                    break;
+                case 'discount_desc':
+                    $qb->orderBy('product.discountPrice', 'DESC');
+                    break;
+                default:
+                    $qb->orderBy('product.id', 'DESC');
+            }
+        } else {
+            $qb->orderBy('product.id', 'DESC');
+        }
 
         return $qb->getQuery();
     }
@@ -109,7 +148,6 @@ class ProductRepository extends ServiceEntityRepository
     * It returns the Product entity if found, or null if no matching product exists.
     *
     * @param string $slug The slug to search for
-    *
     * @return Product|null The product entity if found, otherwise null
     */
     public function findOneBySlug(string $slug)

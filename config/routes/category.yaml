@@ -9,7 +9,7 @@ category_new:
     methods: [GET, POST]
 
 category_show:
-    path: /{id}
+    path: /{id}-{slug}
     controller: App\Controller\CategoryController::showAction
     methods: [GET]
 

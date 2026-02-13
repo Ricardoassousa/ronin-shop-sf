@@ -18,6 +18,10 @@ app_customer_profile:
     path: /customer-profile
     controller: App\Controller\CustomerProfileController::editAction
 
+app_customer_profile_states_ajax:
+    path: /customer-profile/states
+    controller: App\Controller\CustomerProfileController::getStatesAjaxAction
+
 app_forgot_password:
     path: /forgot-password
     controller: App\Controller\ResetPasswordController::forgotPasswordAction

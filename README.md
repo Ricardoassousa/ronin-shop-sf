@@ -93,9 +93,9 @@ The Ecommerce application implements the following main features:
 - [x] Product search endpoint
 
 ### UX/UI (Extra)
-- [ ] Breadcrumbs
-- [ ] Success/error alerts
-- [ ] Responsiveness (images, layout)
+- [x] Breadcrumbs
+- [x] Success/error alerts
+- [x] Responsiveness (images, layout)
 
 ## Technologies Used
 This project uses the following technologies and tools:

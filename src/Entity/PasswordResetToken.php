@@ -36,7 +36,10 @@ class PasswordResetToken
     private $expiresAt;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation and expiration date to the
+     * current DateTime.
      */
     public function __construct()
     {

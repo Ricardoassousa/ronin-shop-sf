@@ -12,14 +12,14 @@
 
                         {{ form_start(registrationForm) }}
 
+                        {# Email #}
                         <div class="mb-3">
                             {{ form_label(registrationForm.email) }}
                             {{ form_widget(registrationForm.email, {
                                 'attr': {
-                                'class': 'form-control ' ~ (registrationForm.email.vars.errors|length ? 'is-invalid' : '')
+                                    'class': 'form-control ' ~ (registrationForm.email.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in registrationForm.email.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}
@@ -27,6 +27,7 @@
                             {% endfor %}
                         </div>
 
+                        {# Password #}
                         <div class="mb-3">
                             {{ form_label(registrationForm.password.first, 'Password') }}
                             {{ form_widget(registrationForm.password.first, {
@@ -34,7 +35,6 @@
                                     'class': 'form-control ' ~ (registrationForm.password.first.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in registrationForm.password.first.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}
@@ -42,6 +42,7 @@
                             {% endfor %}
                         </div>
 
+                        {# Confirm Password #}
                         <div class="mb-3">
                             {{ form_label(registrationForm.password.second, 'Confirm Password') }}
                             {{ form_widget(registrationForm.password.second, {
@@ -49,7 +50,6 @@
                                     'class': 'form-control ' ~ (registrationForm.password.second.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in registrationForm.password.second.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}
@@ -57,6 +57,7 @@
                             {% endfor %}
                         </div>
 
+                        {# Submit button #}
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 Register
@@ -65,19 +66,19 @@
 
                         {{ form_end(registrationForm) }}
 
+                        {# Links #}
                         <div class="text-center mt-4">
                             <p class="mb-2 small text-muted">
                                 <a href="{{ path('app_login') }}"
-                                    class="link-secondary text-decoration-none d-inline-flex align-items-center gap-1">
+                                   class="link-secondary text-decoration-none d-inline-flex align-items-center gap-1">
                                     <i class="bi bi-box-arrow-in-left"></i>
                                     Already have an account? Login here
                                 </a>
                             </p>
-
                             <p class="small text-muted mb-0">
                                 <span>New here?</span>
                                 <a href="{{ path('app_forgot_password') }}"
-                                    class="fw-semibold text-decoration-none ms-1">
+                                   class="fw-semibold text-decoration-none ms-1">
                                     Forgot your password?
                                 </a>
                             </p>

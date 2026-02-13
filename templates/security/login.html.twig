@@ -14,21 +14,26 @@
                     <div class="card-body">
                         <h2 class="card-title mb-4 text-center">Login</h2>
 
+                        {# Error Alert #}
                         {% if error %}
                             <div class="alert alert-danger">
                                 {{ error.messageKey|trans(error.messageData, 'security') }}
                             </div>
                         {% endif %}
 
+                        {# Login Form #}
                         <form action="{{ path('app_login') }}" method="post">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Email:</label>
-                                <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" required autofocus>
+                                <input type="text" id="username" name="_username"
+                                       value="{{ last_username }}"
+                                       class="form-control" required autofocus>
                             </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password:</label>
-                                <input type="password" id="password" name="_password" class="form-control" required>
+                                <input type="password" id="password" name="_password"
+                                       class="form-control" required>
                             </div>
 
                             <div class="d-grid mb-4">
@@ -36,10 +41,11 @@
                             </div>
                         </form>
 
+                        {# Links #}
                         <div class="text-center mt-4">
                             <p class="mb-2 small text-muted">
                                 <a href="{{ path('app_forgot_password') }}"
-                                    class="link-secondary text-decoration-none d-inline-flex align-items-center gap-1">
+                                   class="link-secondary text-decoration-none d-inline-flex align-items-center gap-1">
                                     <i class="bi bi-lock"></i>
                                     Forgot your password?
                                 </a>
@@ -48,7 +54,7 @@
                             <p class="small text-muted mb-0">
                                 <span>New here?</span>
                                 <a href="{{ path('app_register') }}"
-                                    class="fw-semibold text-decoration-none ms-1">
+                                   class="fw-semibold text-decoration-none ms-1">
                                     Create an account
                                 </a>
                             </p>

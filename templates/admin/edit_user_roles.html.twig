@@ -3,50 +3,72 @@
 {% block title %}Edit User Roles{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
+    <div class="container mt-4 mt-md-5">
+
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-12 col-md-6">
+
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h2 class="card-title mb-4 text-center">Edit Roles for {{ user.email }}</h2>
+
+                        <h2 class="card-title mb-4 text-center">
+                            Edit Roles for {{ user.email }}
+                        </h2>
+
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
 
                         {{ form_start(form) }}
 
-                        <div class="mb-3">
-                            {{ form_label(form.roles) }}
+                            <div class="mb-3">
+                                {{ form_label(form.roles) }}
 
-                            <div class="form-check">
                                 {% for child in form.roles %}
                                     <div class="form-check">
                                         {{ form_widget(child, {
-                                            'attr': {
-                                                'class': 'form-check-input' ~ (child.vars.errors|length ? ' is-invalid' : '')
+                                            attr: {
+                                                class: 'form-check-input' ~ (child.vars.errors|length ? ' is-invalid' : '')
                                             }
                                         }) }}
-                                        {{ form_label(child, null, {'label_attr': {'class': 'form-check-label'}}) }}
+
+                                        {{ form_label(child, null, {
+                                            label_attr: { class: 'form-check-label' }
+                                        }) }}
+                                    </div>
+                                {% endfor %}
+
+                                {% for error in form.roles.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ error.message }}
                                     </div>
                                 {% endfor %}
                             </div>
 
-                            {% for error in form.roles.vars.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ error.message }}
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
-                        </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    Save Changes
+                                </button>
+                            </div>
 
                         {{ form_end(form) }}
 
                         <div class="mt-3 text-center">
-                            <a href="{{ path('admin_users_list') }}" class="btn btn-secondary">Back to Users list</a>
+                            <a href="{{ path('admin_users_list') }}"
+                               class="btn btn-secondary w-100 w-md-auto">
+                                Back to Users list
+                            </a>
                         </div>
+
                     </div>
                 </div>
+
             </div>
         </div>
+
     </div>
 {% endblock %}

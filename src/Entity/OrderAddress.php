@@ -21,7 +21,7 @@ class OrderAddress
     private $primaryAddress;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $secondaryAddress;
 
@@ -59,6 +59,25 @@ class OrderAddress
     }
 
     /**
+     * @return OrderShop
+     */
+    public function getOrderShop(): OrderShop
+    {
+        return $this->orderShop;
+    }
+
+    /**
+     * @param OrderShop $orderShop
+     *
+     * @return $this
+     */
+    public function setOrderShop(OrderShop $orderShop): self
+    {
+        $this->orderShop = $orderShop;
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getPrimaryAddress(): string
@@ -78,19 +97,19 @@ class OrderAddress
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSecondaryAddress(): string
+    public function getSecondaryAddress(): ?string
     {
         return $this->secondaryAddress;
     }
 
     /**
-     * @param string $secondaryAddress
+     * @param string|null $secondaryAddress
      *
      * @return $this
      */
-    public function setSecondaryAddress(string $secondaryAddress): self
+    public function setSecondaryAddress(?string $secondaryAddress): self
     {
         $this->secondaryAddress = $secondaryAddress;
         return $this;
@@ -169,25 +188,6 @@ class OrderAddress
     public function setCountry(string $country): self
     {
         $this->country = $country;
-        return $this;
-    }
-
-    /**
-     * @return OrderShop
-     */
-    public function getOrderShop(): OrderShop
-    {
-        return $this->orderShop;
-    }
-
-    /**
-     * @param OrderShop $orderShop
-     *
-     * @return $this
-     */
-    public function setOrderShop(OrderShop $orderShop): self
-    {
-        $this->orderShop = $orderShop;
         return $this;
     }
 

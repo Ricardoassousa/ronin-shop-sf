@@ -69,6 +69,11 @@ class OrderShop
     private $orderAddress;
 
     /**
+     * @var string
+     */
+    private $total;
+
+    /**
      * The current status of the order, which indicates whether the order is active, ordered, or expired.
      * 
      * Possible values include:
@@ -101,11 +106,16 @@ class OrderShop
     private $items;
 
     /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime
+     * and initializes the items collection to ensure it is ready
+     * for use when adding or removing related entities.
      */
     public function __construct()
     {
         $this->createdAt = new DateTime();
+        $this->status = self::STATUS_PENDING;
         $this->items = new ArrayCollection();
     }
 
@@ -152,6 +162,25 @@ class OrderShop
     public function setOrderAddress(OrderAddress $orderAddress): self
     {
         $this->orderAddress = $orderAddress;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTotal(): string
+    {
+        return $this->total;
+    }
+
+    /**
+     * @param string $total
+     *
+     * @return $this
+     */
+    public function setTotal(string $total): self
+    {
+        $this->total = $total;
         return $this;
     }
 
@@ -232,7 +261,7 @@ class OrderShop
     {
         if (!$this->items->contains($item)) {
             $this->items[] = $item;
-            $item->setCategory($this);
+            $item->setOrderShop($this);
         }
 
         return $this;

@@ -176,10 +176,10 @@ class ResetPasswordController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $data = $form->getData();
                 $user = $resetToken->getUser();
+                $password = $form->get('password')->getData();
 
-                $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
 
                 $user->setPassword($hashedPassword);
 

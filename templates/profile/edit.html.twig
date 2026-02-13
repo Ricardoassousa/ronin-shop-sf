@@ -10,10 +10,12 @@
                     <div class="card-body">
                         <h2 class="card-title mb-4 text-center">Edit Your Profile</h2>
 
-                        {% for message in app.flashes('success') %}
-                            <div class="alert alert-success">
-                                {{ message }}
-                            </div>
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
                         {% endfor %}
 
                         {{ form_start(profileForm) }}
@@ -36,7 +38,6 @@
                                     'class': 'form-control ' ~ (profileForm.password.first.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in profileForm.password.first.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}
@@ -51,7 +52,6 @@
                                     'class': 'form-control ' ~ (profileForm.password.second.vars.errors|length ? 'is-invalid' : '')
                                 }
                             }) }}
-
                             {% for error in profileForm.password.second.vars.errors %}
                                 <div class="invalid-feedback">
                                     {{ error.message }}

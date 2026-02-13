@@ -82,19 +82,16 @@ class CatalogController extends AbstractController
                 );
 
                 $name = $searchForm['name']->getData();
-                $sku = $searchForm['sku']->getData();
                 $shortDescription = $searchForm['shortDescription']->getData();
                 $minPrice = $searchForm['minPrice']->getData();
                 $maxPrice = $searchForm['maxPrice']->getData();
-                $stock = $searchForm['stock']->getData();
+                $availability = $searchForm['availability']->getData();
+                $onSale = $searchForm['onSale']->getData();
+                $sort = $searchForm['sort']->getData();
                 $category = $searchForm['category']->getData();
 
                 if (!empty($name)) {
                     $searchParams['name'] = $name;
-                }
-
-                if (!empty($sku)) {
-                    $searchParams['sku'] = $sku;
                 }
 
                 if (!empty($shortDescription)) {
@@ -109,8 +106,16 @@ class CatalogController extends AbstractController
                     $searchParams['maxPrice'] = $maxPrice;
                 }
 
-                if (isset($stock)) {
-                    $searchParams['stock'] = $stock;
+                if (isset($availability)) {
+                    $searchParams['availability'] = $availability;
+                }
+
+                if (isset($onSale)) {
+                    $searchParams['onSale'] = $onSale;
+                }
+
+                if (isset($sort)) {
+                    $searchParams['sort'] = $sort;
                 }
 
                 if ($category instanceof Category) {
@@ -161,13 +166,6 @@ class CatalogController extends AbstractController
     public function showAction(Product $product, string $slug, AnalyticsLogger $analyticsLogger): Response
     {
         try {
-            if ($product->getSlug() != $slug) {
-                return $this->redirectToRoute('product_show', [
-                    'id' => $product->getId(),
-                    'slug' => $product->getSlug(),
-                ], 301);
-            }
-
             $analyticsLogger->log(
                 'Product detail viewed',
                 [
@@ -180,6 +178,14 @@ class CatalogController extends AbstractController
                 ],
                 LogLevel::INFO
             );
+
+            if ($product->getSlug() != $slug) {
+                $this->addFlash('info', 'The product URL was updated to the latest version.');
+                return $this->redirectToRoute('catalog_show', [
+                    'id' => $product->getId(),
+                    'slug' => $product->getSlug(),
+                ], 301);
+            }
 
             return $this->render('catalog/show.html.twig', [
                 'product' => $product

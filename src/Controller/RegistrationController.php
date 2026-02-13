@@ -73,7 +73,6 @@ class RegistrationController extends AbstractController
 
                 if ($form->isValid()) {
                     $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-
                     $em->persist($user);
 
                     try {
@@ -107,6 +106,7 @@ class RegistrationController extends AbstractController
                         LogLevel::NOTICE
                     );
 
+                    $this->addFlash('success', 'Registration successful! You can now log in.');
                     return $this->redirectToRoute('app_login');
                 }
             }

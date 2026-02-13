@@ -6,6 +6,7 @@ use App\Entity\Cart;
 use App\Entity\CustomerProfile;
 use App\Entity\OrderShop;
 use App\Entity\PasswordResetToken;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -56,11 +57,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $passwordResetTokens;
 
     /**
+     * @var Datetime
+     */
+    private $createdAt;
+
+    /**
+     * @var Datetime
+     */
+    private $updatedAt;
+
+    /**
+     * @var Datetime
+     */
+    private $lastLoginAt;
+
+    /**
+     * Constructor to initialize default values for the entity.
      *
+     * This constructor sets the creation date to the current DateTime
+     * and initializes the items collection to ensure it is ready
+     * for use when adding or removing related entities.
      */
     public function __construct()
     {
+        $this->roles = ['ROLE_USER'];
+        $this->createdAt = new DateTime();
         $this->carts = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->passwordResetTokens = new ArrayCollection();
     }
 
     /**
@@ -69,6 +93,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return CustomerProfile|null
+     */
+    public function getCustomerProfile(): ?CustomerProfile
+    {
+        return $this->customerProfile;
+    }
+
+    /**
+     * @param CustomerProfile|null $customerProfile
+     *
+     * @return $this
+     */
+    public function setCustomerProfile(?CustomerProfile $customerProfile): self
+    {
+        if ($customerProfile->getUser() != $this) {
+            $customerProfile->setUser($this);
+        }
+        $this->customerProfile = $customerProfile;
+
+        return $this;
     }
 
     /**
@@ -155,25 +202,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function eraseCredentials() { }
 
     /**
-     * @return CustomerProfile|null
+     * @return Datetime
      */
-    public function getCustomerProfile(): ?CustomerProfile
+    public function getCreatedAt(): Datetime
     {
-        return $this->customerProfile;
+        return $this->createdAt;
     }
 
     /**
-     * @param CustomerProfile|null $customerProfile
+     * @param Datetime $createdAt
      *
      * @return $this
      */
-    public function setCustomerProfile(?CustomerProfile $customerProfile): self
+    public function setCreatedAt(Datetime $createdAt): self
     {
-        if ($customerProfile->getUser() != $this) {
-            $customerProfile->setUser($this);
-        }
-        $this->customerProfile = $customerProfile;
+        $this->createdAt = $createdAt;
+        return $this;
+    }
 
+    /**
+     * @return Datetime
+     */
+    public function getUpdatedAt(): Datetime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param Datetime $updatedAt
+     *
+     * @return $this
+     */
+    public function setUpdatedAt(Datetime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * @return Datetime
+     */
+    public function getlastLoginAt(): Datetime
+    {
+        return $this->lastLoginAt;
+    }
+
+    /**
+     * @param Datetime $lastLoginAt
+     *
+     * @return $this
+     */
+    public function setLastLoginAt(Datetime $lastLoginAt): self
+    {
+        $this->lastLoginAt = $lastLoginAt;
         return $this;
     }
 
